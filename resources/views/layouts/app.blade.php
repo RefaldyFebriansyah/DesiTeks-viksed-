@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'DesiTeks') — DesiTeks</title>
+    
+    <!-- PWA Settings -->
+    <meta name="theme-color" content="#0f2744">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="DesiTeks">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo_icon_light.png') }}">
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{{ asset('css/desiteks.css') }}">
@@ -28,7 +37,7 @@
                 <span class="dt-topbar-title">@yield('page-title', 'Dashboard')</span>
             </div>
             <div class="dt-topbar-actions">
-                <span class="text-muted" style="font-size:12px">
+                <span class="text-muted d-none d-lg-inline" style="font-size:12px">
                     <i class="bi bi-clock me-1"></i><span id="liveClock">{{ now()->timezone('Asia/Jakarta')->translatedFormat('l, d F Y H:i:s') }}</span> WIB
                 </span>
                 <div class="dropdown">
@@ -57,29 +66,60 @@
         {{-- PAGE CONTENT --}}
         <div class="dt-page">
 
-            {{-- Flash Messages --}}
-            @if(session('success'))
-                <div class="dt-alert dt-alert-success">
-                    <i class="bi bi-check-circle-fill flex-shrink-0"></i>
-                    <span>{{ session('success') }}</span>
-                </div>
-            @endif
-            @if(session('error'))
-                <div class="dt-alert dt-alert-danger">
-                    <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
-                    <span>{{ session('error') }}</span>
-                </div>
-            @endif
-            @if($errors->any())
-                <div class="dt-alert dt-alert-danger">
-                    <i class="bi bi-exclamation-circle-fill flex-shrink-0"></i>
-                    <div>
-                        @foreach($errors->all() as $error)
-                            <div>{{ $error }}</div>
-                        @endforeach
+            {{-- Toast Notification Container --}}
+            <div class="dt-toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+                @if(session('success'))
+                    <div class="dt-toast dt-toast-success show shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="dt-toast-content d-flex align-items-center gap-3">
+                            <div class="dt-toast-icon bg-success-soft text-success rounded-circle d-flex align-items-center justify-content-center" style="width:36px; height:36px; flex-shrink:0;">
+                                <i class="bi bi-check-lg" style="font-size:18px;"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-700 text-navy" style="font-size:13px; line-height: 1.2;">Berhasil!</div>
+                                <div class="text-muted" style="font-size:12px; margin-top: 2px;">{{ session('success') }}</div>
+                            </div>
+                            <button type="button" class="btn-close ms-2" onclick="closeToast(this)" aria-label="Close" style="background-size: 10px; opacity: 0.6; border: none; background-color: transparent;"></button>
+                        </div>
+                        <div class="dt-toast-progress bg-success"></div>
                     </div>
-                </div>
-            @endif
+                @endif
+
+                @if(session('error'))
+                    <div class="dt-toast dt-toast-danger show shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="dt-toast-content d-flex align-items-center gap-3">
+                            <div class="dt-toast-icon bg-danger-soft text-danger rounded-circle d-flex align-items-center justify-content-center" style="width:36px; height:36px; flex-shrink:0;">
+                                <i class="bi bi-x-lg" style="font-size:18px;"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-700 text-navy" style="font-size:13px; line-height: 1.2;">Error!</div>
+                                <div class="text-muted" style="font-size:12px; margin-top: 2px;">{{ session('error') }}</div>
+                            </div>
+                            <button type="button" class="btn-close ms-2" onclick="closeToast(this)" aria-label="Close" style="background-size: 10px; opacity: 0.6; border: none; background-color: transparent;"></button>
+                        </div>
+                        <div class="dt-toast-progress bg-danger"></div>
+                    </div>
+                @endif
+
+                @if($errors->any())
+                    <div class="dt-toast dt-toast-danger show shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="dt-toast-content d-flex align-start gap-3">
+                            <div class="dt-toast-icon bg-danger-soft text-danger rounded-circle d-flex align-items-center justify-content-center" style="width:36px; height:36px; flex-shrink:0;">
+                                <i class="bi bi-exclamation" style="font-size:20px; font-weight: bold;"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-700 text-navy mb-1" style="font-size:13px; line-height: 1.2;">Peringatan!</div>
+                                <ul class="text-muted m-0 p-0 ps-3" style="font-size:11px; line-height: 1.4;">
+                                    @foreach($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                            <button type="button" class="btn-close ms-2" onclick="closeToast(this)" aria-label="Close" style="background-size: 10px; opacity: 0.6; border: none; background-color: transparent;"></button>
+                        </div>
+                        <div class="dt-toast-progress bg-danger"></div>
+                    </div>
+                @endif
+            </div>
 
             @yield('content')
         </div>
@@ -88,11 +128,30 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// Sidebar toggle for mobile
+// Sidebar toggle for mobile menu drawer
+window.openSidebarMobile = function() {
+    const sidebar = document.querySelector('.dt-sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    if (sidebar) sidebar.classList.add('show');
+    if (overlay) overlay.style.setProperty('display', 'block', 'important');
+};
+
+window.closeSidebarMobile = function() {
+    const sidebar = document.querySelector('.dt-sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    if (sidebar) sidebar.classList.remove('show');
+    if (overlay) overlay.style.setProperty('display', 'none', 'important');
+};
+
 const sidebarToggle = document.getElementById('sidebarToggle');
 if (sidebarToggle) {
     sidebarToggle.addEventListener('click', () => {
-        document.querySelector('.dt-sidebar').classList.toggle('show');
+        const sidebar = document.querySelector('.dt-sidebar');
+        if (sidebar && sidebar.classList.contains('show')) {
+            window.closeSidebarMobile();
+        } else {
+            window.openSidebarMobile();
+        }
     });
 }
 // Auto-hide alerts
@@ -133,5 +192,113 @@ if (!isFormPage) {
 }
 </script>
 @stack('scripts')
+<script>
+// ─── 3-DOT KEBAB MENU ─────────────────────────────────────────
+function toggleMenu(btn) {
+    const menu = btn.nextElementSibling;
+    const isOpen = menu.classList.contains('open');
+
+    // tutup semua menu lain
+    document.querySelectorAll('.dt-action-menu.open').forEach(m => m.classList.remove('open'));
+
+    if (!isOpen) {
+        // hitung posisi dari tombol (fixed relatif ke viewport)
+        const rect = btn.getBoundingClientRect();
+        menu.style.top  = (rect.bottom + 4) + 'px';
+        menu.style.left = '';
+        // cek apakah keluar kanan layar
+        const menuW = 160;
+        if (rect.right + menuW > window.innerWidth) {
+            menu.style.right = (window.innerWidth - rect.right) + 'px';
+            menu.style.left  = '';
+        } else {
+            menu.style.left  = rect.left + 'px';
+            menu.style.right = '';
+        }
+        menu.classList.add('open');
+    }
+}
+// klik di luar = tutup semua
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.dt-action-wrap')) {
+        document.querySelectorAll('.dt-action-menu.open').forEach(m => m.classList.remove('open'));
+    }
+});
+// scroll = tutup semua menu (biar tidak melayang)
+document.addEventListener('scroll', function() {
+    document.querySelectorAll('.dt-action-menu.open').forEach(m => m.classList.remove('open'));
+}, true);
+
+function closeToast(btn) {
+    const toast = btn.closest('.dt-toast');
+    if (toast) {
+        toast.classList.remove('show');
+        toast.classList.add('hide');
+        setTimeout(() => toast.remove(), 400);
+    }
+}
+
+// Auto close toasts after 4 seconds
+document.addEventListener('DOMContentLoaded', () => {
+    const toasts = document.querySelectorAll('.dt-toast');
+    toasts.forEach(toast => {
+        setTimeout(() => {
+            if (toast && toast.classList.contains('show')) {
+                toast.classList.remove('show');
+                toast.classList.add('hide');
+                setTimeout(() => toast.remove(), 400);
+            }
+        }, 4000);
+    });
+
+    // Registrasi PWA Service Worker
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/service-worker.js')
+            .then(reg => console.log('PWA Service Worker terdaftar!', reg))
+            .catch(err => console.error('Gagal mendaftarkan PWA Service Worker', err));
+    }
+
+    // Penanganan Install PWA
+    let deferredPrompt;
+    const btnInstallPWA = document.getElementById('btnInstallPWA');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Mencegah mini-infobar default browser muncul
+        e.preventDefault();
+        // Simpan event prompt
+        deferredPrompt = e;
+        // Munculkan tombol download aplikasi di sidebar
+        if (btnInstallPWA) {
+            btnInstallPWA.classList.remove('d-none');
+        }
+    });
+
+    if (btnInstallPWA) {
+        btnInstallPWA.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            // Tampilkan prompt instalasi
+            deferredPrompt.prompt();
+            // Tunggu pilihan user
+            const { outcome } = await deferredPrompt.userChoice;
+            // Reset prompt
+            deferredPrompt = null;
+            // Sembunyikan tombol
+            btnInstallPWA.classList.add('d-none');
+        });
+    }
+
+    window.addEventListener('appinstalled', (event) => {
+        deferredPrompt = null;
+        if (btnInstallPWA) {
+            btnInstallPWA.classList.add('d-none');
+        }
+        // Tampilkan notifikasi melayang sukses
+        if (typeof showToastAlert === 'function') {
+            showToastAlert('Instalasi Sukses', 'Aplikasi DesiTeks berhasil terpasang di perangkat Anda!', 'success');
+        }
+    });
+});
+</script>
+
 </body>
 </html>

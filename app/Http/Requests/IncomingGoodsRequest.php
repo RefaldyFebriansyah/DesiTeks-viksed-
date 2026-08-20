@@ -16,6 +16,7 @@ class IncomingGoodsRequest extends FormRequest
             'nama_supplier'        => 'required|string|max:150',
             'nomor_faktur'         => 'required|string|max:100|unique:incoming_goods,nomor_faktur',
             'catatan'              => 'nullable|string|max:500',
+            'foto_lampiran'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
             'items'                => 'required|array|min:1',
             'items.*.fabric_id'    => 'required|string',
             // fields if new fabric

@@ -9,7 +9,10 @@ class Sale extends Model
     protected $fillable = [
         'nomor_transaksi',
         'user_id',
+        'customer_id',
         'total',
+        'diskon',
+        'pajak',
         'status',
         'catatan',
     ];
@@ -31,5 +34,10 @@ class Sale extends Model
     public function payment()
     {
         return $this->hasOne(Payment::class);
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
     }
 }

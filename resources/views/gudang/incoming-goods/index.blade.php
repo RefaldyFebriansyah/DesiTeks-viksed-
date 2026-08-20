@@ -46,7 +46,14 @@
                     <td>{{ $ig->total_rol }} rol</td>
                     <td>{{ number_format($ig->total_meter, 1) }} m</td>
                     <td>
-                        <a href="{{ route('gudang.incoming-goods.show', $ig) }}" class="dt-btn dt-btn-outline dt-btn-xs">Detail</a>
+                        <div class="dt-action-wrap">
+                            <button class="dt-action-btn" onclick="toggleMenu(this)" type="button">⋮</button>
+                            <div class="dt-action-menu">
+                                <a href="{{ route('gudang.incoming-goods.show', $ig) }}">
+                                    <i class="bi bi-eye"></i> Detail
+                                </a>
+                            </div>
+                        </div>
                     </td>
                 </tr>
             @empty

@@ -65,14 +65,22 @@
                         </span>
                     </td>
                     <td>
-                        <div class="d-flex gap-1">
-                            <a href="{{ route('admin.transactions.show', $t) }}" class="dt-btn dt-btn-outline dt-btn-xs">Detail</a>
-                            @if($t->status === 'berhasil')
-                                <form method="POST" action="{{ route('admin.transactions.cancel', $t) }}" onsubmit="return confirm('Batalkan transaksi {{ $t->nomor_transaksi }}?')">
-                                    @csrf
-                                    <button class="dt-btn dt-btn-danger dt-btn-xs">Batalkan</button>
-                                </form>
-                            @endif
+                        <div class="dt-action-wrap">
+                            <button class="dt-action-btn" onclick="toggleMenu(this)" type="button">⋮</button>
+                            <div class="dt-action-menu">
+                                <a href="{{ route('admin.transactions.show', $t) }}">
+                                    <i class="bi bi-eye"></i> Detail
+                                </a>
+                                @if($t->status === 'berhasil')
+                                    <div class="dt-menu-divider"></div>
+                                    <form method="POST" action="{{ route('admin.transactions.cancel', $t) }}" onsubmit="return confirm('Batalkan transaksi {{ $t->nomor_transaksi }}?')">
+                                        @csrf
+                                        <button type="submit" class="dt-menu-danger">
+                                            <i class="bi bi-x-circle"></i> Batalkan
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
                         </div>
                     </td>
                 </tr>

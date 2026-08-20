@@ -113,6 +113,70 @@
     </div>
 </div>
 
+{{-- Kain Terlaris --}}
+<div class="row g-3 mb-4">
+    <div class="col-12">
+        <div class="dt-card">
+            <div class="dt-card-header">
+                <span class="dt-card-title"><i class="bi bi-trophy-fill me-2 text-gold"></i>Kain Terlaris (Best Sellers)</span>
+                <span class="badge bg-gold-light text-navy px-3 py-1 fw-600">Top 5 Performa</span>
+            </div>
+            @if($kainTerlaris->isEmpty())
+                <div class="empty-state py-4">
+                    <i class="bi bi-star fs-3"></i>
+                    <p class="mt-2 mb-0">Belum ada data penjualan kain.</p>
+                </div>
+            @else
+            <div class="dt-table-wrap">
+                <table class="dt-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">Rank</th>
+                            <th>Kain</th>
+                            <th>Kategori</th>
+                            <th>Volume Terjual</th>
+                            <th class="text-end">Total Omset</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($kainTerlaris as $index => $item)
+                        @php
+                            $rank = $index + 1;
+                            $rankBadge = match($rank) {
+                                1 => '<span class="badge bg-warning text-navy" style="font-size: 11px; font-weight: 700;"><i class="bi bi-award-fill"></i> 1st</span>',
+                                2 => '<span class="badge bg-secondary text-white" style="font-size: 11px; font-weight: 700;"><i class="bi bi-award-fill"></i> 2nd</span>',
+                                3 => '<span class="badge bg-danger text-white" style="font-size: 11px; font-weight: 700;"><i class="bi bi-award-fill"></i> 3rd</span>',
+                                default => '<span class="dt-badge dt-badge-navy">#' . $rank . '</span>'
+                            };
+                        @endphp
+                        <tr>
+                            <td>{!! $rankBadge !!}</td>
+                            <td>
+                                <div class="fw-600 text-navy" style="font-size:13px">{{ $item->fabric->nama_kain ?? 'Kain Dihapus' }}</div>
+                                <div style="font-size:11px;color:var(--dt-muted)">{{ $item->fabric->kode_kain ?? '-' }}</div>
+                            </td>
+                            <td>{{ $item->fabric->category->nama_kategori ?? '-' }}</td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    @if($item->total_meter > 0)
+                                        <span class="badge bg-navy-light text-navy px-2 py-1" style="font-size: 11px;"><i class="bi bi-ruler"></i> {{ number_format($item->total_meter, 1) }} m</span>
+                                    @endif
+                                    @if($item->total_rol > 0)
+                                        <span class="badge bg-gold-light text-navy px-2 py-1" style="font-size: 11px; font-weight: 600;"><i class="bi bi-box-seam"></i> {{ number_format($item->total_rol) }} rol</span>
+                                    @endif
+                                </div>
+                            </td>
+                            <td class="fw-700 text-navy text-end" style="font-size:14px">Rp {{ number_format($item->total_omset, 0, ',', '.') }}</td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            </div>
+            @endif
+        </div>
+    </div>
+</div>
+
 <div class="row g-3">
     {{-- Transaksi Terbaru --}}
     <div class="col-lg-7">

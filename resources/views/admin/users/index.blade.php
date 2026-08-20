@@ -61,14 +61,22 @@
                     </td>
                     <td>{{ $u->created_at->format('d/m/Y') }}</td>
                     <td>
-                        <div class="d-flex gap-1">
-                            <a href="{{ route('admin.users.edit', $u) }}" class="dt-btn dt-btn-primary dt-btn-xs">Edit</a>
-                            @if($u->id !== auth()->id())
-                                <form method="POST" action="{{ route('admin.users.destroy', $u) }}" onsubmit="return confirm('Hapus pengguna {{ $u->name }}?')">
-                                    @csrf @method('DELETE')
-                                    <button class="dt-btn dt-btn-danger dt-btn-xs">Hapus</button>
-                                </form>
-                            @endif
+                        <div class="dt-action-wrap">
+                            <button class="dt-action-btn" onclick="toggleMenu(this)" type="button">⋮</button>
+                            <div class="dt-action-menu">
+                                <a href="{{ route('admin.users.edit', $u) }}">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </a>
+                                @if($u->id !== auth()->id())
+                                    <div class="dt-menu-divider"></div>
+                                    <form method="POST" action="{{ route('admin.users.destroy', $u) }}" onsubmit="return confirm('Hapus pengguna {{ $u->name }}?')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="dt-menu-danger">
+                                            <i class="bi bi-trash"></i> Hapus
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
                         </div>
                     </td>
                 </tr>

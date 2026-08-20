@@ -72,13 +72,23 @@
                         <span class="dt-badge {{ $badgeClass }}">{{ ucfirst($statusStok) }}</span>
                     </td>
                     <td>
-                        <div class="d-flex gap-1">
-                            <a href="{{ route('admin.fabrics.show', $fabric) }}" class="dt-btn dt-btn-outline dt-btn-xs">Detail</a>
-                            <a href="{{ route('admin.fabrics.edit', $fabric) }}" class="dt-btn dt-btn-primary dt-btn-xs">Edit</a>
-                            <form method="POST" action="{{ route('admin.fabrics.destroy', $fabric) }}" onsubmit="return confirm('Hapus kain {{ $fabric->nama_kain }}?')">
-                                @csrf @method('DELETE')
-                                <button class="dt-btn dt-btn-danger dt-btn-xs">Hapus</button>
-                            </form>
+                        <div class="dt-action-wrap">
+                            <button class="dt-action-btn" onclick="toggleMenu(this)" type="button">⋮</button>
+                            <div class="dt-action-menu">
+                                <a href="{{ route('admin.fabrics.show', $fabric) }}">
+                                    <i class="bi bi-eye"></i> Detail
+                                </a>
+                                <a href="{{ route('admin.fabrics.edit', $fabric) }}">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </a>
+                                <div class="dt-menu-divider"></div>
+                                <form method="POST" action="{{ route('admin.fabrics.destroy', $fabric) }}" onsubmit="return confirm('Hapus kain {{ $fabric->nama_kain }}?')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="dt-menu-danger">
+                                        <i class="bi bi-trash"></i> Hapus
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </td>
                 </tr>

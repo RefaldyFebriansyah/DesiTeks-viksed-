@@ -4,10 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Sale;
+use App\Services\StockService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
+    public function __construct(private StockService $stockService) {}
+
     public function index(Request $request)
     {
         $query = Sale::with(['user', 'payment']);
@@ -41,13 +45,28 @@ class TransactionController extends Controller
         if ($sale->status === 'dibatalkan') {
             return back()->with('error', 'Transaksi sudah dibatalkan.');
         }
-        $sale->update(['status' => 'dibatalkan']);
-        \App\Models\AuditLog::create([
-            'user_id'   => auth()->id(),
-            'aktivitas' => "Membatalkan transaksi: {$sale->nomor_transaksi}",
-            'model'     => 'Sale',
-            'model_id'  => $sale->id,
-        ]);
-        return back()->with('success', 'Transaksi berhasil dibatalkan.');
+
+        try {
+            DB::transaction(function () use ($sale) {
+                // Kembalikan stok kain ke inventaris
+                $this->stockService->kembalikanStok($sale);
+
+                // Update status transaksi
+                $sale->update(['status' => 'dibatalkan']);
+
+                // Catat audit log
+                \App\Models\AuditLog::create([
+                    'user_id'   => auth()->id(),
+                    'aktivitas' => "Membatalkan transaksi: {$sale->nomor_transaksi} (Stok dikembalikan)",
+                    'model'     => 'Sale',
+                    'model_id'  => $sale->id,
+                ]);
+            });
+
+            return back()->with('success', 'Transaksi berhasil dibatalkan dan stok dikembalikan.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal membatalkan transaksi: ' . $e->getMessage());
+        }
     }
 }
+

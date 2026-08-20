@@ -33,12 +33,20 @@
                     <td>{{ $cat->deskripsi ?? '-' }}</td>
                     <td><span class="dt-badge dt-badge-navy">{{ $cat->fabrics_count }} Kain</span></td>
                     <td>
-                        <div class="d-flex gap-1">
-                            <a href="{{ route('admin.categories.edit', $cat) }}" class="dt-btn dt-btn-primary dt-btn-xs">Edit</a>
-                            <form method="POST" action="{{ route('admin.categories.destroy', $cat) }}" onsubmit="return confirm('Hapus kategori {{ $cat->nama_kategori }}?')">
-                                @csrf @method('DELETE')
-                                <button class="dt-btn dt-btn-danger dt-btn-xs">Hapus</button>
-                            </form>
+                        <div class="dt-action-wrap">
+                            <button class="dt-action-btn" onclick="toggleMenu(this)" type="button">⋮</button>
+                            <div class="dt-action-menu">
+                                <a href="{{ route('admin.categories.edit', $cat) }}">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </a>
+                                <div class="dt-menu-divider"></div>
+                                <form method="POST" action="{{ route('admin.categories.destroy', $cat) }}" onsubmit="return confirm('Hapus kategori {{ $cat->nama_kategori }}?')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="dt-menu-danger">
+                                        <i class="bi bi-trash"></i> Hapus
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </td>
                 </tr>

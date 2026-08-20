@@ -40,9 +40,16 @@
                         </span>
                     </td>
                     <td>
-                        <div class="d-flex gap-1">
-                            <a href="{{ route('kasir.transactions.show', $t) }}" class="dt-btn dt-btn-outline dt-btn-xs">Detail</a>
-                            <a href="{{ route('kasir.sales.receipt', $t) }}" target="_blank" class="dt-btn dt-btn-gold dt-btn-xs"><i class="bi bi-printer"></i> Struk</a>
+                        <div class="dt-action-wrap">
+                            <button class="dt-action-btn" onclick="toggleMenu(this)" type="button">⋮</button>
+                            <div class="dt-action-menu">
+                                <a href="{{ route('kasir.transactions.show', $t) }}">
+                                    <i class="bi bi-eye"></i> Detail
+                                </a>
+                                <a href="{{ route('kasir.sales.receipt', $t) }}" target="_blank">
+                                    <i class="bi bi-printer"></i> Cetak Struk
+                                </a>
+                            </div>
                         </div>
                     </td>
                 </tr>

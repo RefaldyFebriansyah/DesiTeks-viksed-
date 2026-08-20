@@ -7,7 +7,17 @@ use App\Http\Controllers\Kasir;
 use Illuminate\Support\Facades\Route;
 
 // ─── ROOT ──────────────────────────────────────────────────────────────────
-Route::get('/', fn() => redirect()->route('login'));
+Route::get('/', function() {
+    if (auth()->check()) {
+        return match (auth()->user()->role) {
+            'admin'  => redirect()->route('admin.dashboard'),
+            'gudang' => redirect()->route('gudang.dashboard'),
+            'kasir'  => redirect()->route('kasir.dashboard'),
+            default  => redirect()->route('login'),
+        };
+    }
+    return redirect()->route('login');
+});
 
 // ─── AUTH ──────────────────────────────────────────────────────────────────
 Route::middleware('guest')->group(function () {
@@ -34,6 +44,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Supplier
     Route::resource('suppliers', Admin\SupplierController::class)->except(['show']);
 
+    // Pelanggan
+    Route::resource('customers', Admin\CustomerController::class);
+
     // Stok
     Route::get('/stocks',                    [Admin\StockController::class, 'index'])->name('stocks.index');
     Route::post('/stocks/{fabric}/adjust',   [Admin\StockController::class, 'adjust'])->name('stocks.adjust');
@@ -59,13 +72,18 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('/transactions/{sale}/cancel', [Admin\TransactionController::class, 'cancel'])->name('transactions.cancel');
 
     // Laporan
-    Route::get('/reports', [Admin\ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports',            [Admin\ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/export-csv', [Admin\ReportController::class, 'exportCsv'])->name('reports.export-csv');
 
     // Pengguna
     Route::resource('users', Admin\UserController::class)->except(['show']);
 
     // Audit Log
     Route::get('/audit-logs', [Admin\AuditLogController::class, 'index'])->name('audit-logs.index');
+
+    // Pengaturan Aplikasi
+    Route::get('/settings',  [Admin\SettingController::class, 'index'])->name('settings.index');
+    Route::post('/settings', [Admin\SettingController::class, 'update'])->name('settings.update');
 });
 
 // ─── GUDANG ────────────────────────────────────────────────────────────────

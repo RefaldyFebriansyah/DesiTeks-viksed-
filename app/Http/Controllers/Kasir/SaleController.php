@@ -26,7 +26,8 @@ class SaleController extends Controller
         }
         $fabrics    = $query->orderBy('nama_kain')->get();
         $categories = Category::orderBy('nama_kategori')->get();
-        return view('kasir.sales.pos', compact('fabrics','categories'));
+        $customers  = \App\Models\Customer::orderBy('nama')->get();
+        return view('kasir.sales.pos', compact('fabrics','categories','customers'));
     }
 
     public function store(SaleRequest $request)
@@ -35,7 +36,10 @@ class SaleController extends Controller
             $sale = $this->saleService->prosesTransaksi(
                 $request->items,
                 (float) $request->jumlah_bayar,
-                $request->metode
+                $request->metode,
+                $request->filled('customer_id') ? (int) $request->customer_id : null,
+                (float) ($request->diskon ?? 0),
+                (float) ($request->pajak ?? 0)
             );
             return redirect()->route('kasir.sales.success', $sale->id);
         } catch (\Exception $e) {

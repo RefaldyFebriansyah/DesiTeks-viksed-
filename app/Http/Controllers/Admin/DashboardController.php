@@ -46,6 +46,18 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
+        // Kain terlaris berdasarkan total omset
+        $kainTerlaris = \App\Models\SaleDetail::with(['fabric.category'])
+            ->join('sales', 'sale_details.sale_id', '=', 'sales.id')
+            ->where('sales.status', 'berhasil')
+            ->selectRaw('fabric_id, SUM(subtotal) as total_omset, 
+                         SUM(CASE WHEN satuan = "meter" THEN jumlah ELSE 0 END) as total_meter,
+                         SUM(CASE WHEN satuan = "rol" THEN jumlah ELSE 0 END) as total_rol')
+            ->groupBy('fabric_id')
+            ->orderByDesc('total_omset')
+            ->limit(5)
+            ->get();
+
         // Data grafik penjualan 7 hari
         $grafikData = [];
         for ($i = 6; $i >= 0; $i--) {
@@ -61,7 +73,7 @@ class DashboardController extends Controller
         return view('admin.dashboard', compact(
             'totalJenisKain', 'totalStokRol', 'totalStokMeter',
             'barangMasukHariIni', 'transaksiHariIni', 'pendapatanHariIni',
-            'transaksiTerbaru', 'stokMenipis', 'aktivitasTerbaru', 'grafikData'
+            'transaksiTerbaru', 'stokMenipis', 'aktivitasTerbaru', 'grafikData', 'kainTerlaris'
         ));
     }
 }

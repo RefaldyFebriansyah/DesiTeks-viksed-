@@ -1,12 +1,14 @@
 @extends('layouts.app')
-@section('title', 'Detail Transaksi')
+@section('title', 'Detail Transaksi — ' . $sale->nomor_transaksi)
 @section('page-title', 'Detail Transaksi Kasir')
 
 @section('content')
+
+{{-- Page Header --}}
 <div class="dt-page-header">
     <div>
-        <h1 class="dt-page-title">Transaksi: {{ $sale->nomor_transaksi }}</h1>
-        <div class="dt-breadcrumb">Kasir / Transaksi Hari Ini / Detail</div>
+        <h1 class="dt-page-title">Detail Transaksi</h1>
+        <div class="dt-breadcrumb">Kasir / Transaksi Hari Ini / {{ $sale->nomor_transaksi }}</div>
     </div>
     <div class="d-flex gap-2">
         <a href="{{ route('kasir.sales.receipt', $sale) }}" target="_blank" class="dt-btn dt-btn-gold">
@@ -18,53 +20,121 @@
     </div>
 </div>
 
-<div class="row g-3">
-    <div class="col-md-4">
-        <div class="dt-card">
-            <h5 class="fw-700 text-navy mb-3">Rincian Pembayaran</h5>
-            <table class="table table-borderless table-sm fs-14">
-                <tr><td class="text-muted">No. Transaksi</td><td class="fw-600">{{ $sale->nomor_transaksi }}</td></tr>
-                <tr><td class="text-muted">Waktu Transaksi</td><td>{{ $sale->created_at->format('d/m/Y H:i') }}</td></tr>
-                <tr><td class="text-muted">Kasir</td><td>{{ $sale->user->name }}</td></tr>
-                <tr><td class="text-muted">Status</td><td><span class="dt-badge {{ $sale->status === 'berhasil' ? 'dt-badge-success' : 'dt-badge-danger' }}">{{ ucfirst($sale->status) }}</span></td></tr>
-                <tr><td class="text-muted">Metode Bayar</td><td class="fw-600">{{ ucfirst($sale->payment->metode ?? 'tunai') }}</td></tr>
-                <tr><td class="text-muted">Total Belanja</td><td class="fw-700 text-navy fs-16">Rp {{ number_format($sale->total, 0, ',', '.') }}</td></tr>
-                <tr><td class="text-muted">Jumlah Bayar</td><td>Rp {{ number_format($sale->payment->jumlah_bayar ?? 0, 0, ',', '.') }}</td></tr>
-                <tr><td class="text-muted">Kembalian</td><td class="fw-600 text-success">Rp {{ number_format($sale->payment->kembalian ?? 0, 0, ',', '.') }}</td></tr>
-            </table>
+{{-- Dokumen Header --}}
+<div class="dt-card mb-3" style="padding: 0; overflow: hidden;">
+    <div style="display:flex; align-items:stretch; border-bottom: 1px solid var(--dt-border);">
+        {{-- Kiri: Identitas Transaksi --}}
+        <div style="flex:1; padding: 20px 24px; border-right: 1px solid var(--dt-border);">
+            <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--dt-muted); margin-bottom:6px;">No. Transaksi</div>
+            <div style="font-size:20px; font-weight:700; color:var(--dt-navy); letter-spacing:.3px;">{{ $sale->nomor_transaksi }}</div>
+            <div style="margin-top:10px; font-size:13px; color:var(--dt-muted);">
+                <i class="bi bi-calendar3 me-1"></i>
+                {{ $sale->created_at->format('d F Y H:i') }} WIB
+            </div>
         </div>
-    </div>
-    <div class="col-md-8">
-        <div class="dt-card">
-            <h5 class="fw-700 text-navy mb-3">Item Pembelian</h5>
-            <div class="dt-table-wrap">
-                <table class="dt-table">
-                    <thead>
-                        <tr>
-                            <th>Kain</th>
-                            <th>Satuan</th>
-                            <th>Jumlah</th>
-                            <th>Harga Satuan</th>
-                            <th>Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    @foreach($sale->details as $detail)
-                        <tr>
-                            <td>
-                                <div class="fw-600">{{ $detail->fabric->nama_kain }}</div>
-                                <small class="text-muted">{{ $detail->fabric->kode_kain }}</small>
-                            </td>
-                            <td><span class="dt-badge dt-badge-navy">{{ ucfirst($detail->satuan) }}</span></td>
-                            <td>{{ number_format($detail->jumlah, $detail->satuan === 'meter' ? 1 : 0) }}</td>
-                            <td>Rp {{ number_format($detail->harga_satuan, 0, ',', '.') }}</td>
-                            <td class="fw-600">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
-                        </tr>
-                    @endforeach
-                    </tbody>
-                </table>
+        {{-- Tengah: Info Pembayaran --}}
+        <div style="flex:1; padding: 20px 24px; border-right: 1px solid var(--dt-border);">
+            <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--dt-muted); margin-bottom:6px;">Metode Pembayaran</div>
+            <div style="font-size:15px; font-weight:600; color:var(--dt-navy);">
+                @php
+                    $emoji = match(strtolower($sale->payment->metode ?? 'tunai')) {
+                        'tunai' => '💵 ',
+                        'transfer' => '🏦 ',
+                        'qris' => '📱 ',
+                        default => ''
+                    };
+                @endphp
+                {{ $emoji }}{{ ucfirst($sale->payment->metode ?? 'tunai') }}
+            </div>
+            <div style="margin-top:8px; font-size:13px; color:var(--dt-muted);">
+                Status: 
+                <span class="dt-badge {{ $sale->status === 'berhasil' ? 'dt-badge-success' : 'dt-badge-danger' }}">
+                    {{ ucfirst($sale->status) }}
+                </span>
+            </div>
+        </div>
+        {{-- Kanan: Kasir --}}
+        <div style="flex:1; padding: 20px 24px;">
+            <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--dt-muted); margin-bottom:6px;">Kasir / Operator</div>
+            <div style="font-size:15px; font-weight:600; color:var(--dt-navy);">{{ $sale->user->name }}</div>
+            <div style="margin-top:4px; font-size:12px; color:var(--dt-muted);">
+                ID Kasir: <span class="dt-badge dt-badge-navy">#{{ $sale->user->id }}</span>
             </div>
         </div>
     </div>
+
+    {{-- Ringkasan angka pembayaran --}}
+    <div style="display:flex; background: #f8fafc;">
+        <div style="flex:1; padding:14px 24px; text-align:center; border-right:1px solid var(--dt-border);">
+            <div style="font-size:11px; color:var(--dt-muted); font-weight:600; text-transform:uppercase; letter-spacing:.8px;">Total Belanja</div>
+            <div style="font-size:22px; font-weight:700; color:var(--dt-navy); margin-top:2px;">Rp {{ number_format($sale->total, 0, ',', '.') }}</div>
+        </div>
+        <div style="flex:1; padding:14px 24px; text-align:center; border-right:1px solid var(--dt-border);">
+            <div style="font-size:11px; color:var(--dt-muted); font-weight:600; text-transform:uppercase; letter-spacing:.8px;">Jumlah Bayar</div>
+            <div style="font-size:22px; font-weight:700; color:var(--dt-navy); margin-top:2px;">Rp {{ number_format($sale->payment->jumlah_bayar ?? 0, 0, ',', '.') }}</div>
+        </div>
+        <div style="flex:1; padding:14px 24px; text-align:center;">
+            <div style="font-size:11px; color:var(--dt-muted); font-weight:600; text-transform:uppercase; letter-spacing:.8px;">Kembalian</div>
+            <div style="font-size:22px; font-weight:700; color:var(--dt-success); margin-top:2px;">Rp {{ number_format($sale->payment->kembalian ?? 0, 0, ',', '.') }}</div>
+        </div>
+    </div>
 </div>
+
+{{-- Tabel Rincian Item --}}
+<div class="dt-card">
+    <div style="padding: 16px 20px 12px; border-bottom: 1px solid var(--dt-border); display:flex; align-items:center; justify-content:space-between;">
+        <div>
+            <div style="font-size:14px; font-weight:600; color:var(--dt-navy);">Item Pembelian</div>
+            <div style="font-size:12px; color:var(--dt-muted); margin-top:1px;">{{ $sale->details->count() }} jenis produk dalam transaksi ini</div>
+        </div>
+    </div>
+    <div class="dt-table-wrap">
+        <table class="dt-table">
+            <thead>
+                <tr>
+                    <th style="width:30px;">No</th>
+                    <th>Kode Kain</th>
+                    <th>Nama Kain</th>
+                    <th>Satuan</th>
+                    <th class="text-end">Jumlah</th>
+                    <th class="text-end">Harga Satuan</th>
+                    <th class="text-end">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach($sale->details as $i => $detail)
+                <tr>
+                    <td style="color:var(--dt-muted); font-size:12px;">{{ $i + 1 }}</td>
+                    <td><span class="dt-badge dt-badge-navy">{{ $detail->fabric->kode_kain }}</span></td>
+                    <td>
+                        <div class="fw-600" style="color:var(--dt-navy)">{{ $detail->fabric->nama_kain }}</div>
+                        <div style="font-size:11px; color:var(--dt-muted)">{{ $detail->fabric->jenis_kain }}</div>
+                    </td>
+                    <td>
+                        <span class="dt-badge {{ $detail->satuan === 'meter' ? 'dt-badge-gold' : 'dt-badge-navy' }}">
+                            {{ ucfirst($detail->satuan) }}
+                        </span>
+                    </td>
+                    <td class="text-end fw-600">
+                        {{ number_format($detail->jumlah, $detail->satuan === 'meter' ? 1 : 0) }} 
+                        <span style="font-size:11px;font-weight:400;color:var(--dt-muted)">{{ $detail->satuan }}</span>
+                    </td>
+                    <td class="text-end" style="font-size:13px;">Rp {{ number_format($detail->harga_satuan, 0, ',', '.') }}</td>
+                    <td class="text-end fw-600" style="color:var(--dt-navy)">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
+                </tr>
+            @endforeach
+            </tbody>
+            <tfoot>
+                <tr style="background:#f8fafc; border-top: 2px solid var(--dt-border);">
+                    <td colspan="4" style="font-size:13px; font-weight:600; color:var(--dt-muted); padding: 12px 16px;">TOTAL AKHIR</td>
+                    <td colspan="2"></td>
+                    <td class="text-end fw-700" style="font-size:16px; color:var(--dt-navy); padding: 12px 16px;">
+                        Rp {{ number_format($sale->total, 0, ',', '.') }}
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
 @endsection

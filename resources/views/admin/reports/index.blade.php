@@ -8,9 +8,14 @@
         <h1 class="dt-page-title">Laporan Analisis & Ekspor</h1>
         <div class="dt-breadcrumb">Sistem / Laporan</div>
     </div>
-    <button onclick="window.print()" class="dt-btn dt-btn-primary">
-        <i class="bi bi-printer"></i> Cetak Laporan
-    </button>
+    <div class="d-flex gap-2">
+        <a href="{{ route('admin.reports.export-csv', request()->all()) }}" class="dt-btn dt-btn-outline">
+            <i class="bi bi-file-earmark-spreadsheet"></i> Ekspor CSV
+        </a>
+        <button onclick="window.print()" class="dt-btn dt-btn-primary">
+            <i class="bi bi-printer"></i> Cetak Laporan
+        </button>
+    </div>
 </div>
 
 <div class="dt-card mb-4 no-print">

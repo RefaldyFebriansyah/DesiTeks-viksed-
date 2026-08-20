@@ -23,14 +23,18 @@ class SaleService
      * @return Sale
      * @throws \Exception jika stok tidak cukup atau pembayaran kurang
      */
-    public function prosesTransaksi(array $items, float $jumlahBayar, string $metode): Sale
+    public function prosesTransaksi(array $items, float $jumlahBayar, string $metode, ?int $customerId = null, float $diskon = 0, float $pajak = 0): Sale
     {
-        return DB::transaction(function () use ($items, $jumlahBayar, $metode) {
-            // 1. Hitung total
-            $total = 0;
+        return DB::transaction(function () use ($items, $jumlahBayar, $metode, $customerId, $diskon, $pajak) {
+            // 1. Hitung subtotal belanja awal
+            $subtotalBelanja = 0;
             foreach ($items as $item) {
-                $total += $item['harga_satuan'] * $item['jumlah'];
+                $subtotalBelanja += $item['harga_satuan'] * $item['jumlah'];
             }
+
+            // Total akhir setelah diskon & pajak
+            $total = ($subtotalBelanja - $diskon) + $pajak;
+            if ($total < 0) $total = 0;
 
             // 2. Validasi pembayaran
             if ($jumlahBayar < $total) {
@@ -44,7 +48,10 @@ class SaleService
             $sale = Sale::create([
                 'nomor_transaksi' => $nomor,
                 'user_id'         => Auth::id(),
+                'customer_id'     => $customerId,
                 'total'           => $total,
+                'diskon'          => $diskon,
+                'pajak'           => $pajak,
                 'status'          => 'berhasil',
             ]);
 

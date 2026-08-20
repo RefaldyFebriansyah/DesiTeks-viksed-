@@ -77,6 +77,13 @@
             </div>
             <div class="col-md-6">
                 <div class="dt-form-group">
+                    <label class="dt-label">Meter Per Rol (m) <span class="required">*</span></label>
+                    <input type="number" step="0.01" name="meter_per_rol" class="dt-input @error('meter_per_rol') is-invalid @enderror" value="{{ old('meter_per_rol', 50.00) }}" required>
+                    @error('meter_per_rol') <div class="dt-error-msg">{{ $message }}</div> @enderror
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="dt-form-group">
                     <label class="dt-label">Stok Minimum Meter</label>
                     <input type="number" name="stok_minimum" class="dt-input" value="{{ old('stok_minimum', 10) }}">
                 </div>

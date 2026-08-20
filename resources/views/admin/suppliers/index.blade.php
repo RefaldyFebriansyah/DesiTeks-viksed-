@@ -35,12 +35,20 @@
                     <td>{{ $sup->alamat ?? '-' }}</td>
                     <td><span class="dt-badge dt-badge-gold">{{ $sup->incoming_goods_count }} Transaksi</span></td>
                     <td>
-                        <div class="d-flex gap-1">
-                            <a href="{{ route('admin.suppliers.edit', $sup) }}" class="dt-btn dt-btn-primary dt-btn-xs">Edit</a>
-                            <form method="POST" action="{{ route('admin.suppliers.destroy', $sup) }}" onsubmit="return confirm('Hapus supplier {{ $sup->nama_supplier }}?')">
-                                @csrf @method('DELETE')
-                                <button class="dt-btn dt-btn-danger dt-btn-xs">Hapus</button>
-                            </form>
+                        <div class="dt-action-wrap">
+                            <button class="dt-action-btn" onclick="toggleMenu(this)" type="button">⋮</button>
+                            <div class="dt-action-menu">
+                                <a href="{{ route('admin.suppliers.edit', $sup) }}">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </a>
+                                <div class="dt-menu-divider"></div>
+                                <form method="POST" action="{{ route('admin.suppliers.destroy', $sup) }}" onsubmit="return confirm('Hapus supplier {{ $sup->nama_supplier }}?')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="dt-menu-danger">
+                                        <i class="bi bi-trash"></i> Hapus
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </td>
                 </tr>

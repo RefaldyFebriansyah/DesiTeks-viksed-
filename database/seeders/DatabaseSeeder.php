@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
         // Data kain, kategori, supplier, stok dimulakan dari nol (0)
         $this->call([
             UserSeeder::class,
+            SettingSeeder::class,
         ]);
     }
 }

@@ -21,6 +21,7 @@ class FabricRequest extends FormRequest
             'motif'           => 'nullable|string|max:100',
             'harga_per_meter' => 'required|numeric|min:0',
             'harga_per_rol'   => 'required|numeric|min:0',
+            'meter_per_rol'   => 'required|numeric|min:0.01',
             'stok_minimum'    => 'nullable|integer|min:0',
             'status'          => 'required|in:aktif,nonaktif',
         ];

@@ -75,6 +75,12 @@ class IncomingGoodsController extends Controller
                 $totalBeli  += $item['jumlah_meter'] * $item['harga_beli'];
             }
 
+            // Upload foto jika ada
+            $fotoPath = null;
+            if ($request->hasFile('foto_lampiran')) {
+                $fotoPath = $request->file('foto_lampiran')->store('incoming_goods', 'public');
+            }
+
             // 2. Buat record barang masuk
             $incomingGood = IncomingGood::create([
                 'nomor_faktur'    => $request->nomor_faktur,
@@ -82,6 +88,7 @@ class IncomingGoodsController extends Controller
                 'user_id'         => Auth::id(),
                 'tanggal'         => $request->tanggal,
                 'catatan'         => $request->catatan,
+                'foto_lampiran'   => $fotoPath,
                 'total_pembelian' => $totalBeli,
                 'total_rol'       => $totalRol,
                 'total_meter'     => $totalMeter,
@@ -115,6 +122,7 @@ class IncomingGoodsController extends Controller
                         'warna'           => $item['warna'] ?? null,
                         'harga_per_meter' => $item['harga_per_meter'] ?? 0,
                         'harga_per_rol'   => $item['harga_per_rol'] ?? 0,
+                        'meter_per_rol'   => 50.00,
                         'stok_minimum'    => 10,
                         'status'          => 'aktif',
                     ]);

@@ -59,7 +59,14 @@
                     <td>{{ number_format($ig->total_meter, 1) }} m</td>
                     <td class="fw-600 text-success">Rp {{ number_format($ig->total_pembelian, 0, ',', '.') }}</td>
                     <td>
-                        <a href="{{ route('admin.incoming-goods.show', $ig) }}" class="dt-btn dt-btn-outline dt-btn-xs">Detail</a>
+                        <div class="dt-action-wrap">
+                            <button class="dt-action-btn" onclick="toggleMenu(this)" type="button">⋮</button>
+                            <div class="dt-action-menu">
+                                <a href="{{ route('admin.incoming-goods.show', $ig) }}">
+                                    <i class="bi bi-eye"></i> Detail
+                                </a>
+                            </div>
+                        </div>
                     </td>
                 </tr>
             @empty

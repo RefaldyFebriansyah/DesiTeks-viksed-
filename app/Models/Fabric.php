@@ -15,6 +15,7 @@ class Fabric extends Model
         'motif',
         'harga_per_meter',
         'harga_per_rol',
+        'meter_per_rol',
         'stok_minimum',
         'status',
     ];
@@ -22,6 +23,7 @@ class Fabric extends Model
     protected $casts = [
         'harga_per_meter' => 'decimal:2',
         'harga_per_rol'   => 'decimal:2',
+        'meter_per_rol'   => 'decimal:2',
     ];
 
     // Relationships

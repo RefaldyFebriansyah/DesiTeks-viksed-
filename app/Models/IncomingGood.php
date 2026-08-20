@@ -12,6 +12,7 @@ class IncomingGood extends Model
         'user_id',
         'tanggal',
         'catatan',
+        'foto_lampiran',
         'total_pembelian',
         'total_rol',
         'total_meter',
