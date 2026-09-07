@@ -12,22 +12,35 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'username',
+        'email',
         'password',
         'role',
         'status',
+        'branch_id',
+        'two_factor_secret',
+        'two_factor_enabled',
+        'two_factor_confirmed_at',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
+        'two_factor_secret',
     ];
 
     protected $casts = [
         'role' => 'string',
         'status' => 'string',
+        'two_factor_enabled' => 'boolean',
+        'two_factor_confirmed_at' => 'datetime',
     ];
 
     // Relationships
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
     public function incomingGoods()
     {
         return $this->hasMany(IncomingGood::class);

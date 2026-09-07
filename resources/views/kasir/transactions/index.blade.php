@@ -46,9 +46,9 @@
                                 <a href="{{ route('kasir.transactions.show', $t) }}">
                                     <i class="bi bi-eye"></i> Detail
                                 </a>
-                                <a href="{{ route('kasir.sales.receipt', $t) }}" target="_blank">
+                                <button type="button" onclick="printReceiptDirect('{{ route('kasir.sales.receipt', $t) }}')">
                                     <i class="bi bi-printer"></i> Cetak Struk
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </td>

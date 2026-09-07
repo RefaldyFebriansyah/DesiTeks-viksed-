@@ -3,80 +3,70 @@
 @section('page-title', 'Pengaturan Toko')
 
 @section('content')
-<div class="dt-page-header">
-    <div>
-        <h1 class="dt-page-title">Pengaturan Aplikasi & Struk</h1>
-        <div class="dt-breadcrumb">Sistem / Pengaturan Toko</div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-lg-6">
-        <div class="dt-card">
-            <div class="dt-card-header">
-                <span class="dt-card-title"><i class="bi bi-sliders me-2 text-gold"></i>Identitas Toko & Cetakan</span>
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-7">
+        <div class="dt-page-header mb-3">
+            <div>
+                <h1 class="dt-page-title">Pengaturan Aplikasi & Struk</h1>
+                <div class="dt-breadcrumb">Sistem / Pengaturan Toko</div>
             </div>
-            
-            <form method="POST" action="{{ route('admin.settings.update') }}">
-                @csrf
-                
-                <div class="dt-form-group">
-                    <label class="dt-label" for="nama_toko">Nama Toko <span class="required">*</span></label>
-                    <input type="text" id="nama_toko" name="nama_toko" value="{{ old('nama_toko', $settings['nama_toko']) }}" class="dt-input @error('nama_toko') is-invalid @enderror" required>
-                    @error('nama_toko')
-                        <div class="dt-error-msg">{{ $message }}</div>
-                    @enderror
-                </div>
-                
-                <div class="dt-form-group">
-                    <label class="dt-label" for="telepon_toko">No. Telepon Toko</label>
-                    <input type="text" id="telepon_toko" name="telepon_toko" value="{{ old('telepon_toko', $settings['telepon_toko']) }}" class="dt-input @error('telepon_toko') is-invalid @enderror">
-                    @error('telepon_toko')
-                        <div class="dt-error-msg">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="dt-form-group">
-                    <label class="dt-label" for="alamat_toko">Alamat Toko</label>
-                    <textarea id="alamat_toko" name="alamat_toko" class="dt-textarea @error('alamat_toko') is-invalid @enderror">{{ old('alamat_toko', $settings['alamat_toko']) }}</textarea>
-                    @error('alamat_toko')
-                        <div class="dt-error-msg">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="dt-form-group">
-                    <label class="dt-label" for="catatan_struk">Catatan Kaki Struk Belanja</label>
-                    <textarea id="catatan_struk" name="catatan_struk" class="dt-textarea @error('catatan_struk') is-invalid @enderror" placeholder="Contoh: Barang yang sudah dibeli tidak dapat ditukar/dikembalikan..." style="min-height: 80px;">{{ old('catatan_struk', $settings['catatan_struk']) }}</textarea>
-                    @error('catatan_struk')
-                        <div class="dt-error-msg">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="mt-4 pt-3 border-top border-light">
-                    <button type="submit" class="dt-btn dt-btn-primary px-4"><i class="bi bi-save me-1"></i> Simpan Pengaturan</button>
-                </div>
-            </form>
         </div>
-    </div>
-    
-    <div class="col-lg-6">
-        <div class="dt-card">
-            <div class="dt-card-header">
-                <span class="dt-card-title"><i class="bi bi-info-circle me-2 text-navy"></i>Panduan Konfigurasi</span>
-            </div>
-            <div class="p-2">
-                <p>Pengaturan ini bersifat global dan digunakan di beberapa tempat di aplikasi:</p>
-                <ul class="ps-3" style="font-size:13.5px; line-height:1.8;">
-                    <li><strong>Nama Toko:</strong> Ditampilkan di pojok kiri atas (sidebar brand), tab browser, dan paling atas pada cetak struk belanja POS.</li>
-                    <li><strong>No. Telepon & Alamat Toko:</strong> Ditampilkan pada header struk belanja fisik saat transaksi diselesaikan.</li>
-                    <li><strong>Catatan Kaki Struk:</strong> Ditampilkan di bagian terbawah struk belanja (keterangan retur, ucapan terima kasih, dll).</li>
-                </ul>
-                <div class="alert alert-info py-3 px-3 mt-4 border-0 d-flex gap-2 text-navy" style="background: rgba(15,39,68,0.06); border-radius: 8px; font-size:13px;">
-                    <i class="bi bi-shield-fill-check fs-5 text-gold"></i>
+        <div class="dt-card border-0 shadow-sm" style="border-radius: 16px; overflow: hidden;">
+            <div class="p-4 border-bottom bg-light bg-opacity-60">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10 text-primary" style="width: 42px; height: 42px; flex-shrink: 0;">
+                        <i class="bi bi-shop fs-5"></i>
+                    </div>
                     <div>
-                        <strong>Keamanan Data:</strong> Setiap perubahan pengaturan toko akan dicatat secara otomatis dalam log aktivitas sistem untuk keperluan audit berkala.
+                        <h5 class="fw-bold text-navy mb-0" style="font-size: 15px;">Identitas Toko & Cetakan</h5>
+                        <p class="text-muted mb-0" style="font-size: 12px;">Konfigurasi nama toko, nomor telepon (+62), dan footer struk</p>
                     </div>
                 </div>
+            </div>
+            
+            <div class="p-4 bg-white">
+                <form method="POST" action="{{ route('admin.settings.update') }}">
+                    @csrf
+                    
+                    <div class="dt-form-group mb-3">
+                        <label class="dt-label fw-600 mb-1.5" for="nama_toko">Nama Toko <span class="text-danger">*</span></label>
+                        <input type="text" id="nama_toko" name="nama_toko" value="{{ old('nama_toko', $settings['nama_toko']) }}" class="form-control form-control-lg @error('nama_toko') is-invalid @enderror" required style="font-size: 14px;">
+                        @error('nama_toko')
+                            <div class="dt-error-msg mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    
+                    <div class="dt-form-group mb-3">
+                        <label class="dt-label fw-600 mb-1.5" for="telepon_toko"><i class="bi bi-whatsapp me-1 text-success"></i>No. Telepon Toko (+62)</label>
+                        <div class="input-group">
+                            <span class="input-group-text fw-bold bg-light text-navy border-end-0 px-3">+62</span>
+                            <input type="text" id="telepon_toko" name="telepon_toko" value="{{ old('telepon_toko', preg_replace('/^\+?62\s*/', '', $settings['telepon_toko'])) }}" class="form-control border-start-0 @error('telepon_toko') is-invalid @enderror" placeholder="812-3456-7890" style="font-size: 13.5px;">
+                        </div>
+                        @error('telepon_toko')
+                            <div class="dt-error-msg mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="dt-form-group mb-3">
+                        <label class="dt-label fw-600 mb-1.5" for="alamat_toko">Alamat Toko</label>
+                        <textarea id="alamat_toko" name="alamat_toko" class="form-control @error('alamat_toko') is-invalid @enderror" rows="3" style="font-size: 13.5px;">{{ old('alamat_toko', $settings['alamat_toko']) }}</textarea>
+                        @error('alamat_toko')
+                            <div class="dt-error-msg mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="dt-form-group mb-4">
+                        <label class="dt-label fw-600 mb-1.5" for="catatan_struk">Catatan Struk Belanja</label>
+                        <textarea id="catatan_struk" name="catatan_struk" class="form-control @error('catatan_struk') is-invalid @enderror" placeholder="Contoh: Terima kasih atas kunjungan Anda..." rows="3" style="font-size: 13.5px;">{{ old('catatan_struk', $settings['catatan_struk']) }}</textarea>
+                        @error('catatan_struk')
+                            <div class="dt-error-msg mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="pt-3 border-top d-flex align-items-center justify-content-end">
+                        <button type="submit" class="dt-btn dt-btn-primary px-4"><i class="bi bi-check-lg me-1"></i> Simpan Pengaturan</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

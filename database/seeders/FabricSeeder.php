@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Branch;
 use App\Models\Category;
 use App\Models\Fabric;
 use App\Models\Stock;
@@ -16,6 +17,8 @@ class FabricSeeder extends Seeder
         $rayon   = Category::where('nama_kategori', 'Rayon')->first();
         $batik   = Category::where('nama_kategori', 'Batik')->first();
         $polyester = Category::where('nama_kategori', 'Polyester')->first();
+
+        $mainBranch = Branch::where('is_main', true)->first() ?? Branch::first();
 
         $fabrics = [
             [
@@ -80,7 +83,7 @@ class FabricSeeder extends Seeder
                 'harga_per_meter' => 120000,
                 'harga_per_rol'  => 5500000,
                 'stok_minimum'   => 5,
-                'stok_rol'       => 2,
+                'stok_rol'       => 0,  // habis
                 'stok_meter'     => 0,  // habis
             ],
             [
@@ -105,9 +108,10 @@ class FabricSeeder extends Seeder
 
             $fabric = Fabric::create($fabricData);
 
-            // Create stock record
+            // Create stock record with explicit branch_id
             Stock::create([
                 'fabric_id'  => $fabric->id,
+                'branch_id'  => $mainBranch?->id ?? 1,
                 'stok_rol'   => $stokRol,
                 'stok_meter' => $stokMeter,
                 'updated_at' => now(),

@@ -10,78 +10,91 @@
         <h1 class="dt-page-title">Detail Barang Masuk</h1>
         <div class="dt-breadcrumb">Gudang / Barang Masuk / {{ $incomingGood->nomor_faktur }}</div>
     </div>
-    <a href="{{ route('gudang.incoming-goods.index') }}" class="dt-btn dt-btn-outline">
-        <i class="bi bi-arrow-left"></i> Kembali
-    </a>
+    @if($incomingGood->foto_lampiran)
+    <div class="d-flex align-items-center gap-2">
+        <a href="{{ asset('storage/' . $incomingGood->foto_lampiran) }}" target="_blank" download class="dt-btn dt-btn-outline dt-btn-sm d-inline-flex align-items-center gap-1.5">
+            <i class="bi bi-file-earmark-arrow-down"></i> Unduh Soft File Surat Jalan
+        </a>
+        <button type="button" class="dt-btn dt-btn-primary dt-btn-sm d-inline-flex align-items-center gap-1.5" data-bs-toggle="modal" data-bs-target="#suratJalanModal">
+            <i class="bi bi-eye"></i> Lihat Surat Jalan
+        </button>
+    </div>
+    @endif
 </div>
 
 {{-- Dokumen Header --}}
-<div class="dt-card mb-3" style="padding: 0; overflow: hidden;">
-    <div style="display:flex; align-items:stretch; border-bottom: 1px solid var(--dt-border);">
-        {{-- Kiri: identitas dokumen --}}
-        <div style="flex:1; padding: 20px 24px; border-right: 1px solid var(--dt-border);">
-            <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--dt-muted); margin-bottom:6px;">No. Faktur</div>
-            <div style="font-size:20px; font-weight:700; color:var(--dt-navy); letter-spacing:.3px;">{{ $incomingGood->nomor_faktur }}</div>
-            <div style="margin-top:10px; font-size:13px; color:var(--dt-muted);">
+<div class="dt-card mb-3 p-0 overflow-hidden">
+    <div class="row g-0 border-bottom">
+        {{-- Kiri: Identitas Dokumen --}}
+        <div class="col-12 col-md-4 p-3 p-md-4 border-bottom border-md-bottom-0 border-md-end">
+            <div class="text-muted text-uppercase fw-600 mb-1" style="font-size:10.5px; letter-spacing:0.8px;">No. Faktur</div>
+            <div class="fw-700 text-navy fs-5 text-break">{{ $incomingGood->nomor_faktur }}</div>
+            <div class="text-muted mt-2" style="font-size:12px;">
                 <i class="bi bi-calendar3 me-1"></i>
                 {{ $incomingGood->tanggal->format('d F Y') }}
             </div>
         </div>
-        {{-- Tengah: supplier --}}
-        <div style="flex:1; padding: 20px 24px; border-right: 1px solid var(--dt-border);">
-            <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--dt-muted); margin-bottom:6px;">Supplier</div>
-            <div style="font-size:15px; font-weight:600; color:var(--dt-navy);">{{ $incomingGood->supplier->nama_supplier }}</div>
-            <div style="margin-top:4px; font-size:12px; color:var(--dt-muted);">
-                <span class="dt-badge dt-badge-navy">{{ $incomingGood->supplier->kode_supplier }}</span>
+        {{-- Tengah: Supplier --}}
+        <div class="col-12 col-md-4 p-3 p-md-4 border-bottom border-md-bottom-0 border-md-end">
+            <div class="text-muted text-uppercase fw-600 mb-1" style="font-size:10.5px; letter-spacing:0.8px;">Supplier</div>
+            <div class="fw-600 text-navy fs-6">{{ $incomingGood->supplier->nama_supplier }}</div>
+            <div class="mt-1">
+                <span class="dt-badge dt-badge-navy" style="font-size:10.5px;">{{ $incomingGood->supplier->kode_supplier }}</span>
             </div>
             @if($incomingGood->supplier->no_telepon)
-            <div style="margin-top:8px; font-size:13px; color:var(--dt-muted);">
+            <div class="text-muted mt-2" style="font-size:12px;">
                 <i class="bi bi-telephone me-1"></i>{{ $incomingGood->supplier->no_telepon }}
             </div>
             @endif
         </div>
-        {{-- Kanan: dicatat oleh --}}
-        <div style="flex:1; padding: 20px 24px;">
-            <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--dt-muted); margin-bottom:6px;">Dicatat Oleh</div>
-            <div style="font-size:15px; font-weight:600; color:var(--dt-navy);">{{ $incomingGood->user->name }}</div>
-            <div style="margin-top:4px; font-size:12px; color:var(--dt-muted);">
-                <span class="dt-badge dt-badge-gold">{{ ucfirst($incomingGood->user->role) }}</span>
+        {{-- Kanan: Dicatat Oleh --}}
+        <div class="col-12 col-md-4 p-3 p-md-4">
+            <div class="text-muted text-uppercase fw-600 mb-1" style="font-size:10.5px; letter-spacing:0.8px;">Dicatat Oleh</div>
+            <div class="fw-600 text-navy fs-6">{{ $incomingGood->user->name }}</div>
+            <div class="mt-1">
+                <span class="dt-badge dt-badge-gold" style="font-size:10.5px;">{{ ucfirst($incomingGood->user->role) }}</span>
             </div>
             @if($incomingGood->catatan)
-            <div style="margin-top:8px; font-size:12px; color:var(--dt-muted); font-style:italic;">
+            <div class="text-muted mt-2 fst-italic" style="font-size:11.5px;">
                 "{{ $incomingGood->catatan }}"
             </div>
             @endif
             @if($incomingGood->foto_lampiran)
-            <div style="margin-top:10px;">
-                <a href="{{ asset('storage/' . $incomingGood->foto_lampiran) }}" target="_blank" class="dt-btn dt-btn-gold dt-btn-xs" style="padding: 4px 10px; font-size: 11px;">
-                    <i class="bi bi-image"></i> Lihat Foto Nota
-                </a>
+            <div class="mt-2">
+                <button type="button" class="dt-btn dt-btn-gold dt-btn-xs w-100 w-md-auto" data-bs-toggle="modal" data-bs-target="#suratJalanModal">
+                    <i class="bi bi-image me-1"></i> Lihat Bukti Surat Jalan
+                </button>
             </div>
             @endif
         </div>
     </div>
 
-    {{-- Ringkasan angka --}}
-    <div style="display:flex; background: #f8fafc;">
-        <div style="flex:1; padding:14px 24px; text-align:center; border-right:1px solid var(--dt-border);">
-            <div style="font-size:11px; color:var(--dt-muted); font-weight:600; text-transform:uppercase; letter-spacing:.8px;">Total Jenis Kain</div>
-            <div style="font-size:22px; font-weight:700; color:var(--dt-navy); margin-top:2px;">{{ $incomingGood->details->count() }}</div>
-            <div style="font-size:11px; color:var(--dt-muted);">item</div>
+    {{-- Ringkasan Angka --}}
+    <div class="row g-0 bg-light">
+        <div class="col-6 col-md-3 p-3 text-center border-end border-bottom border-md-bottom-0">
+            <div class="text-muted text-uppercase fw-600 mb-1" style="font-size:10px; letter-spacing:0.5px;">Total Jenis Kain</div>
+            <div class="fw-700 text-navy fs-4">{{ $incomingGood->details->count() > 0 ? $incomingGood->details->count() : '-' }}</div>
+            <div class="text-muted" style="font-size:10.5px;">{{ $incomingGood->details->count() > 0 ? 'item' : 'ringkasan volume' }}</div>
         </div>
-        <div style="flex:1; padding:14px 24px; text-align:center; border-right:1px solid var(--dt-border);">
-            <div style="font-size:11px; color:var(--dt-muted); font-weight:600; text-transform:uppercase; letter-spacing:.8px;">Total Rol</div>
-            <div style="font-size:22px; font-weight:700; color:var(--dt-navy); margin-top:2px;">{{ $incomingGood->total_rol }}</div>
-            <div style="font-size:11px; color:var(--dt-muted);">rol</div>
+        <div class="col-6 col-md-3 p-3 text-center border-end-0 border-md-end border-bottom border-md-bottom-0">
+            <div class="text-muted text-uppercase fw-600 mb-1" style="font-size:10px; letter-spacing:0.5px;">Total Rol</div>
+            <div class="fw-700 text-navy fs-4">{{ $incomingGood->total_rol }}</div>
+            <div class="text-muted" style="font-size:10.5px;">rol</div>
         </div>
-        <div style="flex:1; padding:14px 24px; text-align:center;">
-            <div style="font-size:11px; color:var(--dt-muted); font-weight:600; text-transform:uppercase; letter-spacing:.8px;">Total Meter</div>
-            <div style="font-size:22px; font-weight:700; color:var(--dt-navy); margin-top:2px;">{{ number_format($incomingGood->total_meter, 1) }}</div>
-            <div style="font-size:11px; color:var(--dt-muted);">meter</div>
+        <div class="col-6 col-md-3 p-3 text-center border-end border-bottom-0">
+            <div class="text-muted text-uppercase fw-600 mb-1" style="font-size:10px; letter-spacing:0.5px;">Total Meter</div>
+            <div class="fw-700 text-navy fs-4">{{ number_format($incomingGood->total_meter, 1) }}</div>
+            <div class="text-muted" style="font-size:10.5px;">meter</div>
+        </div>
+        <div class="col-6 col-md-3 p-3 text-center border-bottom-0">
+            <div class="text-muted text-uppercase fw-600 mb-1" style="font-size:10px; letter-spacing:0.5px;">Total Pembelian</div>
+            <div class="fw-700 text-success fs-6">Rp {{ number_format($incomingGood->total_pembelian, 0, ',', '.') }}</div>
+            <div class="text-muted" style="font-size:10.5px;">nilai pembelian</div>
         </div>
     </div>
 </div>
 
+@if($incomingGood->details->count() > 0)
 {{-- Tabel Rincian Item --}}
 <div class="dt-card">
     <div style="padding: 16px 20px 12px; border-bottom: 1px solid var(--dt-border); display:flex; align-items:center; justify-content:space-between;">
@@ -127,5 +140,46 @@
         </table>
     </div>
 </div>
+@else
+<div class="dt-card p-4 text-center">
+    <div class="py-3">
+        <i class="bi bi-box-seam text-secondary" style="font-size: 2.2rem;"></i>
+        <div class="fw-600 mt-2" style="font-size: 14px; color:var(--dt-navy);">Penerimaan Barang Masuk Ringkasan Total</div>
+        <div class="text-muted mt-1" style="font-size: 12.5px; max-width: 480px; margin: 0 auto;">
+            Penerimaan ini dicatat dengan ringkasan volume total sebanyak <strong>{{ $incomingGood->total_rol }} Rol</strong> (<strong>{{ number_format($incomingGood->total_meter, 1) }} Meter</strong>) tanpa rincian per-item kain.
+        </div>
+    </div>
+</div>
+@endif
+
+{{-- Tombol Kembali di Bagian Bawah --}}
+<div class="mt-4 mb-3 text-center">
+    <a href="{{ route('gudang.incoming-goods.index') }}" class="dt-btn dt-btn-outline px-4 py-2.5 shadow-sm d-inline-flex align-items-center justify-content-center gap-2" style="font-size:13.5px; font-weight:600; width:100%; max-width:320px;">
+        <i class="bi bi-arrow-left fs-6"></i> Kembali ke Riwayat Barang Masuk
+    </a>
+</div>
+
+@if($incomingGood->foto_lampiran)
+<!-- Lightbox Modal Bukti Surat Jalan -->
+<div class="modal fade" id="suratJalanModal" tabindex="-1" aria-hidden="true" style="z-index: 1065;">
+    <div class="modal-dialog modal-dialog-centered modal-lg" style="z-index: 1066; position: relative;">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
+            <div class="modal-header bg-navy text-white py-2.5 px-3">
+                <h6 class="modal-title fw-700 m-0"><i class="bi bi-file-earmark-image me-1.5 text-gold"></i> Bukti Surat Jalan - {{ $incomingGood->nomor_faktur }}</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-2 text-center bg-dark">
+                <img src="{{ asset('storage/' . $incomingGood->foto_lampiran) }}" alt="Bukti Surat Jalan" class="img-fluid rounded" style="max-height: 80vh; width: auto; object-fit: contain;">
+            </div>
+            <div class="modal-footer py-2 px-3 justify-content-between bg-light">
+                <span class="text-muted" style="font-size:12px;">Supplier: {{ $incomingGood->supplier->nama_supplier }}</span>
+                <a href="{{ asset('storage/' . $incomingGood->foto_lampiran) }}" download class="dt-btn dt-btn-gold dt-btn-xs">
+                    <i class="bi bi-download me-1"></i> Unduh File
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
 
 @endsection

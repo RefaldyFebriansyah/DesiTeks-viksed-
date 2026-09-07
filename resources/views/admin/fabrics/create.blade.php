@@ -34,12 +34,18 @@
             <div class="col-md-6">
                 <div class="dt-form-group">
                     <label class="dt-label">Kategori Kain <span class="required">*</span></label>
-                    <input type="text" name="nama_kategori" list="categoryList" class="dt-input @error('nama_kategori') is-invalid @enderror" value="{{ old('nama_kategori') }}" placeholder="Ketik atau pilih kategori (misal: Cotton, Linen, Rayon)" required autocomplete="off">
-                    <datalist id="categoryList">
+                    <select name="nama_kategori" id="categorySelect" class="dt-select @error('nama_kategori') is-invalid @enderror" required onchange="checkCustomCategory(this)">
+                        <option value="" disabled {{ old('nama_kategori') ? '' : 'selected' }}>-- Pilih Kategori Kain --</option>
                         @foreach($categories as $cat)
-                            <option value="{{ $cat->nama_kategori }}"></option>
+                            <option value="{{ $cat->nama_kategori }}" {{ old('nama_kategori') == $cat->nama_kategori ? 'selected' : '' }}>
+                                {{ $cat->nama_kategori }}
+                            </option>
                         @endforeach
-                    </datalist>
+                        <option value="__custom__" {{ old('nama_kategori') === '__custom__' || old('nama_kategori_custom') ? 'selected' : '' }}>+ Tambah Kategori Baru...</option>
+                    </select>
+                    <div id="customCategoryWrap" class="mt-2" style="display: {{ old('nama_kategori') === '__custom__' || old('nama_kategori_custom') ? 'block' : 'none' }};">
+                        <input type="text" name="nama_kategori_custom" id="customCategoryInput" class="dt-input" placeholder="Ketik nama kategori baru..." value="{{ old('nama_kategori_custom') }}">
+                    </div>
                     @error('nama_kategori') <div class="dt-error-msg">{{ $message }}</div> @enderror
                 </div>
             </div>
@@ -103,4 +109,23 @@
         </div>
     </form>
 </div>
+
+@push('scripts')
+<script>
+function checkCustomCategory(select) {
+    const wrap = document.getElementById('customCategoryWrap');
+    const input = document.getElementById('customCategoryInput');
+    if (!wrap || !input) return;
+    if (select.value === '__custom__') {
+        wrap.style.display = 'block';
+        input.required = true;
+        input.focus();
+    } else {
+        wrap.style.display = 'none';
+        input.required = false;
+        input.value = '';
+    }
+}
+</script>
+@endpush
 @endsection

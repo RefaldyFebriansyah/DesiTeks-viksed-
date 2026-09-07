@@ -12,30 +12,39 @@ class UserSeeder extends Seeder
     {
         $users = [
             [
-                'name'     => 'Administrator',
-                'username' => 'admin',
-                'password' => Hash::make('admin123'),
-                'role'     => 'admin',
-                'status'   => 'aktif',
+                'name'      => 'Refaldi Febriansyah (Admin)',
+                'username'  => 'admin',
+                'email'     => 'refaldi.febriansyah@gmail.com',
+                'password'  => Hash::make('pakade73'),
+                'role'      => 'admin',
+                'status'    => 'aktif',
+                'branch_id' => 1,
             ],
             [
-                'name'     => 'Staff Gudang',
-                'username' => 'gudang',
-                'password' => Hash::make('gudang123'),
-                'role'     => 'gudang',
-                'status'   => 'aktif',
+                'name'      => 'Staff Gudang',
+                'username'  => 'gudang',
+                'email'     => 'refaldi.febriansyahh@gmail.com',
+                'password'  => Hash::make('Ipang123'),
+                'role'      => 'gudang',
+                'status'    => 'aktif',
+                'branch_id' => 1,
             ],
             [
-                'name'     => 'Staff Kasir',
-                'username' => 'kasir',
-                'password' => Hash::make('kasir123'),
-                'role'     => 'kasir',
-                'status'   => 'aktif',
+                'name'      => 'Staff Kasir',
+                'username'  => 'kasir',
+                'email'     => 'refaldi.febriansyahh@gmail.com',
+                'password'  => Hash::make('Ipang123'),
+                'role'      => 'kasir',
+                'status'    => 'aktif',
+                'branch_id' => 1,
             ],
         ];
 
         foreach ($users as $user) {
-            User::create($user);
+            User::updateOrCreate(
+                ['username' => $user['username']],
+                $user
+            );
         }
     }
 }

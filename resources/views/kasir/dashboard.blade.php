@@ -12,14 +12,14 @@
             <div class="dt-stat-value sm">Rp {{ number_format($pendapatanHariIni,0,',','.') }}</div>
         </div>
     </div>
-    <div class="col-sm-6 col-xl-4">
+    <div class="col-6 col-xl-4">
         <div class="dt-stat gold">
             <div class="dt-stat-icon"><i class="bi bi-receipt fs-5"></i></div>
             <div class="dt-stat-label">Transaksi Hari Ini</div>
             <div class="dt-stat-value">{{ $transaksiHariIni }}</div>
         </div>
     </div>
-    <div class="col-sm-6 col-xl-4">
+    <div class="col-6 col-xl-4">
         <div class="dt-stat">
             <div class="dt-stat-icon"><i class="bi bi-rulers fs-5"></i></div>
             <div class="dt-stat-label">Kain Terjual</div>

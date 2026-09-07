@@ -8,6 +8,15 @@ class FabricRequest extends FormRequest
 {
     public function authorize(): bool { return true; }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->nama_kategori === '__custom__' && $this->filled('nama_kategori_custom')) {
+            $this->merge([
+                'nama_kategori' => trim($this->nama_kategori_custom)
+            ]);
+        }
+    }
+
     public function rules(): array
     {
         $fabricId = $this->route('fabric')?->id;

@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToBranch;
 use Illuminate\Database\Eloquent\Model;
 
 class StockMovement extends Model
 {
+    use BelongsToBranch;
+
     protected $fillable = [
         'fabric_id',
         'user_id',
+        'branch_id',
         'jenis',
         'jumlah_rol',
         'jumlah_meter',

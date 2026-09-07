@@ -6,13 +6,28 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SupplierRequest;
 use App\Models\AuditLog;
 use App\Models\Supplier;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class SupplierController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $suppliers = Supplier::withCount('incomingGoods')->orderBy('nama_supplier')->paginate(10);
+        $query = Supplier::withCount('incomingGoods');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_supplier', 'like', "%{$search}%")
+                  ->orWhere('kode_supplier', 'like', "%{$search}%")
+                  ->orWhere('asal_kota', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('no_telepon', 'like', "%{$search}%")
+                  ->orWhere('alamat', 'like', "%{$search}%");
+            });
+        }
+
+        $suppliers = $query->orderBy('nama_supplier')->paginate(10)->withQueryString();
         return view('gudang.suppliers.index', compact('suppliers'));
     }
 
@@ -47,7 +62,12 @@ class SupplierController extends Controller
 
     public function update(SupplierRequest $request, Supplier $supplier)
     {
-        $supplier->update($request->validated());
+        $data = $request->validated();
+        // Jika bukan admin, jangan ubah email yang sudah ada
+        if (Auth::user()?->role !== 'admin') {
+            unset($data['email']);
+        }
+        $supplier->update($data);
 
         AuditLog::create([
             'user_id'   => Auth::id(),

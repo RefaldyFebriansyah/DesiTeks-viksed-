@@ -14,35 +14,54 @@ class StockController extends Controller
 
     public function index(Request $request)
     {
-        $query = Stock::with('fabric.category');
+        $query = Stock::with('fabric.category')
+            ->join('fabrics', 'stocks.fabric_id', '=', 'fabrics.id')
+            ->where('fabrics.status', 'aktif')
+            ->select('stocks.*');
 
         if ($request->filled('search')) {
-            $query->whereHas('fabric', function ($q) use ($request) {
-                $q->where('kode_kain', 'like', '%' . $request->search . '%')
-                  ->orWhere('nama_kain', 'like', '%' . $request->search . '%');
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('fabrics.kode_kain', 'like', '%' . $search . '%')
+                  ->orWhere('fabrics.nama_kain', 'like', '%' . $search . '%');
             });
         }
 
         if ($request->filled('status')) {
             $status = $request->status;
-            $query->whereHas('fabric', function ($q) use ($status) {
-                if ($status === 'habis') {
-                    $q->whereRaw('stocks.stok_meter <= 0');
-                } elseif ($status === 'menipis') {
-                    $q->whereRaw('stocks.stok_meter > 0 AND stocks.stok_meter <= fabrics.stok_minimum');
-                } else {
-                    $q->whereRaw('stocks.stok_meter > fabrics.stok_minimum');
-                }
-            });
+            if ($status === 'habis') {
+                $query->where('stocks.stok_rol', '<=', 0)
+                      ->where('stocks.stok_meter', '<=', 0);
+            } elseif ($status === 'menipis') {
+                $query->where('stocks.stok_rol', '<=', 5)
+                      ->where(function ($q) {
+                          $q->where('stocks.stok_rol', '>', 0)
+                            ->orWhere('stocks.stok_meter', '>', 0);
+                      });
+            } elseif ($status === 'aman') {
+                $query->where('stocks.stok_rol', '>', 5);
+            }
         }
 
-        $stocks = $query->join('fabrics', 'stocks.fabric_id', '=', 'fabrics.id')
+        $stats = Stock::join('fabrics', 'stocks.fabric_id', '=', 'fabrics.id')
             ->where('fabrics.status', 'aktif')
-            ->select('stocks.*')
-            ->orderBy('fabrics.kode_kain')
-            ->paginate(10)->withQueryString();
+            ->selectRaw("
+                COUNT(*) as total_semua,
+                COUNT(CASE WHEN stocks.stok_rol <= 0 AND stocks.stok_meter <= 0 THEN 1 END) as count_habis,
+                COUNT(CASE WHEN stocks.stok_rol <= 5 AND (stocks.stok_rol > 0 OR stocks.stok_meter > 0) THEN 1 END) as count_menipis,
+                COUNT(CASE WHEN stocks.stok_rol > 5 THEN 1 END) as count_aman
+            ")
+            ->first();
 
-        return view('admin.stocks.index', compact('stocks'));
+        $countHabis   = (int) ($stats->count_habis ?? 0);
+        $countMenipis = (int) ($stats->count_menipis ?? 0);
+        $countAman    = (int) ($stats->count_aman ?? 0);
+        $totalSemua   = (int) ($stats->total_semua ?? 0);
+
+        $stocks = $query->orderBy('fabrics.kode_kain')
+            ->paginate(15)->withQueryString();
+
+        return view('admin.stocks.index', compact('stocks', 'countHabis', 'countMenipis', 'countAman', 'totalSemua'));
     }
 
     public function adjust(Request $request, Fabric $fabric)

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\IncomingGoodsRequest;
+use App\Models\AppNotification;
 use App\Models\AuditLog;
 use App\Models\Category;
 use App\Models\Fabric;
@@ -25,8 +26,13 @@ class IncomingGoodsController extends Controller
         $query = IncomingGood::with(['supplier', 'user']);
 
         if ($request->filled('search')) {
-            $query->where('nomor_faktur', 'like', '%' . $request->search . '%')
-                  ->orWhereHas('supplier', fn($q) => $q->where('nama_supplier', 'like', '%' . $request->search . '%'));
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nomor_faktur', 'like', '%' . $search . '%')
+                  ->orWhereHas('supplier', function($sq) use ($search) {
+                      $sq->where('nama_supplier', 'like', '%' . $search . '%');
+                  });
+            });
         }
 
         if ($request->filled('tanggal_dari')) {
@@ -36,13 +42,13 @@ class IncomingGoodsController extends Controller
             $query->whereDate('tanggal', '<=', $request->tanggal_sampai);
         }
 
-        $incomingGoods = $query->orderBy('tanggal', 'desc')->paginate(10)->withQueryString();
+        $incomingGoods = $query->orderBy('tanggal', 'desc')->orderBy('id', 'desc')->paginate(10)->withQueryString();
         return view('admin.incoming-goods.index', compact('incomingGoods'));
     }
 
     public function create()
     {
-        $suppliers  = Supplier::orderBy('nama_supplier')->get();
+        $suppliers  = Supplier::withCount('incomingGoods')->orderBy('nama_supplier')->get();
         $categories = Category::orderBy('nama_kategori')->get();
         $fabrics    = Fabric::with('stock')->where('status', 'aktif')->orderBy('nama_kain')->get();
         return view('admin.incoming-goods.create', compact('suppliers', 'categories', 'fabrics'));
@@ -65,14 +71,24 @@ class IncomingGoodsController extends Controller
                 ]);
             }
 
-            $totalRol   = 0;
-            $totalMeter = 0;
-            $totalBeli  = 0;
+            $totalRol   = (int) ($request->total_rol ?? 0);
+            $totalMeter = (float) ($request->total_meter ?? 0);
+            $totalBeli  = (float) ($request->total_pembelian ?? 0);
 
-            foreach ($request->items as $item) {
-                $totalRol   += $item['jumlah_rol'];
-                $totalMeter += $item['jumlah_meter'];
-                $totalBeli  += $item['jumlah_meter'] * $item['harga_beli'];
+            if ($request->has('items') && is_array($request->items) && count($request->items) > 0) {
+                $itemRol = 0; $itemMeter = 0; $itemBeli = 0;
+                foreach ($request->items as $item) {
+                    if (!empty($item['fabric_id'])) {
+                        $itemRol   += (int) ($item['jumlah_rol'] ?? 0);
+                        $itemMeter += (float) ($item['jumlah_meter'] ?? 0);
+                        $itemBeli  += ((float) ($item['jumlah_meter'] ?? 0)) * ((float) ($item['harga_beli'] ?? 0));
+                    }
+                }
+                if ($itemRol > 0 || $itemMeter > 0 || $itemBeli > 0) {
+                    $totalRol   = $itemRol;
+                    $totalMeter = $itemMeter;
+                    $totalBeli  = $itemBeli;
+                }
             }
 
             // Upload foto jika ada
@@ -94,60 +110,64 @@ class IncomingGoodsController extends Controller
                 'total_meter'     => $totalMeter,
             ]);
 
-            // 3. Simpan detail, buat kain baru jika dipilih "new", & update stok
-            foreach ($request->items as $item) {
-                $subtotal = $item['jumlah_meter'] * $item['harga_beli'];
+            // 3. Simpan detail, buat kain baru jika dipilih "new", & update stok jika ada items
+            if ($request->has('items') && is_array($request->items)) {
+                foreach ($request->items as $item) {
+                    if (empty($item['fabric_id'])) continue;
 
-                if ($item['fabric_id'] === 'new') {
-                    // Otomatis buat Kategori jika baru
-                    $category = Category::firstOrCreate([
-                        'nama_kategori' => trim($item['nama_kategori'])
-                    ]);
+                    $subtotal = $item['jumlah_meter'] * $item['harga_beli'];
 
-                    // Auto-generate kode kain jika kosong
-                    $kodeKain = trim($item['kode_kain'] ?? '');
-                    if (!$kodeKain) {
-                        $prefix   = strtoupper(substr($category->nama_kategori, 0, 3));
-                        $lastFab  = Fabric::where('kode_kain', 'like', $prefix . '-%')->orderBy('id', 'desc')->first();
-                        $seqFab   = $lastFab ? ((int) substr($lastFab->kode_kain, -3)) + 1 : 1;
-                        $kodeKain = $prefix . '-' . str_pad($seqFab, 3, '0', STR_PAD_LEFT);
+                    if ($item['fabric_id'] === 'new') {
+                        // Otomatis buat Kategori jika baru
+                        $category = Category::firstOrCreate([
+                            'nama_kategori' => trim($item['nama_kategori'])
+                        ]);
+
+                        // Auto-generate kode kain jika kosong
+                        $kodeKain = trim($item['kode_kain'] ?? '');
+                        if (!$kodeKain) {
+                            $prefix   = strtoupper(substr($category->nama_kategori, 0, 3));
+                            $lastFab  = Fabric::where('kode_kain', 'like', $prefix . '-%')->orderBy('id', 'desc')->first();
+                            $seqFab   = $lastFab ? ((int) substr($lastFab->kode_kain, -3)) + 1 : 1;
+                            $kodeKain = $prefix . '-' . str_pad($seqFab, 3, '0', STR_PAD_LEFT);
+                        }
+
+                        // Buat Kain Baru
+                        $fabric = Fabric::create([
+                            'kode_kain'       => $kodeKain,
+                            'nama_kain'       => trim($item['nama_kain']),
+                            'category_id'     => $category->id,
+                            'jenis_kain'      => $item['jenis_kain'] ?? null,
+                            'warna'           => $item['warna'] ?? null,
+                            'harga_per_meter' => $item['harga_per_meter'] ?? 0,
+                            'harga_per_rol'   => $item['harga_per_rol'] ?? 0,
+                            'meter_per_rol'   => 50.00,
+                            'stok_minimum'    => 10,
+                            'status'          => 'aktif',
+                        ]);
+
+                        // Inisialisasi Stok
+                        Stock::create([
+                            'fabric_id'  => $fabric->id,
+                            'stok_rol'   => 0,
+                            'stok_meter' => 0,
+                            'updated_at' => now(),
+                        ]);
+                    } else {
+                        $fabric = Fabric::findOrFail($item['fabric_id']);
                     }
 
-                    // Buat Kain Baru
-                    $fabric = Fabric::create([
-                        'kode_kain'       => $kodeKain,
-                        'nama_kain'       => trim($item['nama_kain']),
-                        'category_id'     => $category->id,
-                        'jenis_kain'      => $item['jenis_kain'] ?? null,
-                        'warna'           => $item['warna'] ?? null,
-                        'harga_per_meter' => $item['harga_per_meter'] ?? 0,
-                        'harga_per_rol'   => $item['harga_per_rol'] ?? 0,
-                        'meter_per_rol'   => 50.00,
-                        'stok_minimum'    => 10,
-                        'status'          => 'aktif',
+                    IncomingGoodsDetail::create([
+                        'incoming_good_id' => $incomingGood->id,
+                        'fabric_id'        => $fabric->id,
+                        'jumlah_rol'       => $item['jumlah_rol'],
+                        'jumlah_meter'     => $item['jumlah_meter'],
+                        'harga_beli'       => $item['harga_beli'],
+                        'subtotal'         => $subtotal,
                     ]);
 
-                    // Inisialisasi Stok
-                    Stock::create([
-                        'fabric_id'  => $fabric->id,
-                        'stok_rol'   => 0,
-                        'stok_meter' => 0,
-                        'updated_at' => now(),
-                    ]);
-                } else {
-                    $fabric = Fabric::findOrFail($item['fabric_id']);
+                    $this->stockService->tambahStok($fabric, $item['jumlah_rol'], $item['jumlah_meter'], $incomingGood->id);
                 }
-
-                IncomingGoodsDetail::create([
-                    'incoming_good_id' => $incomingGood->id,
-                    'fabric_id'        => $fabric->id,
-                    'jumlah_rol'       => $item['jumlah_rol'],
-                    'jumlah_meter'     => $item['jumlah_meter'],
-                    'harga_beli'       => $item['harga_beli'],
-                    'subtotal'         => $subtotal,
-                ]);
-
-                $this->stockService->tambahStok($fabric, $item['jumlah_rol'], $item['jumlah_meter'], $incomingGood->id);
             }
 
             AuditLog::create([
@@ -155,6 +175,13 @@ class IncomingGoodsController extends Controller
                 'aktivitas' => "Barang masuk: {$incomingGood->nomor_faktur} dari {$supplier->nama_supplier}",
                 'model'     => 'IncomingGood',
                 'model_id'  => $incomingGood->id,
+            ]);
+
+            AppNotification::create([
+                'type'    => 'barang_masuk',
+                'title'   => 'Barang Masuk Diterima',
+                'message' => "Penerimaan faktur {$incomingGood->nomor_faktur} dari {$supplier->nama_supplier} ({$totalRol} rol / " . number_format($totalMeter, 1) . "m).",
+                'link'    => route('admin.incoming-goods.show', $incomingGood->id),
             ]);
         });
 

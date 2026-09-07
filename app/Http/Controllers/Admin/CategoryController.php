@@ -18,7 +18,9 @@ class CategoryController extends Controller
 
     public function create()
     {
-        return view('admin.categories.create');
+        $existingCategories = Category::withCount('fabrics')->orderBy('nama_kategori')->get();
+        $totalFabricsCount = \App\Models\Fabric::count();
+        return view('admin.categories.create', compact('existingCategories', 'totalFabricsCount'));
     }
 
     public function store(CategoryRequest $request)

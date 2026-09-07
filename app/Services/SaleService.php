@@ -86,12 +86,19 @@ class SaleService
                 'metode'       => $metode,
             ]);
 
-            // 7. Audit log
+            // 7. Audit log & Notifikasi
             AuditLog::create([
                 'user_id'    => Auth::id(),
                 'aktivitas'  => "Transaksi penjualan: {$nomor} - Total: Rp " . number_format($total, 0, ',', '.'),
                 'model'      => 'Sale',
                 'model_id'   => $sale->id,
+            ]);
+
+            \App\Models\AppNotification::create([
+                'type'    => 'transaksi_baru',
+                'title'   => 'Penjualan Baru Selesai',
+                'message' => "Transaksi {$nomor} senilai Rp " . number_format($total, 0, ',', '.') . " berhasil disimpan.",
+                'link'    => route(Auth::user()->role === 'kasir' ? 'kasir.transactions.index' : 'admin.transactions.index'),
             ]);
 
             return $sale->load(['details.fabric', 'payment']);

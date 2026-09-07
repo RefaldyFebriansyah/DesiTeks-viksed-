@@ -17,6 +17,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin'  => \App\Http\Middleware\AdminMiddleware::class,
             'gudang' => \App\Http\Middleware\GudangMiddleware::class,
             'kasir'  => \App\Http\Middleware\KasirMiddleware::class,
+            'branch' => \App\Http\Middleware\BranchMiddleware::class,
+        ]);
+
+        $middleware->web(append: [
+            \App\Http\Middleware\BranchMiddleware::class,
         ]);
 
         // Redirect to /login instead of /login by default

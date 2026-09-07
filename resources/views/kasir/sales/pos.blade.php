@@ -64,7 +64,7 @@
     animation: pulseBadge 0.3s ease-in-out;
 }
 
-@media (max-width: 991px) {
+@media (max-width: 991.98px) {
     .dt-pos-wrap {
         grid-template-columns: 1fr;
         height: calc(100vh - 160px);
@@ -75,13 +75,20 @@
         overflow-y: auto;
         padding-right: 0;
         height: 100%;
-        display: block !important;
     }
     .pos-right {
         overflow: hidden;
         height: 100%;
         margin-top: 0;
+        display: none;
+    }
+    .pos-left.mobile-hide,
+    .pos-right.mobile-hide {
         display: none !important;
+    }
+    .pos-left.mobile-show,
+    .pos-right.mobile-show {
+        display: flex !important;
     }
     .dt-cart {
         height: 100%;
@@ -103,7 +110,7 @@
 .dt-pill {
     display: inline-flex;
     align-items: center;
-    padding: 8px 16px;
+    padding: 7px 16px;
     background: var(--dt-white);
     border: 1.5px solid var(--dt-border);
     border-radius: 20px;
@@ -111,20 +118,21 @@
     text-decoration: none;
     font-size: 13px;
     font-weight: 500;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
+    user-select: none;
 }
 .dt-pill:hover {
     border-color: var(--dt-navy);
     color: var(--dt-navy);
-    transform: translateY(-1px);
+    background: #f8fafc;
 }
 .dt-pill.active {
     background: var(--dt-navy);
     border-color: var(--dt-navy);
     color: var(--dt-white);
     font-weight: 600;
-    box-shadow: 0 4px 10px rgba(15,39,68,0.2);
+    box-shadow: 0 2px 6px rgba(15, 39, 68, 0.15);
 }
 
 /* Fabric Cards Grid */
@@ -132,6 +140,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 16px;
+    padding-top: 8px;
     padding-bottom: 20px;
 }
 .dt-fabric-item {
@@ -140,7 +149,7 @@
     border-radius: 12px;
     padding: 16px;
     cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
     display: flex;
     flex-direction: column;
@@ -148,9 +157,9 @@
     height: 100%;
 }
 .dt-fabric-item:hover {
-    border-color: var(--dt-navy);
-    box-shadow: 0 8px 24px rgba(15, 39, 68, 0.12);
-    transform: translateY(-4px);
+    border-color: #2563eb;
+    box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.12);
+    transform: translateY(-2px);
 }
 .dt-fabric-item.out-of-stock {
     opacity: 0.5;
@@ -207,12 +216,12 @@
     border-radius: 0;
 }
 .dt-cart-header {
-    padding: 18px 20px;
-    background: var(--dt-navy);
+    padding: 14px 18px;
+    background: #0f172a;
     color: var(--dt-white);
     font-weight: 600;
     font-size: 15px;
-    border-bottom: 2px solid var(--dt-gold);
+    border-bottom: 1px solid #1e293b;
 }
 .dt-cart-body {
     flex: 1;
@@ -395,21 +404,20 @@
     <div class="pos-left">
         <div class="fabric-search">
             <form method="GET" class="d-flex gap-2 mb-3">
-                <div class="position-relative" style="flex: 1;">
+                <div class="position-relative w-100">
                     <i class="bi bi-search position-absolute text-muted" style="left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px;"></i>
-                    <input type="text" name="search" value="{{ request('search') }}" class="dt-input" placeholder="Scan barcode atau cari berdasarkan nama/kode kain..." style="padding-left: 36px;" autocomplete="off">
+                    <input type="text" name="search" value="{{ request('search') }}" class="dt-input w-100" placeholder="Scan barcode atau cari berdasarkan nama/kode kain..." style="padding-left: 36px;" autocomplete="off">
                 </div>
                 @if(request()->hasAny(['search','category_id']))
-                    <a href="{{ url()->current() }}" class="dt-btn dt-btn-outline"><i class="bi bi-x-lg"></i> Reset</a>
+                    <a href="{{ url()->current() }}" class="dt-btn dt-btn-outline flex-shrink-0"><i class="bi bi-x-lg"></i> Reset</a>
                 @endif
-                <button class="dt-btn dt-btn-primary px-4"><i class="bi bi-search"></i> Cari</button>
             </form>
 
             {{-- Category Pills --}}
             @php
                 $currentCatId = request('category_id');
             @endphp
-            <div class="d-flex gap-2 overflow-x-auto pb-2" style="white-space: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none;">
+            <div class="d-flex gap-2 overflow-x-auto py-1.5" style="white-space: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none;">
                 <a href="{{ url()->current() }}{{ request('search') ? '?search='.request('search') : '' }}" 
                    class="dt-pill {{ !$currentCatId ? 'active' : '' }}">
                     <i class="bi bi-grid-fill me-1.5"></i> Semua Kategori
@@ -464,8 +472,18 @@
                         break;
                     }
                 }
+                $totalMeters = ($stok?->stok_meter ?? 0) + (($stok?->stok_rol ?? 0) * $fabric->meter_per_rol);
+                $isMenipis = $stok && $totalMeters <= $fabric->stok_minimum;
             @endphp
-            <div class="dt-fabric-item {{ $habis ? 'out-of-stock' : '' }}" onclick="addToCart({{ $fabric->id }}, '{{ addslashes($fabric->nama_kain) }}', {{ $fabric->harga_per_meter }}, {{ $fabric->harga_per_rol }}, {{ $stok?->stok_meter ?? 0 }}, {{ $stok?->stok_rol ?? 0 }}, {{ $fabric->meter_per_rol }})">
+            <div class="dt-fabric-item {{ $habis ? 'out-of-stock' : '' }}" 
+                 id="fabric-card-{{ $fabric->id }}"
+                 data-fabric-id="{{ $fabric->id }}"
+                 data-initial-meter="{{ $stok?->stok_meter ?? 0 }}"
+                 data-initial-rol="{{ $stok?->stok_rol ?? 0 }}"
+                 data-meter-per-rol="{{ $fabric->meter_per_rol ?? 50 }}"
+                 data-min-stock="{{ $fabric->stok_minimum ?? 10 }}"
+                 data-search="{{ strtolower($fabric->kode_kain . ' ' . $fabric->nama_kain . ' ' . $fabric->category->nama_kategori . ' ' . $fabric->motif . ' ' . $fabric->warna) }}"
+                 onclick="addToCart({{ $fabric->id }}, '{{ addslashes($fabric->nama_kain) }}', {{ $fabric->harga_per_meter }}, {{ $fabric->harga_per_rol }}, {{ $stok?->stok_meter ?? 0 }}, {{ $stok?->stok_rol ?? 0 }}, {{ $fabric->meter_per_rol }})">
                 <div>
                     <div class="d-flex justify-content-between align-items-center mb-1">
                         <span class="fabric-card-code">{{ $fabric->kode_kain }}</span>
@@ -493,24 +511,16 @@
                     </div>
                     
                     <div class="d-flex justify-content-between align-items-center">
-                        @if($habis)
-                            <span class="badge bg-danger px-2.5 py-1">Habis</span>
-                        @else
-                            @php
-                                $totalMeters = ($stok?->stok_meter ?? 0) + (($stok?->stok_rol ?? 0) * $fabric->meter_per_rol);
-                            @endphp
-                            <div class="d-flex gap-1">
-                                <span class="badge bg-navy-light text-navy px-2 py-1" style="font-size: 10px;" title="Sisa meteran eceran: {{ number_format($stok?->stok_meter ?? 0, 1) }} m">
-                                    <i class="bi bi-ruler me-0.5"></i> {{ number_format($totalMeters, 1) }} m
-                                </span>
-                                <span class="badge bg-gold-light text-navy px-2 py-1" style="font-size: 10px; font-weight: 600;">
-                                    <i class="bi bi-box-seam me-0.5"></i> {{ $stok?->stok_rol ?? 0 }} r
-                                </span>
-                            </div>
-                            @if($stok && $totalMeters <= $fabric->stok_minimum)
-                                <span class="badge bg-warning text-white px-2 py-1" style="font-size: 10px;">Menipis</span>
-                            @endif
-                        @endif
+                        <span class="badge bg-danger px-2.5 py-1 badge-habis {{ $habis ? '' : 'd-none' }}">Habis</span>
+                        <div class="d-flex gap-1 badge-stock-container {{ $habis ? 'd-none' : '' }}">
+                            <span class="badge bg-navy-light text-navy px-2 py-1" style="font-size: 10px;" title="Total stok meter">
+                                <i class="bi bi-ruler me-0.5"></i> <span class="meter-text">{{ number_format($totalMeters, 1) }} m</span>
+                            </span>
+                            <span class="badge bg-gold-light text-navy px-2 py-1" style="font-size: 10px; font-weight: 600;">
+                                <i class="bi bi-box-seam me-0.5"></i> <span class="rol-text">{{ $stok?->stok_rol ?? 0 }} r</span>
+                            </span>
+                        </div>
+                        <span class="badge bg-warning text-white px-2 py-1 badge-menipis {{ (!$habis && $isMenipis) ? '' : 'd-none' }}" style="font-size: 10px;">Menipis</span>
                     </div>
                 </div>
             </div>
@@ -523,12 +533,15 @@
     <div class="pos-right">
         <div class="dt-cart">
             <div class="dt-cart-header d-flex justify-content-between align-items-center">
-                <span><i class="bi bi-cart-fill me-2 text-gold"></i>Keranjang</span>
                 <div class="d-flex align-items-center gap-2">
-                    <button type="button" class="btn btn-xs btn-outline-light text-white border-white-50" data-bs-toggle="modal" data-bs-target="#kalkulatorKainModal" style="font-size: 11px; padding: 2px 8px; background: rgba(255,255,255,0.15)">
+                    <i class="bi bi-cart3 text-white-50 fs-5"></i>
+                    <span class="fw-700">Keranjang</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-light py-1 px-2.5 rounded-2 d-flex align-items-center gap-1.5" data-bs-toggle="modal" data-bs-target="#kalkulatorKainModal" style="font-size: 11.5px; border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.08);">
                         <i class="bi bi-calculator me-1"></i> Kalkulator Kain
                     </button>
-                    <span class="badge bg-warning text-navy px-2.5 py-1 fw-700" id="cartCount" style="font-size: 12px;">0 item</span>
+                    <span class="badge rounded-pill bg-primary px-2.5 py-1" id="cartCount" style="font-size: 11.5px; font-weight: 600;">0 item</span>
                 </div>
             </div>
 
@@ -572,18 +585,7 @@
                             <option value="qris">QRIS</option>
                         </select>
 
-                        {{-- Pelanggan Inline --}}
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <label class="dt-label m-0" style="font-size:12px; font-weight: 600; color:var(--dt-muted)">Pelanggan:</label>
-                            <select name="customer_id" id="customer_id" class="dt-select py-1 px-2" style="width: 70%; font-size:12px; height: 30px;" onchange="applyCustomerDiscount()">
-                                <option value="">-- Pelanggan Eceran (Umum) --</option>
-                                @foreach($customers as $c)
-                                    <option value="{{ $c->id }}" data-tipe="{{ $c->tipe }}" data-diskon="{{ $c->diskon_member }}">
-                                        {{ $c->nama }} ({{ ucfirst($c->tipe) }}{{ $c->tipe === 'member' ? ' - ' . number_format($c->diskon_member, 1) . '%' : '' }})
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+
 
                         {{-- Metode Pembayaran Inline --}}
                         <div class="d-flex align-items-center justify-content-between mb-2">
@@ -606,22 +608,20 @@
 
                         {{-- Bayar Inline --}}
                         <div class="d-flex align-items-center justify-content-between mb-2">
-                            <div class="d-flex flex-column align-items-start">
-                                <label class="dt-label m-0" style="font-size:12px; font-weight: 600; color:var(--dt-muted)">Bayar:</label>
-                                <span id="quickPayLabel" style="font-size:10px; color:var(--dt-gold); cursor:pointer; text-decoration: underline;" onclick="setExactAmount()">Uang Pas</span>
-                            </div>
+                            <label class="dt-label m-0" style="font-size:12px; font-weight: 600; color:var(--dt-muted)">Bayar:</label>
                             <div class="position-relative" style="width: 70%;">
-                                <span class="position-absolute fw-700 text-navy" style="left: 10px; top: 50%; transform: translateY(-50%); font-size: 13px;">Rp</span>
-                                <input type="number" id="jumlahBayar" name="jumlah_bayar" class="dt-input py-1 ps-4 pe-2" style="font-size:14px; font-weight:700; height:32px;" placeholder="0" min="0" step="1" oninput="hitungKembalian()">
+                                <span class="position-absolute fw-700 text-navy" style="left: 12px; top: 50%; transform: translateY(-50%); font-size: 13px; z-index: 5;">Rp</span>
+                                <input type="text" inputmode="numeric" id="jumlahBayar" name="jumlah_bayar" class="dt-input py-1 pe-2" style="font-size:14px; font-weight:700; height:36px; padding-left: 38px !important;" placeholder="0" oninput="formatJumlahBayarInput(this)">
                             </div>
                         </div>
 
                         {{-- Quick pay options --}}
-                        <div class="d-flex justify-content-end gap-1 mb-2" id="quickPayWrapper">
-                            <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2" style="font-size: 10px; border-radius: 4px; height: 20px; color: var(--dt-navy); border-color: var(--dt-border);" onclick="addPay(10000)">+10k</button>
-                            <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2" style="font-size: 10px; border-radius: 4px; height: 20px; color: var(--dt-navy); border-color: var(--dt-border);" onclick="addPay(50000)">+50k</button>
-                            <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2" style="font-size: 10px; border-radius: 4px; height: 20px; color: var(--dt-navy); border-color: var(--dt-border);" onclick="addPay(100000)">+100k</button>
-                            <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2" style="font-size: 10px; border-radius: 4px; height: 20px; color: var(--dt-navy); border-color: var(--dt-border);" onclick="addPay(200000)">+200k</button>
+                        <div class="d-flex justify-content-end gap-1.5 mt-2 mb-3 flex-wrap" id="quickPayWrapper">
+                            <button type="button" class="btn btn-xs btn-outline-secondary d-inline-flex align-items-center justify-content-center px-2.5" style="font-size: 11px; font-weight: 600; border-radius: 6px; height: 26px; color: var(--dt-navy); border-color: var(--dt-border);" onclick="setExactAmount()">Uang Pas</button>
+                            <button type="button" class="btn btn-xs btn-outline-secondary d-inline-flex align-items-center justify-content-center px-2" style="font-size: 11px; font-weight: 600; border-radius: 6px; height: 26px; color: var(--dt-navy); border-color: var(--dt-border);" onclick="addPay(10000)">+10k</button>
+                            <button type="button" class="btn btn-xs btn-outline-secondary d-inline-flex align-items-center justify-content-center px-2" style="font-size: 11px; font-weight: 600; border-radius: 6px; height: 26px; color: var(--dt-navy); border-color: var(--dt-border);" onclick="addPay(50000)">+50k</button>
+                            <button type="button" class="btn btn-xs btn-outline-secondary d-inline-flex align-items-center justify-content-center px-2" style="font-size: 11px; font-weight: 600; border-radius: 6px; height: 26px; color: var(--dt-navy); border-color: var(--dt-border);" onclick="addPay(100000)">+100k</button>
+                            <button type="button" class="btn btn-xs btn-outline-secondary d-inline-flex align-items-center justify-content-center px-2" style="font-size: 11px; font-weight: 600; border-radius: 6px; height: 26px; color: var(--dt-navy); border-color: var(--dt-border);" onclick="addPay(200000)">+200k</button>
                         </div>
 
                         {{-- Kembalian --}}
@@ -630,7 +630,7 @@
                             <span id="kembalian" class="fw-800" style="font-size:15px; color:var(--dt-muted)">Rp 0</span>
                         </div>
 
-                        <button type="submit" id="btnBayar" class="dt-btn dt-btn-gold w-100 justify-content-center disabled" style="padding:8px; font-size:13.5px; border-radius: 6px; font-weight:600;" disabled>
+                        <button type="submit" id="btnBayar" class="dt-btn dt-btn-primary w-100 justify-content-center disabled" style="padding:10px; font-size:14px; border-radius: 8px; font-weight:700;" disabled>
                             <i class="bi bi-check-circle-fill me-2"></i> Selesaikan Transaksi
                         </button>
                     </form>
@@ -641,16 +641,16 @@
 </div>
 
 {{-- Modal Kalkulator Kebutuhan Kain --}}
-<div class="modal fade" id="kalkulatorKainModal" tabindex="-1" aria-labelledby="kalkulatorKainModalLabel" aria-hidden="true">
+<div class="modal fade" id="kalkulatorKainModal" tabindex="-1" aria-labelledby="kalkulatorKainModalLabel" aria-hidden="true" style="z-index: 1060;">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header text-white" style="background: var(--dt-navy); border-bottom: 2px solid var(--dt-gold)">
-                <h5 class="modal-title" id="kalkulatorKainModalLabel"><i class="bi bi-calculator me-2 text-gold"></i>Kalkulator Kebutuhan Kain</h5>
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 14px; overflow: hidden;">
+            <div class="modal-header text-white" style="background: #0f172a; border-bottom: 1px solid #1e293b;">
+                <h5 class="modal-title fs-6 fw-700" id="kalkulatorKainModalLabel"><i class="bi bi-calculator me-2 text-primary-subtle"></i>Kalkulator Kebutuhan Kain</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
                 <div class="mb-3">
-                    <label class="dt-label">Jenis Pakaian</label>
+                    <label class="dt-label mb-1">Jenis Pakaian</label>
                     <select id="calcJenis" class="dt-select">
                         <option value="1.5">👕 Kemeja Lengan Pendek (1.5 m)</option>
                         <option value="2.0" selected>👔 Kemeja Lengan Panjang (2.0 m)</option>
@@ -660,7 +660,7 @@
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label class="dt-label">Ukuran Badan</label>
+                    <label class="dt-label mb-1">Ukuran Badan</label>
                     <select id="calcUkuran" class="dt-select">
                         <option value="0.9">S (Kecil - x0.9)</option>
                         <option value="1.0" selected>M (Standar - x1.0)</option>
@@ -670,28 +670,28 @@
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label class="dt-label">Jumlah Potong Pakaian</label>
+                    <label class="dt-label mb-1">Jumlah Potong Pakaian</label>
                     <input type="number" id="calcJumlah" class="dt-input" value="1" min="1" step="1">
                 </div>
                 
-                <div class="p-3 rounded mb-3 text-center" style="background: #f1f5f9; border: 1px solid var(--dt-border)">
+                <div class="p-3 rounded mb-3 text-center" style="background: #f8fafc; border: 1px solid #e2e8f0;">
                     <div class="text-muted" style="font-size: 12px; font-weight: 500">Estimasi Kebutuhan Kain:</div>
                     <div class="fw-800 text-navy mt-1" style="font-size: 24px;"><span id="calcResult">2.0</span> <span style="font-size: 16px; font-weight: 500">meter</span></div>
                 </div>
 
                 <div class="mb-3" id="calcApplyToWrapper" style="display: none;">
-                    <label class="dt-label">Terapkan Langsung ke Keranjang</label>
+                    <label class="dt-label mb-1">Terapkan Langsung ke Keranjang</label>
                     <select id="calcApplyTo" class="dt-select"></select>
                 </div>
 
-                <div class="alert alert-warning py-2 px-3 border-0 d-flex gap-2 align-items-center mb-0" style="font-size: 11px; background: var(--dt-warning-bg); color: #874b12; border-radius: 8px;">
+                <div class="alert alert-info py-2 px-3 border-0 d-flex gap-2 align-items-center mb-0" style="font-size: 11.5px; background: #f0f9ff; color: #0369a1; border-radius: 8px;">
                     <i class="bi bi-info-circle-fill fs-6 flex-shrink-0"></i>
                     <span>Hasil ini adalah perkiraan umum. Silakan konsultasikan dengan penjahit Anda untuk kebutuhan tepat.</span>
                 </div>
             </div>
-            <div class="modal-footer bg-light border-0">
+            <div class="modal-footer bg-light border-0 px-4 py-3">
                 <button type="button" class="dt-btn dt-btn-outline" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="dt-btn dt-btn-gold" onclick="applyCalculatorResult()"><i class="bi bi-check-lg me-1"></i> Terapkan ke Kuantitas</button>
+                <button type="button" class="dt-btn dt-btn-primary px-3" onclick="applyCalculatorResult()"><i class="bi bi-check-circle me-1.5"></i> Terapkan ke Kuantitas</button>
             </div>
         </div>
     </div>
@@ -709,27 +709,81 @@
                 hargaMeter: {{ $fabric->harga_per_meter }},
                 hargaRol: {{ $fabric->harga_per_rol }},
                 stokMeter: {{ $fabric->stock?->stok_meter ?? 0 }},
-                stokRol: {{ $fabric->stock?->stok_rol ?? 0 }}
+                stokRol: {{ $fabric->stock?->stok_rol ?? 0 }},
+                meterPerRol: {{ $fabric->meter_per_rol ?? 50 }}
             },
         @endforeach
     };
 
     // Intercept barcode scans or manual fabric codes entered in the search bar
     document.addEventListener('DOMContentLoaded', function() {
+        const calcModal = document.getElementById('kalkulatorKainModal');
+        if (calcModal) {
+            document.body.appendChild(calcModal);
+        }
+
+        const searchInput = document.querySelector('.fabric-search input[name="search"]');
+        const fabricItems = document.querySelectorAll('.dt-fabric-item');
+        const fabricGrid = document.querySelector('.dt-fabric-grid');
         const searchForm = document.querySelector('.fabric-search form');
+
+        function filterFabricCards() {
+            if (!searchInput) return;
+            const query = searchInput.value.trim().toLowerCase();
+            let visibleCount = 0;
+
+            fabricItems.forEach(item => {
+                const text = item.getAttribute('data-search') || item.innerText.toLowerCase();
+                if (!query || text.includes(query)) {
+                    item.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            let noMatchEl = document.getElementById('noFabricMatch');
+            if (visibleCount === 0 && fabricItems.length > 0) {
+                if (!noMatchEl) {
+                    noMatchEl = document.createElement('div');
+                    noMatchEl.id = 'noFabricMatch';
+                    noMatchEl.className = 'empty-state w-100 py-4 text-center';
+                    noMatchEl.innerHTML = '<i class="bi bi-search fs-3 text-muted"></i><h5 class="mt-2 text-muted" style="font-size:14px;">Kain tidak ditemukan</h5>';
+                    if (fabricGrid && fabricGrid.parentNode) {
+                        fabricGrid.parentNode.insertBefore(noMatchEl, fabricGrid.nextSibling);
+                    }
+                }
+                noMatchEl.style.display = 'block';
+            } else if (noMatchEl) {
+                noMatchEl.style.display = 'none';
+            }
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', filterFabricCards);
+            if (searchInput.value.trim() !== '') {
+                filterFabricCards();
+            }
+        }
+
         if (searchForm) {
             searchForm.addEventListener('submit', function(e) {
-                const searchInput = this.querySelector('input[name="search"]');
+                e.preventDefault();
+                if (!searchInput) return;
                 const query = searchInput.value.trim().toLowerCase();
-                
+
                 if (fabricLookup && fabricLookup[query]) {
-                    e.preventDefault(); // Mencegah submit form reload halaman
                     const fabric = fabricLookup[query];
-                    addToCart(fabric.id, fabric.nama, fabric.hargaMeter, fabric.hargaRol, fabric.stokMeter, fabric.stokRol);
-                    searchInput.value = ''; // Kosongkan input kembali
-                    
-                    // Show a toast or feedback if necessary
-                    console.log('Barcode/Kode terdeteksi: ' + fabric.nama + ' ditambahkan ke keranjang.');
+                    addToCart(fabric.id, fabric.nama, fabric.hargaMeter, fabric.hargaRol, fabric.stokMeter, fabric.stokRol, fabric.meterPerRol);
+                    searchInput.value = '';
+                    filterFabricCards();
+                } else {
+                    const visibleItems = Array.from(fabricItems).filter(item => item.style.display !== 'none');
+                    if (visibleItems.length === 1) {
+                        visibleItems[0].click();
+                        searchInput.value = '';
+                        filterFabricCards();
+                    }
                 }
             });
         }
@@ -745,34 +799,40 @@
         // Find click target and make active
         if (metode === 'tunai') {
             document.querySelector('.payment-card:nth-child(1)').classList.add('active');
-            document.getElementById('quickPayWrapper').style.display = 'block';
-            document.getElementById('quickPayLabel').style.display = 'inline';
+            document.getElementById('quickPayWrapper').style.display = 'flex';
         } else if (metode === 'transfer') {
             document.querySelector('.payment-card:nth-child(2)').classList.add('active');
             document.getElementById('quickPayWrapper').style.display = 'none';
-            document.getElementById('quickPayLabel').style.display = 'none';
-            // Auto fill full payment amount for digital
             setExactAmount();
         } else if (metode === 'qris') {
             document.querySelector('.payment-card:nth-child(3)').classList.add('active');
             document.getElementById('quickPayWrapper').style.display = 'none';
-            document.getElementById('quickPayLabel').style.display = 'none';
-            // Auto fill full payment amount for digital
             setExactAmount();
         }
     }
     
     function setExactAmount() {
-        const total = getTotalCart();
-        document.getElementById('jumlahBayar').value = total;
-        hitungKembalian();
+        if (typeof window.setExactAmount === 'function') {
+            window.setExactAmount();
+        } else {
+            const total = Math.round(getTotalCart());
+            const input = document.getElementById('jumlahBayar');
+            if (input) input.value = total > 0 ? total.toLocaleString('id-ID') : '';
+            hitungKembalian();
+        }
     }
 
     function addPay(amt) {
-        const input = document.getElementById('jumlahBayar');
-        let current = parseFloat(input.value) || 0;
-        input.value = current + amt;
-        hitungKembalian();
+        if (typeof window.addPay === 'function') {
+            window.addPay(amt);
+        } else {
+            const input = document.getElementById('jumlahBayar');
+            if (!input) return;
+            let current = parseFloat((input.value || '').replace(/\D/g, '')) || 0;
+            let nextVal = current + amt;
+            input.value = nextVal > 0 ? nextVal.toLocaleString('id-ID') : '';
+            hitungKembalian();
+        }
     }
 
     function applyCustomerDiscount() {
@@ -788,19 +848,62 @@
         const posRight = document.querySelector('.pos-right');
         
         if (!fabricsTab || !cartTab || !posLeft || !posRight) return;
+
+        posLeft.style.removeProperty('display');
+        posRight.style.removeProperty('display');
         
         if (tab === 'fabrics') {
             fabricsTab.classList.add('active');
             cartTab.classList.remove('active');
-            posLeft.style.setProperty('display', 'block', 'important');
-            posRight.style.setProperty('display', 'none', 'important');
+            posLeft.classList.remove('mobile-hide');
+            posLeft.classList.add('mobile-show');
+            posRight.classList.remove('mobile-show');
+            posRight.classList.add('mobile-hide');
         } else {
             cartTab.classList.add('active');
             fabricsTab.classList.remove('active');
-            posLeft.style.setProperty('display', 'none', 'important');
-            posRight.style.setProperty('display', 'block', 'important');
+            posLeft.classList.remove('mobile-show');
+            posLeft.classList.add('mobile-hide');
+            posRight.classList.remove('mobile-hide');
+            posRight.classList.add('mobile-show');
         }
     }
+
+    window.addEventListener('resize', function() {
+        if (window.innerWidth >= 992) {
+            const posLeft = document.querySelector('.pos-left');
+            const posRight = document.querySelector('.pos-right');
+            if (posLeft) {
+                posLeft.style.removeProperty('display');
+                posLeft.classList.remove('mobile-hide', 'mobile-show');
+            }
+            if (posRight) {
+                posRight.style.removeProperty('display');
+                posRight.classList.remove('mobile-hide', 'mobile-show');
+            }
+        }
+    });
 </script>
 <script src="{{ asset('js/pos.js') }}"></script>
+
+@if(session('auto_print_sale_id'))
+<iframe id="printReceiptFrame" src="{{ route('kasir.sales.receipt', session('auto_print_sale_id')) }}" style="display:none;"></iframe>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const iframe = document.getElementById('printReceiptFrame');
+    if (iframe) {
+        iframe.onload = function() {
+            setTimeout(function() {
+                try {
+                    iframe.contentWindow.focus();
+                    iframe.contentWindow.print();
+                } catch(e) {
+                    window.open("{{ route('kasir.sales.receipt', session('auto_print_sale_id')) }}", "_blank");
+                }
+            }, 300);
+        };
+    }
+});
+</script>
+@endif
 @endpush

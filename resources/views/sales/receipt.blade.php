@@ -115,37 +115,76 @@
         th { border-bottom: 1px solid #000; padding: 6px 2px; text-align: left; font-size: 10.5px; font-weight: 700; }
         td { padding: 4px 2px; vertical-align: top; }
         .text-right { text-align: right; }
+        .items-container { margin: 8px 0; }
+        .receipt-item { margin-bottom: 7px; }
+        .receipt-item:last-child { margin-bottom: 0; }
+        .item-name { 
+            font-size: 11.5px; 
+            font-weight: 700; 
+            line-height: 1.35; 
+            word-break: break-word; 
+        }
+        .item-line { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: baseline; 
+            font-size: 11.5px; 
+            margin-top: 1px; 
+        }
+        .item-calc { 
+            white-space: nowrap; 
+            color: #1e293b; 
+        }
+        .item-subtotal { 
+            font-weight: 700; 
+            white-space: nowrap; 
+            text-align: right; 
+        }
         .total-row { font-weight: 700; font-size: 13.5px; }
         .footer { text-align:center; font-size: 10.5px; margin-top: 16px; line-height: 1.5; word-break: break-word; }
 
-        /* Print Media Rules */
+        /* Print Media Rules - Thermal Printer Optimized */
         @media print {
-            .no-print { display: none !important; }
-            body { 
-                background: #fff !important; 
-                padding: 0 !important;
-                min-height: auto !important;
-                display: block !important;
+            @page {
+                margin: 0;
+                size: auto;
             }
+            html, body {
+                background: #fff !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+            }
+            .no-print { display: none !important; }
             .receipt-card { 
                 box-shadow: none !important; 
                 border: none !important; 
-                padding: 0 !important; 
+                padding: 4mm 2mm !important; 
                 width: 100% !important; 
+                max-width: 100% !important;
+                border-radius: 0 !important;
             }
             .receipt-card::after { display: none !important; }
-            .receipt-content { font-size: 12px !important; }
+            .receipt-content { font-size: 11px !important; line-height: 1.3 !important; }
+            .brand { font-size: 18px !important; }
+            .items-container { margin: 6px 0 !important; }
+            .receipt-item { margin-bottom: 5px !important; }
+            .item-name { font-size: 11px !important; }
+            .item-line { font-size: 11px !important; }
+            .item-calc { color: #000 !important; }
         }
     </style>
 </head>
 <body>
 <div class="no-print">
-    <button class="ctrl-btn btn-print" onclick="window.print()">
-        <i class="bi bi-printer-fill"></i> Cetak Struk
-    </button>
-    <button class="ctrl-btn btn-close" onclick="window.close()">
-        <i class="bi bi-x-lg"></i> Tutup Halaman
-    </button>
+    <div class="d-flex align-items-center gap-2">
+        <button class="ctrl-btn btn-print" onclick="window.print()">
+            <i class="bi bi-printer-fill"></i> Cetak Struk
+        </button>
+        <button class="ctrl-btn btn-close" onclick="window.close()">
+            <i class="bi bi-x-lg"></i> Tutup
+        </button>
+    </div>
 </div>
 
 <div class="receipt-card">
@@ -171,26 +210,22 @@
 
         <hr class="divider">
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Nama Kain</th>
-                    <th class="text-right">Jml</th>
-                    <th class="text-right">Harga</th>
-                    <th class="text-right">Subtotal</th>
-                </tr>
-            </thead>
-            <tbody>
+        <div class="items-container">
             @foreach($sale->details as $d)
-                <tr>
-                    <td>{{ $d->fabric->nama_kain }}</td>
-                    <td class="text-right">{{ number_format($d->jumlah, $d->satuan==='meter'?1:0) }} {{ $d->satuan }}</td>
-                    <td class="text-right">{{ number_format($d->harga_satuan,0,',','.') }}</td>
-                    <td class="text-right">{{ number_format($d->subtotal,0,',','.') }}</td>
-                </tr>
+                @php
+                    $qtyFormatted = fmod((float)$d->jumlah, 1) == 0 
+                        ? number_format($d->jumlah, 0, ',', '.') 
+                        : rtrim(rtrim(number_format($d->jumlah, 2, ',', '.'), '0'), ',');
+                @endphp
+                <div class="receipt-item">
+                    <div class="item-name">{{ $d->fabric->nama_kain }}</div>
+                    <div class="item-line">
+                        <span class="item-calc">{{ $qtyFormatted }} {{ $d->satuan }} &times; {{ number_format($d->harga_satuan, 0, ',', '.') }}</span>
+                        <span class="item-subtotal">{{ number_format($d->subtotal, 0, ',', '.') }}</span>
+                    </div>
+                </div>
             @endforeach
-            </tbody>
-        </table>
+        </div>
 
         <hr class="divider">
 

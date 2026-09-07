@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToBranch;
 use Illuminate\Database\Eloquent\Model;
 
 class Sale extends Model
 {
+    use BelongsToBranch;
+
     protected $fillable = [
         'nomor_transaksi',
         'user_id',
+        'branch_id',
         'customer_id',
         'total',
         'diskon',

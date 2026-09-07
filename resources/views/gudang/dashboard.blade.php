@@ -5,28 +5,28 @@
 @section('content')
 
 <div class="row g-3 mb-4">
-    <div class="col-sm-6 col-xl-3">
+    <div class="col-6 col-xl-3">
         <div class="dt-stat">
             <div class="dt-stat-icon"><i class="bi bi-grid-3x3-gap fs-5"></i></div>
             <div class="dt-stat-label">Total Jenis Kain</div>
             <div class="dt-stat-value">{{ number_format($totalJenisKain) }}</div>
         </div>
     </div>
-    <div class="col-sm-6 col-xl-3">
+    <div class="col-6 col-xl-3">
         <div class="dt-stat gold">
             <div class="dt-stat-icon"><i class="bi bi-box-seam fs-5"></i></div>
             <div class="dt-stat-label">Total Stok Rol</div>
             <div class="dt-stat-value">{{ number_format($totalStokRol) }}</div>
         </div>
     </div>
-    <div class="col-sm-6 col-xl-3">
+    <div class="col-6 col-xl-3">
         <div class="dt-stat">
             <div class="dt-stat-icon"><i class="bi bi-rulers fs-5"></i></div>
             <div class="dt-stat-label">Total Stok Meter</div>
             <div class="dt-stat-value sm">{{ number_format($totalStokMeter, 1) }} m</div>
         </div>
     </div>
-    <div class="col-sm-6 col-xl-3">
+    <div class="col-6 col-xl-3">
         <div class="dt-stat success">
             <div class="dt-stat-icon"><i class="bi bi-arrow-down-circle fs-5"></i></div>
             <div class="dt-stat-label">Barang Masuk Hari Ini</div>
@@ -79,13 +79,13 @@
             @else
             @foreach($stokMenipis as $s)
             <div style="padding:10px 0;border-bottom:1px solid var(--dt-border);font-size:13px">
-                <div class="fw-600">{{ $s->fabric->nama_kain }}</div>
+                <div class="fw-600 text-navy">{{ $s->fabric->nama_kain }}</div>
                 <div class="d-flex justify-content-between align-items-center mt-1">
-                    <span style="color:var(--dt-muted);font-size:12px">{{ $s->fabric->kode_kain }}</span>
-                    @if($s->stok_meter <= 0)
-                        <span class="dt-badge dt-badge-danger">Habis</span>
+                    <span style="color:var(--dt-muted);font-size:12px">{{ $s->fabric->kode_kain }} • {{ $s->stok_rol }} rol ({{ number_format($s->total_meter,1) }}m)</span>
+                    @if($s->total_meter <= 0)
+                        <span class="badge-stok-habis"><i class="bi bi-x-circle-fill me-1"></i> Habis</span>
                     @else
-                        <span class="dt-badge dt-badge-warning">{{ number_format($s->stok_meter,1) }} m</span>
+                        <span class="badge-stok-menipis"><i class="bi bi-exclamation-triangle-fill me-1"></i> Stok Menipis</span>
                     @endif
                 </div>
             </div>

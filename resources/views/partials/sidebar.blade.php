@@ -6,7 +6,7 @@
     if ($role === 'admin') {
         if (request()->routeIs(['admin.fabrics*', 'admin.categories*', 'admin.suppliers*', 'admin.customers*'])) {
             $activeMenu = 'master-data';
-        } elseif (request()->routeIs(['admin.reports*', 'admin.transactions*', 'admin.stock-movements*', 'admin.stocks*'])) {
+        } elseif (request()->routeIs(['admin.reports*', 'admin.transactions*', 'admin.stock-movements*', 'admin.stocks*', 'admin.incoming-goods*'])) {
             $activeMenu = 'laporan-audit';
         } elseif (request()->routeIs(['admin.users*', 'admin.audit-logs*', 'admin.settings*'])) {
             $activeMenu = 'sistem-pengaturan';
@@ -17,16 +17,23 @@
         } elseif (request()->routeIs(['gudang.suppliers*', 'gudang.incoming-goods*'])) {
             $activeMenu = 'gudang-pengadaan';
         }
-    } elseif ($role === 'kasir') {
-        if (request()->routeIs(['kasir.transactions*', 'kasir.income*'])) {
-            $activeMenu = 'kasir-transaksi';
-        }
     }
-@endphp
 
-{{-- Overlay for mobile --}}
-<div class="d-lg-none" id="sidebarOverlay" style="display:none!important;position:fixed;inset:0;background:rgba(15,39,68,.4);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);z-index:99"
-     onclick="closeSidebarMobile()"></div>
+    $userName = auth()->user()->name ?? 'User';
+    $words = explode(' ', trim($userName));
+    if (count($words) >= 2) {
+        $initials = strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
+    } else {
+        $initials = strtoupper(substr($userName, 0, 2));
+    }
+
+    $roleTitle = match($role) {
+        'admin'  => 'System Admin',
+        'gudang' => 'Gudang Master',
+        'kasir'  => 'Kasir POS',
+        default  => ucfirst($role ?? 'User'),
+    };
+@endphp
 
 <aside class="dt-sidebar">
     {{-- Brand --}}
@@ -99,9 +106,6 @@
                 <a href="{{ route('admin.suppliers.index') }}" class="dt-nav-sublink {{ request()->routeIs('admin.suppliers*') ? 'active' : '' }}">
                     <i class="bi bi-truck"></i> Supplier
                 </a>
-                <a href="{{ route('admin.customers.index') }}" class="dt-nav-sublink {{ request()->routeIs('admin.customers*') ? 'active' : '' }}">
-                    <i class="bi bi-people-fill"></i> Pelanggan
-                </a>
             </div>
         </div>
 
@@ -120,6 +124,9 @@
                 </a>
                 <a href="{{ route('admin.stock-movements.index') }}" class="dt-nav-sublink {{ request()->routeIs('admin.stock-movements*') ? 'active' : '' }}">
                     <i class="bi bi-arrow-left-right"></i> Riwayat Pergerakan Stok
+                </a>
+                <a href="{{ route('admin.incoming-goods.index') }}" class="dt-nav-sublink {{ request()->routeIs('admin.incoming-goods*') ? 'active' : '' }}">
+                    <i class="bi bi-box-arrow-in-down"></i> Riwayat Barang Masuk
                 </a>
                 <a href="{{ route('admin.stocks.index') }}" class="dt-nav-sublink {{ request()->routeIs('admin.stocks*') ? 'active' : '' }}">
                     <i class="bi bi-box-seam"></i> Laporan Stok Kain
@@ -178,69 +185,53 @@
                 <a href="{{ route('gudang.suppliers.index') }}" class="dt-nav-sublink {{ request()->routeIs('gudang.suppliers*') ? 'active' : '' }}">
                     <i class="bi bi-truck"></i> Kelola Supplier
                 </a>
-                <a href="{{ route('gudang.incoming-goods.index') }}" class="dt-nav-sublink {{ request()->routeIs('gudang.incoming-goods*') ? 'active' : '' }}">
-                    <i class="bi bi-arrow-down-square"></i> Input Barang Masuk
+                <a href="{{ route('gudang.incoming-goods.create') }}" class="dt-nav-sublink {{ request()->routeIs('gudang.incoming-goods.create') ? 'active' : '' }}">
+                    <i class="bi bi-plus-circle"></i> Input Barang Masuk
+                </a>
+                <a href="{{ route('gudang.incoming-goods.index') }}" class="dt-nav-sublink {{ request()->routeIs('gudang.incoming-goods.index') && !request()->routeIs('gudang.incoming-goods.create') ? 'active' : '' }}">
+                    <i class="bi bi-box-arrow-in-down"></i> Riwayat / Cek Barang Masuk
                 </a>
             </div>
         </div>
 
         @elseif($role === 'kasir')
         {{-- ======== KASIR MENU ======== --}}
-        <div class="dt-nav-section">Utama</div>
-        <a href="{{ route('kasir.dashboard') }}" class="dt-nav-link {{ request()->routeIs('kasir.dashboard') ? 'active' : '' }}">
-            <i class="bi bi-speedometer2"></i> Dashboard
-        </a>
-
         <div class="dt-nav-section">Layanan Kasir</div>
         <a href="{{ route('kasir.sales.pos') }}" class="dt-nav-link {{ request()->routeIs('kasir.sales*') ? 'active' : '' }}">
-            <i class="bi bi-cart3"></i> POS Penjualan (Kasir)
+            <i class="bi bi-cart3"></i> POS Penjualan
         </a>
 
-        <!-- Transaksi & Income Dropdown -->
-        <div>
-            <button type="button" class="dt-nav-dropdown-btn {{ $activeMenu === 'kasir-transaksi' ? 'open active' : '' }}" data-menu-id="kasir-transaksi">
-                <span><i class="bi bi-wallet2 me-2"></i> Transaksi Hari Ini</span>
-                <i class="bi bi-chevron-right dt-chevron"></i>
-            </button>
-            <div class="dt-nav-dropdown-container {{ $activeMenu === 'kasir-transaksi' ? 'show' : '' }}">
-                <a href="{{ route('kasir.transactions.index') }}" class="dt-nav-sublink {{ request()->routeIs('kasir.transactions*') ? 'active' : '' }}">
-                    <i class="bi bi-receipt"></i> Riwayat Penjualan
-                </a>
-                <a href="{{ route('kasir.income.index') }}" class="dt-nav-sublink {{ request()->routeIs('kasir.income*') ? 'active' : '' }}">
-                    <i class="bi bi-cash-stack"></i> Rekap Pendapatan
-                </a>
-            </div>
-        </div>
+        <a href="{{ route('kasir.transactions.index') }}" class="dt-nav-link {{ request()->routeIs('kasir.transactions*') ? 'active' : '' }}">
+            <i class="bi bi-wallet2"></i> Transaksi Hari Ini
+        </a>
 
-        <a href="{{ route('kasir.stocks.index') }}" class="dt-nav-link {{ request()->routeIs('kasir.stocks*') ? 'active' : '' }}">
-            <i class="bi bi-search"></i> Cek Stok Kain
+        <a href="{{ route('kasir.income.index') }}" class="dt-nav-link {{ request()->routeIs('kasir.income*') ? 'active' : '' }}">
+            <i class="bi bi-cash-stack"></i> Rekap Pendapatan
         </a>
         @endif
 
     </nav>
 
     {{-- Footer --}}
-    <div class="dt-sidebar-footer">
-        <div class="dt-sidebar-user d-flex align-items-center gap-2 mb-2">
-            <div style="width:34px;height:34px;background:rgba(201,168,76,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--dt-gold);font-weight:700;font-size:13px;flex-shrink:0">
-                {{ strtoupper(substr(auth()->user()->name,0,1)) }}
+    <div class="dt-sidebar-footer border-top" style="border-color: rgba(255, 255, 255, 0.08) !important; background: #0f172a; padding: 12px;">
+        <div class="d-flex align-items-center justify-content-between rounded-3" style="background: #1e293b; border: 1px solid rgba(255, 255, 255, 0.08); padding: 8px 10px; gap: 6px;">
+            <div class="d-flex align-items-center min-w-0 flex-grow-1" style="gap: 8px;">
+                <div class="d-flex align-items-center justify-content-center rounded-circle text-white flex-shrink-0" style="width: 34px; height: 34px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); font-size: 12.5px; font-weight: 700; letter-spacing: 0.3px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                    {{ $initials }}
+                </div>
+                <div class="min-w-0 flex-grow-1">
+                    <div class="text-truncate text-white fw-semibold" style="font-size: 12.5px; line-height: 1.2;" title="{{ $userName }}">{{ $userName }}</div>
+                    <div class="text-truncate" style="font-size: 10.5px; color: #94a3b8; margin-top: 2px;">{{ $roleTitle }}</div>
+                </div>
             </div>
-            <div>
-                <div style="font-size:13px;font-weight:500;color:rgba(255,255,255,.85)">{{ auth()->user()->name }}</div>
-                <small>{{ ucfirst(auth()->user()->role) }}</small>
-            </div>
+            
+            <form method="POST" action="{{ route('logout') }}" class="m-0 flex-shrink-0">
+                @csrf
+                <button type="submit" class="btn btn-link text-decoration-none border-0 d-flex align-items-center justify-content-center rounded-2 p-0" style="color: #94a3b8; transition: all 0.2s; width: 28px; height: 28px;" title="Logout / Keluar" onmouseover="this.style.color='#f87171'; this.style.background='rgba(239, 68, 68, 0.15)';" onmouseout="this.style.color='#94a3b8'; this.style.background='transparent';">
+                    <i class="bi bi-box-arrow-right" style="font-size: 15px;"></i>
+                </button>
+            </form>
         </div>
-        <!-- PWA Install Button -->
-        <button id="btnInstallPWA" class="dt-nav-link w-100 border-0 d-none" style="background:none;color:var(--dt-gold);text-align:left;cursor:pointer;margin-bottom:8px;">
-            <i class="bi bi-download text-gold"></i> Unduh Aplikasi
-        </button>
-
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="dt-nav-link w-100 border-0" style="background:none;color:rgba(255,100,100,.7);text-align:left;cursor:pointer">
-                <i class="bi bi-box-arrow-right"></i> Logout
-            </button>
-        </form>
     </div>
 </aside>
 

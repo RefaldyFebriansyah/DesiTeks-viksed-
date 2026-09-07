@@ -11,9 +11,9 @@
         <div class="dt-breadcrumb">Penjualan / Transaksi / {{ $sale->nomor_transaksi }}</div>
     </div>
     <div class="d-flex gap-2">
-        <a href="{{ route('admin.sales.receipt', $sale) }}" target="_blank" class="dt-btn dt-btn-gold">
-            <i class="bi bi-printer"></i> Struk
-        </a>
+        <button type="button" class="dt-btn dt-btn-gold" onclick="printReceiptDirect('{{ route('admin.sales.receipt', $sale) }}')">
+            <i class="bi bi-printer"></i> Cetak Struk
+        </button>
         <a href="{{ route('admin.transactions.index') }}" class="dt-btn dt-btn-outline">
             <i class="bi bi-arrow-left"></i> Kembali
         </a>
@@ -116,7 +116,7 @@
                         </span>
                     </td>
                     <td class="text-end fw-600">
-                        {{ number_format($detail->jumlah, $detail->satuan === 'meter' ? 1 : 0) }} 
+                        {{ fmod((float)$detail->jumlah, 1) == 0 ? number_format($detail->jumlah, 0, ',', '.') : rtrim(rtrim(number_format($detail->jumlah, 2, ',', '.'), '0'), ',') }} 
                         <span style="font-size:11px;font-weight:400;color:var(--dt-muted)">{{ $detail->satuan }}</span>
                     </td>
                     <td class="text-end" style="font-size:13px;">Rp {{ number_format($detail->harga_satuan, 0, ',', '.') }}</td>

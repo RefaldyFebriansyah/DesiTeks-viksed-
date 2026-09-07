@@ -67,7 +67,7 @@
         </div>
         <div style="flex:1; padding:14px 24px; text-align:center; border-right:1px solid var(--dt-border);">
             <div style="font-size:11px; color:var(--dt-muted); font-weight:600; text-transform:uppercase; letter-spacing:.8px;">Stok Terkini (Meter)</div>
-            <div style="font-size:22px; font-weight:700; color:var(--dt-navy); margin-top:2px;">{{ number_format($fabric->stock->stok_meter ?? 0, 1) }} <span style="font-size:13px; font-weight:400; color:var(--dt-muted);">m</span></div>
+            <div style="font-size:22px; font-weight:700; color:var(--dt-navy); margin-top:2px;">{{ number_format($fabric->total_stok_meter, 1) }} <span style="font-size:13px; font-weight:400; color:var(--dt-muted);">m</span></div>
         </div>
         <div style="flex:1; padding:14px 24px; text-align:center;">
             <div style="font-size:11px; color:var(--dt-muted); font-weight:600; text-transform:uppercase; letter-spacing:.8px;">Kondisi Stok</div>

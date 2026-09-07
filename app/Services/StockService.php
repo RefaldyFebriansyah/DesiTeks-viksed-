@@ -11,13 +11,19 @@ use Illuminate\Support\Facades\DB;
 
 class StockService
 {
+    private function getActiveBranchId(): int
+    {
+        return session('active_branch_id') ?? Auth::user()?->branch_id ?? 1;
+    }
+
     /**
      * Tambah stok setelah barang masuk.
      */
     public function tambahStok(Fabric $fabric, int $jumlahRol, float $jumlahMeter, int $incomingGoodId): void
     {
+        $branchId = $this->getActiveBranchId();
         $stock = Stock::firstOrCreate(
-            ['fabric_id' => $fabric->id],
+            ['fabric_id' => $fabric->id, 'branch_id' => $branchId],
             ['stok_rol' => 0, 'stok_meter' => 0, 'updated_at' => now()]
         );
 
@@ -38,7 +44,7 @@ class StockService
             'jenis'          => 'barang_masuk',
             'jumlah_rol'     => $jumlahRol,
             'jumlah_meter'   => $jumlahMeter,
-            'keterangan'     => "Barang masuk ID: {$incomingGoodId}",
+            'keterangan'     => "Penerimaan barang masuk (Gudang #{$incomingGoodId})",
             'reference_type' => 'App\Models\IncomingGood',
             'reference_id'   => $incomingGoodId,
         ]);
@@ -49,7 +55,16 @@ class StockService
      */
     public function kurangiStok(Fabric $fabric, string $satuan, float $jumlah, int $saleId): void
     {
-        $stock = Stock::where('fabric_id', $fabric->id)->lockForUpdate()->first();
+        $branchId = $this->getActiveBranchId();
+        $stock = Stock::where('fabric_id', $fabric->id)
+            ->where('branch_id', $branchId)
+            ->lockForUpdate()
+            ->first();
+
+        if (!$stock) {
+            // Fallback try without branch filter if exact match missing
+            $stock = Stock::where('fabric_id', $fabric->id)->lockForUpdate()->first();
+        }
 
         if (!$stock) {
             throw new \Exception("Stok untuk kain '{$fabric->nama_kain}' tidak ditemukan.");
@@ -79,9 +94,9 @@ class StockService
             // Potong dari sisa eceran
             $stock->stok_meter -= $jumlah;
 
-            $keterangan = "Penjualan {$jumlah} meter - Sale ID: {$saleId}";
+            $keterangan = "Penjualan eceran {$jumlah} m (Nota #{$saleId})";
             if (isset($rollsToOpen) && $rollsToOpen > 0) {
-                $keterangan .= " (Otomatis memotong/membuka {$rollsToOpen} rol utuh menjadi eceran)";
+                $keterangan .= " - Potong {$rollsToOpen} rol ke eceran";
             }
 
             StockMovement::create([
@@ -108,7 +123,7 @@ class StockService
                 'jenis'          => 'penjualan',
                 'jumlah_rol'     => (int) $jumlah,
                 'jumlah_meter'   => $jumlah * $meterPerRol,
-                'keterangan'     => "Penjualan {$jumlah} rol (~" . ($jumlah * $meterPerRol) . " meter) - Sale ID: {$saleId}",
+                'keterangan'     => "Penjualan grosir {$jumlah} rol (" . ($jumlah * $meterPerRol) . " m) (Nota #{$saleId})",
                 'reference_type' => 'App\Models\Sale',
                 'reference_id'   => $saleId,
             ]);
@@ -118,6 +133,17 @@ class StockService
         if ($stock->stok_rol < 0)   $stock->stok_rol   = 0;
         $stock->updated_at = now();
         $stock->save();
+
+        // Trigger notifikasi jika stok rol <= 5 atau stok meter <= 5
+        if ($stock->stok_rol <= 5) {
+            $statusText = ($stock->stok_rol <= 0 && $stock->stok_meter <= 0) ? 'HABIS' : 'MENIPIS';
+            \App\Models\AppNotification::create([
+                'type'    => 'stok_menipis',
+                'title'   => "Peringatan Stok {$statusText}",
+                'message' => "Stok kain '{$fabric->nama_kain}' {$statusText} (tersisa {$stock->stok_rol} rol / " . number_format($stock->stok_meter, 1) . "m eceran).",
+                'link'    => route('admin.stocks.index', ['status' => strtolower($statusText)]),
+            ]);
+        }
     }
 
     /**
@@ -125,8 +151,9 @@ class StockService
      */
     public function sesuaikanStok(Fabric $fabric, int $rolBaru, float $meterBaru, string $keterangan): void
     {
+        $branchId = $this->getActiveBranchId();
         $stock = Stock::firstOrCreate(
-            ['fabric_id' => $fabric->id],
+            ['fabric_id' => $fabric->id, 'branch_id' => $branchId],
             ['stok_rol' => 0, 'stok_meter' => 0, 'updated_at' => now()]
         );
 
@@ -158,6 +185,8 @@ class StockService
     public function kembalikanStok(\App\Models\Sale $sale): void
     {
         DB::transaction(function () use ($sale) {
+            $branchId = $this->getActiveBranchId();
+
             // Cari pergerakan stok penjualan yang berkaitan dengan transaksi ini
             $movements = StockMovement::where('reference_type', 'App\Models\Sale')
                 ->where('reference_id', $sale->id)
@@ -166,7 +195,7 @@ class StockService
             if ($movements->isNotEmpty()) {
                 foreach ($movements as $movement) {
                     $stock = Stock::firstOrCreate(
-                        ['fabric_id' => $movement->fabric_id],
+                        ['fabric_id' => $movement->fabric_id, 'branch_id' => $branchId],
                         ['stok_rol' => 0, 'stok_meter' => 0, 'updated_at' => now()]
                     );
 
@@ -192,7 +221,7 @@ class StockService
                 // Fallback jika tidak ada data di stock_movements (misal data seeder awal)
                 foreach ($sale->details as $detail) {
                     $stock = Stock::firstOrCreate(
-                        ['fabric_id' => $detail->fabric_id],
+                        ['fabric_id' => $detail->fabric_id, 'branch_id' => $branchId],
                         ['stok_rol' => 0, 'stok_meter' => 0, 'updated_at' => now()]
                     );
 
@@ -227,4 +256,3 @@ class StockService
         });
     }
 }
-

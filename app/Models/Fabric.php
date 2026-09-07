@@ -57,16 +57,31 @@ class Fabric extends Model
         return $this->hasMany(StockMovement::class);
     }
 
-    // Helper: Get status stok
+    // Helper: Total meter gabungan (eceran + rol utuh * meter_per_rol)
+    public function getTotalStokMeterAttribute(): float
+    {
+        $stok = $this->stock;
+        if (!$stok) return 0.0;
+        $mPerRol = (float) ($this->meter_per_rol > 0 ? $this->meter_per_rol : 50);
+        return (float) (($stok->stok_meter ?? 0) + (($stok->stok_rol ?? 0) * $mPerRol));
+    }
+
+    // Helper: Get status stok (0: habis, <= 5 rol: menipis, > 5 rol: aman)
     public function getStatusStokAttribute(): string
     {
         $stok = $this->stock;
-        if (!$stok || $stok->stok_meter <= 0) {
+        if (!$stok) {
             return 'habis';
         }
-        if ($stok->stok_meter <= $this->stok_minimum) {
+        $rol = (int) ($stok->stok_rol ?? 0);
+        $meter = (float) ($stok->stok_meter ?? 0);
+
+        if ($rol <= 0 && $meter <= 0) {
+            return 'habis';
+        }
+        if ($rol <= 5) {
             return 'menipis';
         }
-        return 'tersedia';
+        return 'aman';
     }
 }

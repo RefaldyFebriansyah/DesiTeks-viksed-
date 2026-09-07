@@ -25,8 +25,13 @@
     </div>
     <div class="col-md-4">
         <div class="dt-stat">
-            <div class="dt-stat-label">Total Volume Kain Terjual</div>
-            <div class="dt-stat-value sm">{{ number_format($kainTerjualHariIni, 1) }} unit</div>
+            <div class="dt-stat-label">Total Kain Terjual (Hari Ini)</div>
+            <div class="dt-stat-value sm">{{ number_format($totalVolumeMeter, 1) }} <small style="font-size:14px;font-weight:400">m</small></div>
+            @if($totalRolTerjual > 0)
+                <div style="font-size: 11.5px; color: var(--dt-muted); margin-top: 3px;">
+                    ({{ $totalRolTerjual }} rol + {{ number_format($totalMeterTerjual, 1) }} m eceran)
+                </div>
+            @endif
         </div>
     </div>
 </div>

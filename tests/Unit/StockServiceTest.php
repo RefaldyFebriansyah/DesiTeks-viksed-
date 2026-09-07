@@ -19,6 +19,14 @@ class StockServiceTest extends TestCase
         parent::setUp();
         $this->stockService = app(StockService::class);
 
+        \App\Models\Branch::create([
+            'id' => 1,
+            'nama_cabang' => 'Cabang Utama',
+            'kode_cabang' => 'CBG-001',
+            'is_main' => true,
+            'status' => 'aktif',
+        ]);
+
         // Membuat user testing untuk memenuhi foreign key user_id di stock_movements
         $user = \App\Models\User::create([
             'name' => 'Test User',
@@ -26,6 +34,7 @@ class StockServiceTest extends TestCase
             'password' => bcrypt('password'),
             'role' => 'admin',
             'status' => 'aktif',
+            'branch_id' => 1,
         ]);
         $this->actingAs($user);
     }
@@ -69,6 +78,21 @@ class StockServiceTest extends TestCase
         $stock->refresh();
         $this->assertEquals(0, $stock->stok_rol);
         $this->assertEquals(46.00, $stock->stok_meter);
+    }
+
+    public function test_supplier_email_masking_attribute()
+    {
+        $supplier = \App\Models\Supplier::create([
+            'kode_supplier' => 'SUP-TEST',
+            'nama_supplier' => 'PT Test Supplier',
+            'email' => 'info@kainsejahtera.com',
+            'asal_kota' => 'Bandung',
+            'no_telepon' => '+6281234567890',
+        ]);
+
+        $this->assertStringContainsString('***', $supplier->masked_email);
+        $this->assertStringStartsWith('in', $supplier->masked_email);
+        $this->assertStringEndsWith('.com', $supplier->masked_email);
     }
 
     public function test_roll_splitting_throws_exception_when_out_of_stock()

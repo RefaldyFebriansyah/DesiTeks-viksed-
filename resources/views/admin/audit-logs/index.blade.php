@@ -3,36 +3,42 @@
 @section('page-title', 'Aktivitas Sistem (Audit Log)')
 
 @section('content')
-<div class="dt-page-header">
+<div class="dt-page-header mb-3">
     <div>
         <h1 class="dt-page-title">Audit Log Aktivitas</h1>
         <div class="dt-breadcrumb">Sistem / Audit Log</div>
     </div>
 </div>
 
-<div class="dt-card mb-4">
-    <form method="GET" class="row g-2 align-items-end">
-        <div class="col-sm-4">
-            <input type="text" name="search" value="{{ request('search') }}" class="dt-input" placeholder="Cari aktivitas atau user...">
-        </div>
-        <div class="col-sm-3">
-            <input type="date" name="tanggal_dari" value="{{ request('tanggal_dari') }}" class="dt-input">
-        </div>
-        <div class="col-sm-3">
-            <input type="date" name="tanggal_sampai" value="{{ request('tanggal_sampai') }}" class="dt-input">
-        </div>
-        <div class="col-auto d-flex gap-2">
-            <button class="dt-btn dt-btn-primary"><i class="bi bi-search"></i></button>
-            @if(request()->hasAny(['search','tanggal_dari','tanggal_sampai']))
-                <a href="{{ route('admin.audit-logs.index') }}" class="dt-btn dt-btn-outline"><i class="bi bi-x"></i></a>
-            @endif
-        </div>
-    </form>
-</div>
+<div class="dt-card border-0 shadow-sm" style="border-radius: 14px; overflow: hidden;">
+    <!-- Unified Filter Toolbar -->
+    <div class="p-3 bg-white border-bottom">
+        <form method="GET" action="{{ route('admin.audit-logs.index') }}" class="row g-2 align-items-center">
+            <div class="col-12 col-md-4">
+                <div class="input-group min-w-0">
+                    <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" value="{{ request('search') }}" class="form-control border-start-0 ps-0 bg-light" placeholder="Cari aktivitas atau user..." style="font-size: 13.5px;" onchange="this.form.submit()">
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <input type="date" name="tanggal_dari" value="{{ request('tanggal_dari') }}" class="form-control bg-light" style="font-size: 13.5px;" onchange="this.form.submit()" title="Dari Tanggal">
+            </div>
+            <div class="col-6 col-md-3">
+                <input type="date" name="tanggal_sampai" value="{{ request('tanggal_sampai') }}" class="form-control bg-light" style="font-size: 13.5px;" onchange="this.form.submit()" title="Sampai Tanggal">
+            </div>
+            <div class="col-12 col-md-2 text-md-end ms-auto">
+                @if(request()->hasAny(['search','tanggal_dari','tanggal_sampai']))
+                    <a href="{{ route('admin.audit-logs.index') }}" class="btn btn-light border text-muted" title="Reset Filter">
+                        <i class="bi bi-x-circle me-1"></i> Reset
+                    </a>
+                @endif
+            </div>
+        </form>
+    </div>
 
-<div class="dt-card">
+    <!-- Table -->
     <div class="dt-table-wrap">
-        <table class="dt-table">
+        <table class="dt-table mb-0 align-middle">
             <thead>
                 <tr>
                     <th>Waktu</th>
@@ -52,11 +58,11 @@
                     <td><small class="text-muted">{{ $log->ip_address ?? '-' }}</small></td>
                 </tr>
             @empty
-                <tr><td colspan="5" class="text-center py-4 text-muted">Belum ada catatan aktivitas.</td></tr>
+                <tr><td colspan="5" class="text-center py-5 text-muted">Belum ada catatan aktivitas.</td></tr>
             @endforelse
             </tbody>
         </table>
     </div>
-    <div class="mt-3">{{ $logs->links() }}</div>
+    <div class="p-3 border-top bg-light bg-opacity-30">{{ $logs->links() }}</div>
 </div>
 @endsection

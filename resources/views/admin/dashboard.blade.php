@@ -4,103 +4,173 @@
 
 @push('styles')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+.chart-period-btn {
+    padding: 4px 12px;
+    font-size: 11.5px;
+    font-weight: 600;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.chart-period-btn:hover {
+    background: #f8fafc;
+    color: #0f172a;
+}
+.chart-period-btn.active {
+    background: #0f172a;
+    color: #ffffff;
+    border-color: #0f172a;
+}
+</style>
 @endpush
 
 @section('content')
 
 {{-- Stat Cards Row 1 --}}
-<div class="row g-3 mb-4">
-    <div class="col-sm-6 col-xl-3">
+<div class="row g-2 g-md-3 mb-3 mb-md-4">
+    <div class="col-6 col-xl-3">
         <div class="dt-stat">
-            <div class="dt-stat-icon"><i class="bi bi-grid-3x3-gap fs-5"></i></div>
+            <div class="dt-stat-icon"><i class="bi bi-grid-3x3-gap"></i></div>
             <div class="dt-stat-label">Total Jenis Kain</div>
             <div class="dt-stat-value">{{ number_format($totalJenisKain) }}</div>
         </div>
     </div>
-    <div class="col-sm-6 col-xl-3">
+    <div class="col-6 col-xl-3">
         <div class="dt-stat gold">
-            <div class="dt-stat-icon"><i class="bi bi-box-seam fs-5"></i></div>
+            <div class="dt-stat-icon"><i class="bi bi-box-seam"></i></div>
             <div class="dt-stat-label">Total Stok Rol</div>
-            <div class="dt-stat-value">{{ number_format($totalStokRol) }} <small style="font-size:14px;font-weight:400">rol</small></div>
+            <div class="dt-stat-value">{{ number_format($totalStokRol) }} <small style="font-size:12px;font-weight:400">rol</small></div>
         </div>
     </div>
-    <div class="col-sm-6 col-xl-3">
+    <div class="col-6 col-xl-3">
         <div class="dt-stat">
-            <div class="dt-stat-icon"><i class="bi bi-rulers fs-5"></i></div>
+            <div class="dt-stat-icon"><i class="bi bi-rulers"></i></div>
             <div class="dt-stat-label">Total Stok Meter</div>
-            <div class="dt-stat-value sm">{{ number_format($totalStokMeter, 1) }} <small style="font-size:14px;font-weight:400">m</small></div>
+            <div class="dt-stat-value sm">{{ number_format($totalStokMeter, 1) }} <small style="font-size:12px;font-weight:400">m</small></div>
         </div>
     </div>
-    <div class="col-sm-6 col-xl-3">
+    <div class="col-6 col-xl-3">
         <div class="dt-stat success">
-            <div class="dt-stat-icon"><i class="bi bi-cash-stack fs-5"></i></div>
+            <div class="dt-stat-icon"><i class="bi bi-cash-stack"></i></div>
             <div class="dt-stat-label">Pendapatan Hari Ini</div>
             <div class="dt-stat-value sm">Rp {{ number_format($pendapatanHariIni, 0, ',', '.') }}</div>
         </div>
     </div>
 </div>
 
-<div class="row g-3 mb-4">
-    <div class="col-sm-4">
+<div class="row g-2 g-md-3 mb-3 mb-md-4">
+    <div class="col-6 col-md-4">
         <div class="dt-stat">
-            <div class="dt-stat-icon"><i class="bi bi-arrow-down-circle fs-5"></i></div>
+            <div class="dt-stat-icon"><i class="bi bi-arrow-down-circle"></i></div>
             <div class="dt-stat-label">Barang Masuk Hari Ini</div>
             <div class="dt-stat-value">{{ $barangMasukHariIni }}</div>
         </div>
     </div>
-    <div class="col-sm-4">
+    <div class="col-6 col-md-4">
         <div class="dt-stat gold">
-            <div class="dt-stat-icon"><i class="bi bi-receipt fs-5"></i></div>
+            <div class="dt-stat-icon"><i class="bi bi-receipt"></i></div>
             <div class="dt-stat-label">Transaksi Hari Ini</div>
             <div class="dt-stat-value">{{ $transaksiHariIni }}</div>
         </div>
     </div>
-    <div class="col-sm-4">
+    <div class="col-12 col-md-4">
         <div class="dt-stat warning">
-            <div class="dt-stat-icon"><i class="bi bi-exclamation-triangle fs-5"></i></div>
-            <div class="dt-stat-label">Stok Menipis</div>
-            <div class="dt-stat-value">{{ $stokMenipis->count() }}</div>
+            <div class="dt-stat-icon"><i class="bi bi-exclamation-triangle"></i></div>
+            <div class="dt-stat-label">Stok Menipis / Habis</div>
+            <div class="dt-stat-value">{{ $jumlahStokMenipis }}</div>
         </div>
     </div>
 </div>
 
 <div class="row g-3 mb-4">
-    {{-- Grafik Penjualan --}}
+    {{-- Grafik Penjualan & Filter Keuangan --}}
     <div class="col-lg-7">
-        <div class="dt-card h-100">
-            <div class="dt-card-header">
-                <span class="dt-card-title"><i class="bi bi-bar-chart me-2 text-gold"></i>Penjualan 7 Hari Terakhir</span>
+        <div class="dt-card h-100 d-flex flex-column">
+            <div class="dt-card-header flex-column flex-sm-row align-items-start align-items-sm-center gap-2">
+                <div>
+                    <span class="dt-card-title"><i class="bi bi-bar-chart me-2"></i>Penjualan & Omset</span>
+                </div>
+
+                {{-- Period Filter Buttons --}}
+                <div class="d-flex flex-wrap gap-1" id="periodContainer">
+                    <button type="button" class="chart-period-btn" onclick="filterChart('hari_ini', this)">Hari Ini</button>
+                    <button type="button" class="chart-period-btn active" onclick="filterChart('minggu_ini', this)">7 Hari</button>
+                    <button type="button" class="chart-period-btn" onclick="filterChart('bulan_ini', this)">Bulan Ini</button>
+                    <button type="button" class="chart-period-btn" onclick="filterChart('tahun_ini', this)">Tahun Ini</button>
+                </div>
             </div>
-            <canvas id="salesChart" height="100"></canvas>
+
+            {{-- Summary Indicators --}}
+            <div class="row g-2 my-2 p-2 bg-light rounded text-center">
+                <div class="col-6 col-sm-3 border-end">
+                    <div class="text-muted" style="font-size:10px; font-weight:600; text-transform:uppercase;">Total Omset</div>
+                    <div class="fw-700 text-navy" id="summaryOmset" style="font-size:13px;">-</div>
+                </div>
+                <div class="col-6 col-sm-3 border-end-0 border-sm-end">
+                    <div class="text-muted" style="font-size:10px; font-weight:600; text-transform:uppercase;">Transaksi</div>
+                    <div class="fw-700 text-navy" id="summaryTransaksi" style="font-size:13px;">-</div>
+                </div>
+                <div class="col-6 col-sm-3 border-end">
+                    <div class="text-muted" style="font-size:10px; font-weight:600; text-transform:uppercase;">Terjual (Rol)</div>
+                    <div class="fw-700 text-navy" id="summaryRol" style="font-size:13px;">-</div>
+                </div>
+                <div class="col-6 col-sm-3">
+                    <div class="text-muted" style="font-size:10px; font-weight:600; text-transform:uppercase;">Terjual (Meter)</div>
+                    <div class="fw-700 text-navy" id="summaryMeter" style="font-size:13px;">-</div>
+                </div>
+            </div>
+
+            <div class="position-relative mt-2 flex-grow-1" style="min-height: 230px; max-height: 260px;">
+                <canvas id="salesChart"></canvas>
+            </div>
         </div>
     </div>
 
-    {{-- Stok Menipis --}}
+    {{-- Widget Real-Time Stok Menipis / Habis --}}
     <div class="col-lg-5">
-        <div class="dt-card h-100">
+        <div class="dt-card h-100 d-flex flex-column">
             <div class="dt-card-header">
-                <span class="dt-card-title"><i class="bi bi-exclamation-triangle me-2" style="color:var(--dt-warning)"></i>Stok Menipis / Habis</span>
-                <a href="{{ route('admin.stocks.index') }}" class="dt-btn dt-btn-outline dt-btn-xs">Lihat Semua</a>
+                <div>
+                    <span class="dt-card-title"><i class="bi bi-box me-2"></i>Stok Menipis / Habis</span>
+                </div>
+                <a href="{{ route('admin.stocks.index', ['status' => 'menipis']) }}" class="dt-btn dt-btn-outline dt-btn-xs">Lihat Semua</a>
             </div>
             @if($stokMenipis->isEmpty())
-                <div class="empty-state py-4"><i class="bi bi-check-circle text-success fs-3"></i><p class="mt-2 mb-0">Semua stok aman</p></div>
+                <div class="empty-state py-4"><i class="bi bi-check-circle text-success fs-3"></i><p class="mt-2 mb-0">Semua stok kain aman</p></div>
             @else
-            <div class="dt-table-wrap">
-                <table class="dt-table">
-                    <thead><tr><th>Kain</th><th>Stok (m)</th><th>Status</th></tr></thead>
+            <div class="dt-table-wrap flex-grow-1" style="max-height: 330px; overflow-y: auto;">
+                <table class="dt-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Kain</th>
+                            <th class="text-end">Stok Rol</th>
+                            <th class="text-end">Total Meter</th>
+                            <th class="text-center" style="white-space: nowrap;">Status</th>
+                        </tr>
+                    </thead>
                     <tbody>
                     @foreach($stokMenipis as $s)
                         <tr>
                             <td>
-                                <div class="fw-600" style="font-size:13px">{{ $s->fabric->nama_kain }}</div>
+                                <div class="fw-600 text-navy" style="font-size:12.5px">{{ $s->fabric->nama_kain }}</div>
                                 <div style="font-size:11px;color:var(--dt-muted)">{{ $s->fabric->kode_kain }}</div>
                             </td>
-                            <td>{{ number_format($s->stok_meter, 1) }}</td>
-                            <td>
-                                @if($s->stok_meter <= 0)
-                                    <span class="dt-badge dt-badge-danger">Habis</span>
+                            <td class="fw-700 text-navy text-end">{{ $s->stok_rol }} rol</td>
+                            <td class="fw-600 text-navy text-end">
+                                {{ number_format($s->total_meter, 1) }} m
+                                @if($s->stok_meter > 0)
+                                    <div style="font-size:10.5px;color:var(--dt-muted);font-weight:normal">(eceran {{ number_format($s->stok_meter, 1) }}m)</div>
+                                @endif
+                            </td>
+                            <td class="text-center" style="white-space: nowrap;">
+                                @if($s->stok_rol <= 0 && $s->stok_meter <= 0)
+                                    <span class="badge-stok-habis"><i class="bi bi-x-circle-fill me-1"></i> Habis</span>
                                 @else
-                                    <span class="dt-badge dt-badge-warning">Menipis</span>
+                                    <span class="badge-stok-menipis"><i class="bi bi-exclamation-triangle-fill me-1"></i> Stok Menipis</span>
                                 @endif
                             </td>
                         </tr>
@@ -113,17 +183,16 @@
     </div>
 </div>
 
-{{-- Kain Terlaris --}}
+{{-- Kain Terlaris (Clean Human UI) --}}
 <div class="row g-3 mb-4">
     <div class="col-12">
         <div class="dt-card">
             <div class="dt-card-header">
-                <span class="dt-card-title"><i class="bi bi-trophy-fill me-2 text-gold"></i>Kain Terlaris (Best Sellers)</span>
-                <span class="badge bg-gold-light text-navy px-3 py-1 fw-600">Top 5 Performa</span>
+                <span class="dt-card-title"><i class="bi bi-basket me-2"></i>Kain Terlaris</span>
             </div>
             @if($kainTerlaris->isEmpty())
                 <div class="empty-state py-4">
-                    <i class="bi bi-star fs-3"></i>
+                    <i class="bi bi-inbox fs-3"></i>
                     <p class="mt-2 mb-0">Belum ada data penjualan kain.</p>
                 </div>
             @else
@@ -131,8 +200,8 @@
                 <table class="dt-table">
                     <thead>
                         <tr>
-                            <th style="width: 80px;">Rank</th>
-                            <th>Kain</th>
+                            <th style="width: 60px;">No</th>
+                            <th>Kode & Nama Kain</th>
                             <th>Kategori</th>
                             <th>Volume Terjual</th>
                             <th class="text-end">Total Omset</th>
@@ -140,17 +209,8 @@
                     </thead>
                     <tbody>
                     @foreach($kainTerlaris as $index => $item)
-                        @php
-                            $rank = $index + 1;
-                            $rankBadge = match($rank) {
-                                1 => '<span class="badge bg-warning text-navy" style="font-size: 11px; font-weight: 700;"><i class="bi bi-award-fill"></i> 1st</span>',
-                                2 => '<span class="badge bg-secondary text-white" style="font-size: 11px; font-weight: 700;"><i class="bi bi-award-fill"></i> 2nd</span>',
-                                3 => '<span class="badge bg-danger text-white" style="font-size: 11px; font-weight: 700;"><i class="bi bi-award-fill"></i> 3rd</span>',
-                                default => '<span class="dt-badge dt-badge-navy">#' . $rank . '</span>'
-                            };
-                        @endphp
                         <tr>
-                            <td>{!! $rankBadge !!}</td>
+                            <td style="color:var(--dt-muted); font-size:12px;">#{{ $index + 1 }}</td>
                             <td>
                                 <div class="fw-600 text-navy" style="font-size:13px">{{ $item->fabric->nama_kain ?? 'Kain Dihapus' }}</div>
                                 <div style="font-size:11px;color:var(--dt-muted)">{{ $item->fabric->kode_kain ?? '-' }}</div>
@@ -158,15 +218,15 @@
                             <td>{{ $item->fabric->category->nama_kategori ?? '-' }}</td>
                             <td>
                                 <div class="d-flex gap-2">
-                                    @if($item->total_meter > 0)
-                                        <span class="badge bg-navy-light text-navy px-2 py-1" style="font-size: 11px;"><i class="bi bi-ruler"></i> {{ number_format($item->total_meter, 1) }} m</span>
-                                    @endif
                                     @if($item->total_rol > 0)
-                                        <span class="badge bg-gold-light text-navy px-2 py-1" style="font-size: 11px; font-weight: 600;"><i class="bi bi-box-seam"></i> {{ number_format($item->total_rol) }} rol</span>
+                                        <span style="font-size:12px; font-weight:600; color:var(--dt-navy)">{{ number_format($item->total_rol) }} rol</span>
+                                    @endif
+                                    @if($item->total_meter > 0)
+                                        <span style="font-size:12px; color:var(--dt-muted)">{{ number_format($item->total_meter, 1) }} m</span>
                                     @endif
                                 </div>
                             </td>
-                            <td class="fw-700 text-navy text-end" style="font-size:14px">Rp {{ number_format($item->total_omset, 0, ',', '.') }}</td>
+                            <td class="fw-700 text-navy text-end" style="font-size:13.5px">Rp {{ number_format($item->total_omset, 0, ',', '.') }}</td>
                         </tr>
                     @endforeach
                     </tbody>
@@ -182,7 +242,7 @@
     <div class="col-lg-7">
         <div class="dt-card h-100">
             <div class="dt-card-header">
-                <span class="dt-card-title"><i class="bi bi-receipt me-2 text-navy"></i>Transaksi Terbaru</span>
+                <span class="dt-card-title"><i class="bi bi-receipt me-2"></i>Transaksi Terbaru</span>
                 <a href="{{ route('admin.transactions.index') }}" class="dt-btn dt-btn-outline dt-btn-xs">Lihat Semua</a>
             </div>
             @if($transaksiTerbaru->isEmpty())
@@ -247,41 +307,85 @@
 
 @push('scripts')
 <script>
-const ctx = document.getElementById('salesChart');
-new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: {!! json_encode(array_column($grafikData, 'label')) !!},
-        datasets: [{
-            label: 'Pendapatan (Rp)',
-            data: {!! json_encode(array_column($grafikData, 'total')) !!},
-            backgroundColor: 'rgba(15,39,68,.75)',
-            borderRadius: 6,
-            borderSkipped: false,
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: { display: false },
-            tooltip: {
-                callbacks: {
-                    label: ctx => 'Rp ' + ctx.raw.toLocaleString('id-ID')
+let chartInstance = null;
+
+function initSalesChart(labels, data) {
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    if (chartInstance) {
+        chartInstance.destroy();
+    }
+    
+    chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Pendapatan (Rp)',
+                data: data,
+                backgroundColor: '#0f172a',
+                hoverBackgroundColor: '#2563eb',
+                borderRadius: 4,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => 'Omset: Rp ' + ctx.raw.toLocaleString('id-ID')
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: v => 'Rp ' + (v >= 1000000 ? (v/1000000).toFixed(1) + 'M' : (v/1000).toFixed(0) + 'k'),
+                        font: { size: 10 }
+                    },
+                    grid: { color: '#f1f5f9' }
+                },
+                x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+            }
+        }
+    });
+}
+
+function filterChart(period, btn) {
+    if (btn) {
+        document.querySelectorAll('.chart-period-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    fetch("{{ route('admin.dashboard.chartData') }}?period=" + period)
+        .then(res => res.json())
+        .then(data => {
+            initSalesChart(data.labels, data.totals);
+            if (data.summary) {
+                ['summaryOmset', 'summaryTransaksi', 'summaryRol', 'summaryMeter'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) delete el.dataset.animated;
+                });
+                document.getElementById('summaryOmset').innerText = data.summary.total_penjualan;
+                document.getElementById('summaryTransaksi').innerText = data.summary.total_transaksi;
+                document.getElementById('summaryRol').innerText = data.summary.total_rol;
+                document.getElementById('summaryMeter').innerText = data.summary.total_meter;
+
+                if (typeof window.initCounterAnimations === 'function') {
+                    window.initCounterAnimations();
                 }
             }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    callback: v => 'Rp ' + (v/1000).toFixed(0) + 'k',
-                    font: { size: 11 }
-                },
-                grid: { color: 'rgba(0,0,0,.05)' }
-            },
-            x: { grid: { display: false }, ticks: { font: { size: 11 } } }
-        }
-    }
+        })
+        .catch(err => console.error('Gagal mengambil data grafik:', err));
+}
+
+// Initial Load
+document.addEventListener('DOMContentLoaded', () => {
+    const activeBtn = document.querySelector('.chart-period-btn.active');
+    filterChart('minggu_ini', activeBtn);
 });
 </script>
 @endpush

@@ -11,8 +11,8 @@ Route::get('/', function() {
     if (auth()->check()) {
         return match (auth()->user()->role) {
             'admin'  => redirect()->route('admin.dashboard'),
-            'gudang' => redirect()->route('gudang.dashboard'),
-            'kasir'  => redirect()->route('kasir.dashboard'),
+            'kasir'  => redirect()->route('kasir.sales.pos'),
+            'gudang' => redirect()->route('gudang.stocks.index'),
             default  => redirect()->route('login'),
         };
     }
@@ -23,17 +23,26 @@ Route::get('/', function() {
 Route::middleware('guest')->group(function () {
     Route::get('/login',  [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+    Route::get('/login/verify-2fa',  [LoginController::class, 'show2faForm'])->name('login.verify-2fa');
+    Route::post('/login/verify-2fa', [LoginController::class, 'verify2fa'])->name('login.verify-2fa.post');
 });
 
 Route::post('/logout', [LoginController::class, 'logout'])
     ->name('logout')
     ->middleware('auth');
 
+// ─── NOTIFICATIONS (AUTH) ───────────────────────────────────────────────────
+Route::middleware('auth')->group(function () {
+    Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/mark-read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.markRead');
+});
+
 // ─── ADMIN ─────────────────────────────────────────────────────────────────
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [Admin\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/chart-data', [Admin\DashboardController::class, 'getChartData'])->name('dashboard.chartData');
 
     // Data Kain
     Route::resource('fabrics', Admin\FabricController::class);
@@ -54,10 +63,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Riwayat Stok
     Route::get('/stock-movements', [Admin\StockMovementController::class, 'index'])->name('stock-movements.index');
 
-    // Barang Masuk
-    Route::get('/incoming-goods',         [Admin\IncomingGoodsController::class, 'index'])->name('incoming-goods.index');
-    Route::get('/incoming-goods/create',  [Admin\IncomingGoodsController::class, 'create'])->name('incoming-goods.create');
-    Route::post('/incoming-goods',        [Admin\IncomingGoodsController::class, 'store'])->name('incoming-goods.store');
+    // Barang Masuk (Admin)
+    Route::get('/incoming-goods',                 [Admin\IncomingGoodsController::class, 'index'])->name('incoming-goods.index');
+    Route::get('/incoming-goods/create',          [Admin\IncomingGoodsController::class, 'create'])->name('incoming-goods.create');
+    Route::post('/incoming-goods',                 [Admin\IncomingGoodsController::class, 'store'])->name('incoming-goods.store');
     Route::get('/incoming-goods/{incomingGood}', [Admin\IncomingGoodsController::class, 'show'])->name('incoming-goods.show');
 
     // POS / Penjualan

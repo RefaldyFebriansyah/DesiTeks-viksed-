@@ -64,9 +64,9 @@
                     $receiptRoute = $role === 'admin' ? route('admin.sales.receipt', $sale) : route('kasir.sales.receipt', $sale);
                     $newPosRoute = $role === 'admin' ? route('admin.sales.pos') : route('kasir.sales.pos');
                 @endphp
-                <a href="{{ $receiptRoute }}" target="_blank" class="dt-btn dt-btn-outline py-2.5 px-4 justify-content-center text-navy" style="border-radius: 8px; font-weight: 600;">
+                <button type="button" onclick="printReceiptDirect('{{ $receiptRoute }}')" class="dt-btn dt-btn-outline py-2.5 px-4 justify-content-center text-navy" style="border-radius: 8px; font-weight: 600;">
                     <i class="bi bi-printer-fill me-2"></i> Cetak Struk Belanja
-                </a>
+                </button>
                 <a href="{{ $newPosRoute }}" class="dt-btn dt-btn-gold py-2.5 px-4 justify-content-center" style="border-radius: 8px; font-weight: 600;">
                     <i class="bi bi-plus-lg me-2"></i> Buat Transaksi Baru
                 </a>

@@ -44,7 +44,9 @@ class SaleController extends Controller
                 (float) ($request->diskon ?? 0),
                 (float) ($request->pajak ?? 0)
             );
-            return redirect()->route('admin.sales.success', $sale->id);
+            return redirect()->route('admin.sales.pos')
+                ->with('success', "Transaksi {$sale->nomor_transaksi} Berhasil!")
+                ->with('auto_print_sale_id', $sale->id);
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage())->withInput();
         }
