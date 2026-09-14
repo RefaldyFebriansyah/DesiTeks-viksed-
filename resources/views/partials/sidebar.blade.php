@@ -19,7 +19,10 @@
         }
     }
 
-    $userName = auth()->user()->name ?? 'User';
+    $rawName   = auth()->user()->name ?? 'User';
+    $cleanName = preg_replace('/\s*\([^)]*\)/', '', $rawName);
+    $userName  = !empty(trim($cleanName)) ? trim($cleanName) : $rawName;
+
     $words = explode(' ', trim($userName));
     if (count($words) >= 2) {
         $initials = strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
@@ -39,13 +42,13 @@
     {{-- Brand --}}
     <div class="dt-sidebar-brand d-flex align-items-center justify-content-between" style="padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.08);">
         <a href="#" class="d-flex align-items-center gap-2" style="text-decoration:none">
-            <img src="{{ asset('images/logo_icon_light.png') }}" alt="DesiTeks Icon" style="height:42px;width:auto;object-fit:contain;flex-shrink:0">
+            <img src="{{ asset('images/logo_kainkita_transparent.png') }}" alt="KainKita Icon" style="height:38px; width:auto; object-fit:contain; flex-shrink:0;">
             <div>
                 <span style="font-size:21px;font-weight:800;color:var(--dt-white);letter-spacing:.5px;display:block;line-height:1.1">
-                    Desi<span style="color:var(--dt-gold)">Teks</span>
+                    {!! $formattedStoreNameLight !!}
                 </span>
                 <span style="font-size:9.5px;color:rgba(255,255,255,.5);letter-spacing:.3px;display:block;margin-top:2px;white-space:nowrap">
-                    Kain Berkualitas, Gaya Tanpa Batas
+                    Sistem Penerimaan & Distribusi Kain
                 </span>
             </div>
         </a>
@@ -128,6 +131,15 @@
                 <a href="{{ route('admin.incoming-goods.index') }}" class="dt-nav-sublink {{ request()->routeIs('admin.incoming-goods*') ? 'active' : '' }}">
                     <i class="bi bi-box-arrow-in-down"></i> Riwayat Barang Masuk
                 </a>
+                <a href="{{ route('admin.delivery-orders.index') }}" class="dt-nav-sublink {{ request()->routeIs('admin.delivery-orders*') ? 'active' : '' }} d-flex align-items-center justify-content-between">
+                    <span><i class="bi bi-truck"></i> Surat Jalan Masuk</span>
+                    @php
+                        $pendingAdminSjCount = \App\Models\DeliveryOrder::where('status', 'menunggu_approval')->count();
+                    @endphp
+                    @if($pendingAdminSjCount > 0)
+                        <span class="badge rounded-pill bg-primary text-white px-2 py-0.5" style="font-size: 10px;">{{ $pendingAdminSjCount }}</span>
+                    @endif
+                </a>
                 <a href="{{ route('admin.stocks.index') }}" class="dt-nav-sublink {{ request()->routeIs('admin.stocks*') ? 'active' : '' }}">
                     <i class="bi bi-box-seam"></i> Laporan Stok Kain
                 </a>
@@ -185,11 +197,20 @@
                 <a href="{{ route('gudang.suppliers.index') }}" class="dt-nav-sublink {{ request()->routeIs('gudang.suppliers*') ? 'active' : '' }}">
                     <i class="bi bi-truck"></i> Kelola Supplier
                 </a>
+                <a href="{{ route('gudang.delivery-orders.index') }}" class="dt-nav-sublink {{ request()->routeIs('gudang.delivery-orders*') ? 'active' : '' }} d-flex align-items-center justify-content-between">
+                    <span><i class="bi bi-box-arrow-in-down-right"></i> Surat Jalan Masuk</span>
+                    @php
+                        $pendingGudangSjCount = \App\Models\DeliveryOrder::whereIn('status', ['disetujui_admin', 'dikirim'])->count();
+                    @endphp
+                    @if($pendingGudangSjCount > 0)
+                        <span class="badge rounded-pill bg-primary text-white px-2 py-0.5" style="font-size: 10px;">{{ $pendingGudangSjCount }}</span>
+                    @endif
+                </a>
                 <a href="{{ route('gudang.incoming-goods.create') }}" class="dt-nav-sublink {{ request()->routeIs('gudang.incoming-goods.create') ? 'active' : '' }}">
                     <i class="bi bi-plus-circle"></i> Input Barang Masuk
                 </a>
                 <a href="{{ route('gudang.incoming-goods.index') }}" class="dt-nav-sublink {{ request()->routeIs('gudang.incoming-goods.index') && !request()->routeIs('gudang.incoming-goods.create') ? 'active' : '' }}">
-                    <i class="bi bi-box-arrow-in-down"></i> Riwayat / Cek Barang Masuk
+                    <i class="bi bi-box-arrow-in-down"></i> Riwayat Barang Masuk
                 </a>
             </div>
         </div>
@@ -213,22 +234,22 @@
     </nav>
 
     {{-- Footer --}}
-    <div class="dt-sidebar-footer border-top" style="border-color: rgba(255, 255, 255, 0.08) !important; background: #0f172a; padding: 12px;">
-        <div class="d-flex align-items-center justify-content-between rounded-3" style="background: #1e293b; border: 1px solid rgba(255, 255, 255, 0.08); padding: 8px 10px; gap: 6px;">
-            <div class="d-flex align-items-center min-w-0 flex-grow-1" style="gap: 8px;">
-                <div class="d-flex align-items-center justify-content-center rounded-circle text-white flex-shrink-0" style="width: 34px; height: 34px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); font-size: 12.5px; font-weight: 700; letter-spacing: 0.3px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+    <div class="dt-sidebar-footer border-top" style="border-color: rgba(255, 255, 255, 0.08) !important; background: #0f172a; padding: 12px 10px; box-sizing: border-box; width: 100%;">
+        <div class="d-flex align-items-center justify-content-between rounded-3 w-100" style="background: #1e293b; border: 1px solid rgba(255, 255, 255, 0.08); padding: 8px 10px; gap: 8px; box-sizing: border-box; overflow: hidden;">
+            <div class="d-flex align-items-center" style="gap: 8px; min-width: 0; flex: 1; overflow: hidden;">
+                <div class="d-flex align-items-center justify-content-center rounded-circle text-white flex-shrink-0" style="width: 32px; height: 32px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); font-size: 12px; font-weight: 700; letter-spacing: 0.3px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
                     {{ $initials }}
                 </div>
-                <div class="min-w-0 flex-grow-1">
-                    <div class="text-truncate text-white fw-semibold" style="font-size: 12.5px; line-height: 1.2;" title="{{ $userName }}">{{ $userName }}</div>
+                <div style="min-width: 0; flex: 1; overflow: hidden;">
+                    <div class="text-truncate text-white fw-semibold" style="font-size: 12px; line-height: 1.25;" title="{{ $rawName }}">{{ $userName }}</div>
                     <div class="text-truncate" style="font-size: 10.5px; color: #94a3b8; margin-top: 2px;">{{ $roleTitle }}</div>
                 </div>
             </div>
             
             <form method="POST" action="{{ route('logout') }}" class="m-0 flex-shrink-0">
                 @csrf
-                <button type="submit" class="btn btn-link text-decoration-none border-0 d-flex align-items-center justify-content-center rounded-2 p-0" style="color: #94a3b8; transition: all 0.2s; width: 28px; height: 28px;" title="Logout / Keluar" onmouseover="this.style.color='#f87171'; this.style.background='rgba(239, 68, 68, 0.15)';" onmouseout="this.style.color='#94a3b8'; this.style.background='transparent';">
-                    <i class="bi bi-box-arrow-right" style="font-size: 15px;"></i>
+                <button type="submit" class="btn btn-link text-decoration-none border-0 d-flex align-items-center justify-content-center rounded-2 p-0" style="color: #94a3b8; transition: all 0.2s; width: 28px; height: 28px; background: rgba(255, 255, 255, 0.05);" title="Logout / Keluar" onmouseover="this.style.color='#f87171'; this.style.background='rgba(239, 68, 68, 0.2)';" onmouseout="this.style.color='#94a3b8'; this.style.background='rgba(255, 255, 255, 0.05)';">
+                    <i class="bi bi-box-arrow-right" style="font-size: 14px;"></i>
                 </button>
             </form>
         </div>

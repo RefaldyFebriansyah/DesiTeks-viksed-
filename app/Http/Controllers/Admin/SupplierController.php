@@ -66,11 +66,13 @@ class SupplierController extends Controller
 
         AuditLog::create([
             'user_id'   => Auth::id(),
-            'aktivitas' => "Mengubah supplier: {$supplier->nama_supplier}",
+            'aktivitas' => "Mengubah data supplier: {$supplier->nama_supplier}",
+            'model'     => 'Supplier',
+            'model_id'  => $supplier->id,
         ]);
 
         return redirect()->route('admin.suppliers.index')
-            ->with('success', "Data supplier berhasil diperbarui.");
+            ->with('success', "Data supplier {$supplier->nama_supplier} berhasil diperbarui.");
     }
 
     public function destroy(Supplier $supplier)

@@ -47,25 +47,23 @@
             <tbody>
             @forelse($suppliers as $sup)
                 <tr>
-                    <td style="white-space: nowrap;"><span class="dt-badge dt-badge-navy">{{ $sup->kode_supplier }}</span></td>
-                    <td class="fw-600 text-navy" style="white-space: nowrap;">{{ $sup->nama_supplier }}</td>
-                    <td style="white-space: nowrap;">
+                    <td><span class="dt-badge dt-badge-navy">{{ $sup->kode_supplier }}</span></td>
+                    <td class="fw-600 text-navy">{{ $sup->nama_supplier }}</td>
+                    <td>
                         @if($sup->email)
-                            <span class="text-muted d-inline-flex align-items-center flex-nowrap" style="font-size: 13px; white-space: nowrap;" title="Disensor untuk privasi. Hanya Admin yang dapat melihat email lengkap.">
-                                <i class="bi bi-shield-lock text-secondary me-1.5 flex-shrink-0"></i><span class="text-nowrap" style="white-space: nowrap;">{{ $sup->masked_email }}</span>
-                            </span>
+                            <span class="text-muted" style="font-size: 13px;">{{ $sup->masked_email }}</span>
                         @else
                             <span class="text-muted">-</span>
                         @endif
                     </td>
-                    <td style="white-space: nowrap;">
+                    <td>
                         @if($sup->asal_kota)
                             <span class="dt-badge dt-badge-secondary"><i class="bi bi-geo-alt me-1"></i>{{ $sup->asal_kota }}</span>
                         @else
                             -
                         @endif
                     </td>
-                    <td style="white-space: nowrap;">
+                    <td>
                         @if($sup->no_telepon)
                             <a href="https://wa.me/{{ preg_replace('/[^\d]/', '', $sup->no_telepon) }}" target="_blank" class="text-decoration-none text-success fw-500">
                                 <i class="bi bi-whatsapp me-1"></i>{{ $sup->no_telepon }}
@@ -75,8 +73,8 @@
                         @endif
                     </td>
                     <td>{{ $sup->alamat ?? '-' }}</td>
-                    <td style="white-space: nowrap;"><span class="dt-badge dt-badge-gold">{{ $sup->incoming_goods_count }} Transaksi</span></td>
-                    <td class="text-center" style="white-space: nowrap;">
+                    <td><span class="dt-badge dt-badge-gold">{{ $sup->incoming_goods_count }} Transaksi</span></td>
+                    <td class="text-center">
                         <div class="dt-action-wrap">
                             <button class="dt-action-btn" onclick="toggleMenu(this)" type="button">⋮</button>
                             <div class="dt-action-menu">

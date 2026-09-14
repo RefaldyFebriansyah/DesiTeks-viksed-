@@ -38,6 +38,16 @@ class UserSeeder extends Seeder
                 'status'    => 'aktif',
                 'branch_id' => 1,
             ],
+            [
+                'name'        => 'Budi Santoso (PT. Tekstil Nusantara)',
+                'username'    => 'supplier',
+                'email'       => 'supplier@tekstilnusantara.co.id',
+                'password'    => Hash::make('Ipang123'),
+                'role'        => 'supplier',
+                'status'      => 'aktif',
+                'branch_id'   => 1,
+                'supplier_id' => 1,
+            ],
         ];
 
         foreach ($users as $user) {

@@ -1,5 +1,15 @@
 @extends('layouts.auth')
 
+@push('styles')
+<style>
+    .dt-login-wrap {
+        background:
+            linear-gradient(135deg, rgba(15, 23, 42, 0.93) 0%, rgba(15, 23, 42, 0.88) 100%),
+            url('{{ asset('images/textile_hero_bg.jpg') }}') center center / cover no-repeat !important;
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="dt-login-wrap py-2 px-3">
     <div class="dt-login-box" style="max-width: 410px; padding: 20px 22px; margin: auto;">

@@ -39,4 +39,69 @@ class DashboardController extends Controller
             'barangMasukHariIni', 'stokMenipis', 'barangMasukTerbaru'
         ));
     }
+
+    public function getChartData(\Illuminate\Http\Request $request)
+    {
+        $period = $request->get('period', 'minggu_ini');
+        $labels = [];
+        $rolMasuk = [];
+        $fakturMasuk = [];
+
+        if ($period === 'hari_ini') {
+            for ($h = 0; $h < 24; $h += 2) {
+                $startHour = Carbon::today()->setHour($h)->setMinute(0)->setSecond(0);
+                $endHour   = Carbon::today()->setHour($h + 1)->setMinute(59)->setSecond(59);
+
+                $labels[] = sprintf('%02d:00', $h);
+                $rolMasuk[] = (int) IncomingGood::whereBetween('created_at', [$startHour, $endHour])->sum('total_rol');
+                $fakturMasuk[] = (int) IncomingGood::whereBetween('created_at', [$startHour, $endHour])->count();
+            }
+        } elseif ($period === 'bulan_ini') {
+            $daysInMonth = Carbon::now()->daysInMonth;
+            for ($d = 1; $d <= $daysInMonth; $d++) {
+                $date = Carbon::now()->setDate(Carbon::now()->year, Carbon::now()->month, $d);
+                $labels[] = $d . ' ' . $date->translatedFormat('M');
+                $rolMasuk[] = (int) IncomingGood::whereDate('tanggal', $date)->sum('total_rol');
+                $fakturMasuk[] = (int) IncomingGood::whereDate('tanggal', $date)->count();
+            }
+        } elseif ($period === 'tahun_ini') {
+            for ($m = 1; $m <= 12; $m++) {
+                $date = Carbon::now()->setDate(Carbon::now()->year, $m, 1);
+                $labels[] = $date->translatedFormat('F');
+                $rolMasuk[] = (int) IncomingGood::whereYear('tanggal', Carbon::now()->year)
+                    ->whereMonth('tanggal', $m)->sum('total_rol');
+                $fakturMasuk[] = (int) IncomingGood::whereYear('tanggal', Carbon::now()->year)
+                    ->whereMonth('tanggal', $m)->count();
+            }
+        } else {
+            // default: minggu_ini (7 hari)
+            for ($i = 6; $i >= 0; $i--) {
+                $date = Carbon::today()->subDays($i);
+                $labels[] = $date->translatedFormat('D, d M');
+                $rolMasuk[] = (int) IncomingGood::whereDate('tanggal', $date)->sum('total_rol');
+                $fakturMasuk[] = (int) IncomingGood::whereDate('tanggal', $date)->count();
+            }
+        }
+
+        // Data Grafik Batang (Stok Rol per Kategori Kain)
+        $stokPerKategori = \App\Models\Category::withCount(['fabrics as total_rol' => function($q) {
+            $q->join('stocks', 'fabrics.id', '=', 'stocks.fabric_id');
+            $q->select(\DB::raw('COALESCE(SUM(stocks.stok_rol), 0)'));
+        }])->get();
+
+        $categoryLabels = [];
+        $categoryData   = [];
+        foreach ($stokPerKategori as $cat) {
+            $categoryLabels[] = $cat->nama_kategori;
+            $categoryData[]   = (int) $cat->total_rol;
+        }
+
+        return response()->json([
+            'labels'       => $labels,
+            'rol_masuk'    => $rolMasuk,
+            'faktur_masuk' => $fakturMasuk,
+            'bar_labels'   => $categoryLabels,
+            'bar_data'     => $categoryData,
+        ]);
+    }
 }

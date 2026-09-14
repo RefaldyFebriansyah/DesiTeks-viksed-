@@ -50,34 +50,34 @@
         <table class="dt-table mb-0 align-middle">
             <thead>
                 <tr>
-                    <th style="white-space: nowrap;">Kode</th>
-                    <th style="white-space: nowrap;">Nama Kain</th>
-                    <th style="white-space: nowrap;">Kategori</th>
-                    <th style="white-space: nowrap;">Warna</th>
-                    <th class="text-end" style="white-space: nowrap;">Harga / Meter</th>
-                    <th class="text-end" style="white-space: nowrap;">Harga / Rol</th>
-                    <th class="text-end" style="white-space: nowrap;">Stok Rol</th>
-                    <th class="text-end" style="white-space: nowrap;">Stok Meter</th>
-                    <th class="text-center" style="white-space: nowrap;">Status</th>
-                    <th class="text-center" style="white-space: nowrap;">Aksi</th>
+                    <th>Kode</th>
+                    <th>Nama Kain</th>
+                    <th>Kategori</th>
+                    <th>Warna</th>
+                    <th class="text-end">Harga / Meter</th>
+                    <th class="text-end">Harga / Rol</th>
+                    <th class="text-end">Stok Rol</th>
+                    <th class="text-end">Stok Meter</th>
+                    <th class="text-center">Status</th>
+                    <th class="text-center">Aksi</th>
                 </tr>
             </thead>
             <tbody>
             @forelse($fabrics as $fabric)
                 @php $s = $fabric->stock; @endphp
                 <tr>
-                    <td style="white-space: nowrap;"><span class="dt-badge dt-badge-navy">{{ $fabric->kode_kain }}</span></td>
-                    <td style="white-space: nowrap;">
+                    <td><span class="dt-badge dt-badge-navy">{{ $fabric->kode_kain }}</span></td>
+                    <td>
                         <div class="fw-600 text-navy">{{ $fabric->nama_kain }}</div>
                         <div style="font-size:11px;color:var(--dt-muted)">{{ $fabric->jenis_kain }}</div>
                     </td>
-                    <td style="white-space: nowrap;">{{ $fabric->category->nama_kategori }}</td>
-                    <td style="white-space: nowrap;">{{ $fabric->warna }}</td>
-                    <td class="text-end fw-600 text-navy" style="white-space: nowrap;">Rp {{ number_format($fabric->harga_per_meter,0,',','.') }}</td>
-                    <td class="text-end fw-600 text-muted" style="white-space: nowrap;">Rp {{ number_format($fabric->harga_per_rol,0,',','.') }}</td>
-                    <td class="text-end fw-700 text-navy" style="white-space: nowrap;">{{ $s?->stok_rol ?? 0 }} rol</td>
-                    <td class="text-end fw-600 text-navy" style="white-space: nowrap;">{{ number_format($fabric->total_stok_meter, 1) }} m</td>
-                    <td class="text-center" style="white-space: nowrap;">
+                    <td>{{ $fabric->category->nama_kategori }}</td>
+                    <td>{{ $fabric->warna }}</td>
+                    <td class="text-end fw-600 text-navy">Rp {{ number_format($fabric->harga_per_meter,0,',','.') }}</td>
+                    <td class="text-end fw-600 text-muted">Rp {{ number_format($fabric->harga_per_rol,0,',','.') }}</td>
+                    <td class="text-end fw-700 text-navy">{{ $s?->stok_rol ?? 0 }} rol</td>
+                    <td class="text-end fw-600 text-navy">{{ number_format($fabric->total_stok_meter, 1) }} m</td>
+                    <td class="text-center">
                         @if($fabric->status_stok === 'habis')
                             <span class="badge-stok-habis"><i class="bi bi-x-circle-fill me-1"></i> Habis</span>
                         @elseif($fabric->status_stok === 'menipis')
@@ -86,7 +86,7 @@
                             <span class="badge-stok-aman"><i class="bi bi-check-circle-fill me-1"></i> Stok Aman</span>
                         @endif
                     </td>
-                    <td class="text-center" style="white-space: nowrap;">
+                    <td class="text-center">
                         <div class="dt-action-wrap">
                             <button class="dt-action-btn" onclick="toggleMenu(this)" type="button">⋮</button>
                             <div class="dt-action-menu">

@@ -34,6 +34,10 @@
   --dt-shadow-md:   0 4px 12px rgba(15, 23, 42, 0.08);
 }
 
+.min-w-0 {
+  min-width: 0 !important;
+}
+
 * { box-sizing: border-box; }
 
 body {
@@ -290,12 +294,17 @@ body {
 .dt-stat.success .dt-stat-icon { background: #dcfce7; color: #15803d; }
 .dt-stat.warning .dt-stat-icon { background: #fee2e2; color: #b91c1c; }
 
-.dt-table-wrap { overflow-x: auto; min-height: 120px; }
+.dt-table-wrap {
+  overflow-x: hidden;
+  width: 100%;
+  min-height: 120px;
+}
 
 .dt-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
+  table-layout: auto;
 }
 .dt-table th {
   background: #f8fafc;
@@ -306,14 +315,15 @@ body {
   letter-spacing: .4px;
   padding: 9px 12px;
   text-align: left;
-  white-space: nowrap !important;
+  white-space: normal;
   border-bottom: 1px solid var(--dt-border);
 }
 .dt-table td {
   padding: 10px 12px;
   border-bottom: 1px solid var(--dt-border);
   vertical-align: middle;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
 }
 .dt-table td.allow-wrap,
 .dt-table th.allow-wrap {
@@ -325,7 +335,8 @@ body {
 .dt-table .dt-badge,
 .dt-table .badge-stok-aman,
 .dt-table .badge-stok-menipis,
-.dt-table .badge-stok-habis {
+.dt-table .badge-stok-habis,
+.dt-table .dt-action-wrap {
   white-space: nowrap !important;
 }
 .dt-table tbody tr:hover { background: rgba(15,39,68,.025); }

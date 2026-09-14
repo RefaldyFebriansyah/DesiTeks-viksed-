@@ -24,12 +24,20 @@ class LoginController extends Controller
         return view('auth.login');
     }
 
+    public function showStaffLoginForm()
+    {
+        if (Auth::check()) {
+            return $this->redirectByRole(Auth::user()->role);
+        }
+        return view('auth.login-staff');
+    }
+
     public function login(Request $request)
     {
         $request->validate([
             'login'    => 'required|string',
             'password' => 'required|string',
-            'role'     => 'nullable|string|in:admin,kasir,gudang',
+            'role'     => 'nullable|string|in:admin,kasir,gudang,supplier',
         ], [
             'login.required'    => 'Email atau Username wajib diisi.',
             'password.required' => 'Password wajib diisi.',
@@ -202,10 +210,11 @@ class LoginController extends Controller
     private function redirectByRole(string $role): \Illuminate\Http\RedirectResponse
     {
         return match ($role) {
-            'admin'  => redirect()->route('admin.dashboard'),
-            'kasir'  => redirect()->route('kasir.sales.pos'),
-            'gudang' => redirect()->route('gudang.stocks.index'),
-            default  => redirect()->route('login'),
+            'admin'    => redirect()->route('admin.dashboard'),
+            'kasir'    => redirect()->route('kasir.sales.pos'),
+            'gudang'   => redirect()->route('gudang.stocks.index'),
+            'supplier' => redirect()->route('supplier.dashboard'),
+            default    => redirect()->route('login'),
         };
     }
 }

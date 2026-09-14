@@ -47,8 +47,7 @@
                                     <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $supplier->email) }}" placeholder="supplier@pabrik.com" style="font-size: 13.5px;">
                                     @error('email') <div class="dt-error-msg mt-1">{{ $message }}</div> @enderror
                                 @else
-                                    <input type="text" class="form-control bg-light text-muted" value="{{ $supplier->masked_email }}" disabled readonly style="font-size: 13.5px;">
-                                    <small class="text-muted" style="font-size: 11px;"><i class="bi bi-shield-lock me-1"></i>Email disensor untuk privasi. Hanya Admin yang dapat melihat dan mengubah email.</small>
+                                    <small class="text-muted" style="font-size: 11px;">Email disensor untuk privasi.</small>
                                 @endif
                             </div>
                         </div>

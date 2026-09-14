@@ -60,30 +60,30 @@
         <table class="dt-table mb-0 align-middle">
             <thead>
                 <tr>
-                    <th style="white-space: nowrap;">Kode</th>
-                    <th style="white-space: nowrap;">Nama Kain</th>
-                    <th style="white-space: nowrap;">Kategori</th>
-                    <th class="text-end" style="white-space: nowrap;">Stok Rol</th>
-                    <th class="text-end" style="white-space: nowrap;">Total Meter</th>
-                    <th class="text-center" style="white-space: nowrap;">Status Stok</th>
-                    <th style="white-space: nowrap;">Terakhir Update</th>
-                    <th class="text-center" style="width: 70px; white-space: nowrap;">Aksi</th>
+                    <th>Kode</th>
+                    <th>Nama Kain</th>
+                    <th>Kategori</th>
+                    <th class="text-end">Stok Rol</th>
+                    <th class="text-end">Total Meter</th>
+                    <th class="text-center">Status Stok</th>
+                    <th>Terakhir Update</th>
+                    <th class="text-center" style="width: 70px;">Aksi</th>
                 </tr>
             </thead>
             <tbody id="stockTableBody">
             @forelse($stocks as $stock)
                 <tr>
-                    <td style="white-space: nowrap;"><span class="dt-badge dt-badge-navy">{{ $stock->fabric->kode_kain }}</span></td>
-                    <td style="white-space: nowrap;" class="fw-600 text-navy">{{ $stock->fabric->nama_kain }}</td>
-                    <td style="white-space: nowrap;" class="text-muted">{{ $stock->fabric->category->nama_kategori ?? '-' }}</td>
-                    <td class="fw-700 text-end text-navy" style="white-space: nowrap;">{{ $stock->stok_rol }} rol</td>
-                    <td class="fw-600 text-end text-navy" style="white-space: nowrap;">
+                    <td><span class="dt-badge dt-badge-navy">{{ $stock->fabric->kode_kain }}</span></td>
+                    <td class="fw-600 text-navy">{{ $stock->fabric->nama_kain }}</td>
+                    <td class="text-muted">{{ $stock->fabric->category->nama_kategori ?? '-' }}</td>
+                    <td class="fw-700 text-end text-navy">{{ $stock->stok_rol }} rol</td>
+                    <td class="fw-600 text-end text-navy">
                         {{ number_format($stock->total_meter, 1) }} m
                         @if($stock->stok_meter > 0)
-                            <div style="font-size: 11px; color: var(--dt-muted); font-weight: normal; white-space: nowrap;">(eceran {{ number_format($stock->stok_meter, 1) }}m)</div>
+                            <div style="font-size: 11px; color: var(--dt-muted); font-weight: normal;">(eceran {{ number_format($stock->stok_meter, 1) }}m)</div>
                         @endif
                     </td>
-                    <td class="text-center" style="white-space: nowrap;">
+                    <td class="text-center">
                         @if($stock->status === 'habis')
                             <span class="badge-stok-habis"><i class="bi bi-x-circle-fill me-1"></i> Habis</span>
                         @elseif($stock->status === 'menipis')
@@ -92,7 +92,7 @@
                             <span class="badge-stok-aman"><i class="bi bi-check-circle-fill me-1"></i> Stok Aman</span>
                         @endif
                     </td>
-                    <td style="white-space: nowrap;"><small class="text-muted">{{ $stock->updated_at ? $stock->updated_at->diffForHumans() : '-' }}</small></td>
+                    <td><small class="text-muted">{{ $stock->updated_at ? $stock->updated_at->diffForHumans() : '-' }}</small></td>
                     <td class="text-center" style="white-space: nowrap;">
                         <div class="dropdown">
                             <button class="btn btn-light btn-sm border-0 p-0 rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 32px; height: 32px; color: var(--dt-navy);" title="Menu Aksi">

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Gudang;
 use App\Http\Controllers\Kasir;
@@ -10,21 +11,25 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function() {
     if (auth()->check()) {
         return match (auth()->user()->role) {
-            'admin'  => redirect()->route('admin.dashboard'),
-            'kasir'  => redirect()->route('kasir.sales.pos'),
-            'gudang' => redirect()->route('gudang.stocks.index'),
-            default  => redirect()->route('login'),
+            'admin'    => redirect()->route('admin.dashboard'),
+            'kasir'    => redirect()->route('kasir.sales.pos'),
+            'gudang'   => redirect()->route('gudang.stocks.index'),
+            default    => app(App\Http\Controllers\Supplier\DashboardController::class)->landing(),
         };
     }
-    return redirect()->route('login');
-});
+    return app(App\Http\Controllers\Supplier\DashboardController::class)->landing();
+})->name('home');
 
 // ─── AUTH ──────────────────────────────────────────────────────────────────
 Route::middleware('guest')->group(function () {
-    Route::get('/login',  [LoginController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+    Route::get('/login',             [LoginController::class, 'showLoginForm'])->name('login');
+    Route::get('/login/staff',       [LoginController::class, 'showStaffLoginForm'])->name('login.staff');
+    Route::post('/login',            [LoginController::class, 'login'])->name('login.post');
     Route::get('/login/verify-2fa',  [LoginController::class, 'show2faForm'])->name('login.verify-2fa');
     Route::post('/login/verify-2fa', [LoginController::class, 'verify2fa'])->name('login.verify-2fa.post');
+
+    Route::get('/register',          [RegisterController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register',         [RegisterController::class, 'register'])->name('register.post');
 });
 
 Route::post('/logout', [LoginController::class, 'logout'])
@@ -69,6 +74,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('/incoming-goods',                 [Admin\IncomingGoodsController::class, 'store'])->name('incoming-goods.store');
     Route::get('/incoming-goods/{incomingGood}', [Admin\IncomingGoodsController::class, 'show'])->name('incoming-goods.show');
 
+    // Surat Jalan Online (Admin)
+    Route::get('/delivery-orders',                               [Admin\DeliveryOrderController::class, 'index'])->name('delivery-orders.index');
+    Route::get('/delivery-orders/{deliveryOrder}',               [Admin\DeliveryOrderController::class, 'show'])->name('delivery-orders.show');
+    Route::post('/delivery-orders/{deliveryOrder}/approve-admin', [Admin\DeliveryOrderController::class, 'approveByAdmin'])->name('delivery-orders.approve-admin');
+    Route::post('/delivery-orders/{deliveryOrder}/accept',        [Admin\DeliveryOrderController::class, 'accept'])->name('delivery-orders.accept');
+    Route::post('/delivery-orders/{deliveryOrder}/reject',        [Admin\DeliveryOrderController::class, 'reject'])->name('delivery-orders.reject');
+
     // POS / Penjualan
     Route::get('/sales/pos',               [Admin\SaleController::class, 'pos'])->name('sales.pos');
     Route::post('/sales',                  [Admin\SaleController::class, 'store'])->name('sales.store');
@@ -99,6 +111,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 Route::prefix('gudang')->name('gudang.')->middleware(['auth', 'gudang'])->group(function () {
 
     Route::get('/dashboard', [Gudang\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/chart-data', [Gudang\DashboardController::class, 'getChartData'])->name('dashboard.chartData');
 
     // Data Kain & Stok (read-only untuk gudang)
     Route::get('/fabrics',        [Gudang\StockController::class, 'index'])->name('fabrics.index');
@@ -112,6 +125,13 @@ Route::prefix('gudang')->name('gudang.')->middleware(['auth', 'gudang'])->group(
     Route::get('/incoming-goods/create',  [Gudang\IncomingGoodsController::class, 'create'])->name('incoming-goods.create');
     Route::post('/incoming-goods',        [Gudang\IncomingGoodsController::class, 'store'])->name('incoming-goods.store');
     Route::get('/incoming-goods/{incomingGood}', [Gudang\IncomingGoodsController::class, 'show'])->name('incoming-goods.show');
+
+    // Surat Jalan Online Masuk / Stok Sedang Dikirim
+    Route::get('/delivery-orders',                               [Gudang\DeliveryOrderController::class, 'index'])->name('delivery-orders.index');
+    Route::get('/delivery-orders/{deliveryOrder}',               [Gudang\DeliveryOrderController::class, 'show'])->name('delivery-orders.show');
+    Route::post('/delivery-orders/{deliveryOrder}/approve-admin', [Gudang\DeliveryOrderController::class, 'approveByAdmin'])->name('delivery-orders.approve-admin');
+    Route::post('/delivery-orders/{deliveryOrder}/accept',        [Gudang\DeliveryOrderController::class, 'accept'])->name('delivery-orders.accept');
+    Route::post('/delivery-orders/{deliveryOrder}/reject',        [Gudang\DeliveryOrderController::class, 'reject'])->name('delivery-orders.reject');
 });
 
 // ─── KASIR ─────────────────────────────────────────────────────────────────
@@ -134,4 +154,28 @@ Route::prefix('kasir')->name('kasir.')->middleware(['auth', 'kasir'])->group(fun
 
     // Pendapatan hari ini
     Route::get('/income', [Kasir\IncomeController::class, 'index'])->name('income.index');
+});
+
+// ─── SUPPLIER ──────────────────────────────────────────────────────────────
+Route::prefix('supplier')->name('supplier.')->group(function () {
+    // Halaman Depan / Landing Page Web Modern Supplier (Akses Publik / Tanpa Login Dulu)
+    Route::get('/', [App\Http\Controllers\Supplier\DashboardController::class, 'landing'])->name('landing');
+
+    // Fitur yang mewajibkan login supplier (saat mau isi atau akses surat jalan & profil)
+    Route::middleware(['auth', 'supplier'])->group(function () {
+        Route::get('/dashboard',                            [App\Http\Controllers\Supplier\DashboardController::class, 'index'])->name('dashboard');
+
+        // Surat Jalan Online
+        Route::get('/delivery-orders',                      [App\Http\Controllers\Supplier\DeliveryOrderController::class, 'index'])->name('delivery-orders.index');
+        Route::get('/delivery-orders/create',               [App\Http\Controllers\Supplier\DeliveryOrderController::class, 'create'])->name('delivery-orders.create');
+        Route::post('/delivery-orders',                     [App\Http\Controllers\Supplier\DeliveryOrderController::class, 'store'])->name('delivery-orders.store');
+        Route::get('/delivery-orders/{deliveryOrder}',      [App\Http\Controllers\Supplier\DeliveryOrderController::class, 'show'])->name('delivery-orders.show');
+        Route::post('/delivery-orders/{deliveryOrder}/ship',[App\Http\Controllers\Supplier\DeliveryOrderController::class, 'ship'])->name('delivery-orders.ship');
+        Route::get('/delivery-orders/{deliveryOrder}/print',[App\Http\Controllers\Supplier\DeliveryOrderController::class, 'print'])->name('delivery-orders.print');
+
+        // Profil Supplier
+        Route::get('/profile',                              [App\Http\Controllers\Supplier\ProfileController::class, 'index'])->name('profile.index');
+        Route::post('/profile',                             [App\Http\Controllers\Supplier\ProfileController::class, 'update'])->name('profile.update');
+        Route::post('/profile/password',                    [App\Http\Controllers\Supplier\ProfileController::class, 'updatePassword'])->name('profile.updatePassword');
+    });
 });

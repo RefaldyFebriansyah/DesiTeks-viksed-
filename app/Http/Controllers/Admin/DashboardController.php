@@ -82,12 +82,12 @@ class DashboardController extends Controller
         $period = $request->get('period', 'minggu_ini');
         $labels = [];
         $totals = [];
+        $totalsIncoming = [];
         
         $startDate = Carbon::today();
         $endDate   = Carbon::now();
 
         if ($period === 'hari_ini') {
-            // Breakdown per 2 jam (00:00 - 23:59 hari ini)
             $startDate = Carbon::today()->startOfDay();
             $endDate   = Carbon::today()->endOfDay();
 
@@ -97,12 +97,12 @@ class DashboardController extends Controller
 
                 $labels[] = sprintf('%02d:00', $h);
                 $totals[] = (float) Sale::whereBetween('created_at', [$startHour, $endHour])
-                    ->where('status', 'berhasil')
-                    ->sum('total');
+                    ->where('status', 'berhasil')->sum('total');
+                $totalsIncoming[] = (float) IncomingGood::whereBetween('created_at', [$startHour, $endHour])
+                    ->sum('total_pembelian');
             }
 
         } elseif ($period === 'bulan_ini') {
-            // Breakdown per hari dalam bulan ini
             $startDate = Carbon::now()->startOfMonth();
             $endDate   = Carbon::now()->endOfMonth();
             $daysInMonth = Carbon::now()->daysInMonth;
@@ -111,12 +111,12 @@ class DashboardController extends Controller
                 $date = Carbon::now()->setDate(Carbon::now()->year, Carbon::now()->month, $d);
                 $labels[] = $d . ' ' . $date->translatedFormat('M');
                 $totals[] = (float) Sale::whereDate('created_at', $date)
-                    ->where('status', 'berhasil')
-                    ->sum('total');
+                    ->where('status', 'berhasil')->sum('total');
+                $totalsIncoming[] = (float) IncomingGood::whereDate('tanggal', $date)
+                    ->sum('total_pembelian');
             }
 
         } elseif ($period === 'tahun_ini') {
-            // Breakdown per bulan dalam tahun ini (12 Bulan)
             $startDate = Carbon::now()->startOfYear();
             $endDate   = Carbon::now()->endOfYear();
 
@@ -124,9 +124,9 @@ class DashboardController extends Controller
                 $date = Carbon::now()->setDate(Carbon::now()->year, $m, 1);
                 $labels[] = $date->translatedFormat('F');
                 $totals[] = (float) Sale::whereYear('created_at', Carbon::now()->year)
-                    ->whereMonth('created_at', $m)
-                    ->where('status', 'berhasil')
-                    ->sum('total');
+                    ->whereMonth('created_at', $m)->where('status', 'berhasil')->sum('total');
+                $totalsIncoming[] = (float) IncomingGood::whereYear('tanggal', Carbon::now()->year)
+                    ->whereMonth('tanggal', $m)->sum('total_pembelian');
             }
 
         } else {
@@ -138,8 +138,9 @@ class DashboardController extends Controller
                 $date = Carbon::today()->subDays($i);
                 $labels[] = $date->translatedFormat('D, d M');
                 $totals[] = (float) Sale::whereDate('created_at', $date)
-                    ->where('status', 'berhasil')
-                    ->sum('total');
+                    ->where('status', 'berhasil')->sum('total');
+                $totalsIncoming[] = (float) IncomingGood::whereDate('tanggal', $date)
+                    ->sum('total_pembelian');
             }
         }
 
@@ -152,16 +153,34 @@ class DashboardController extends Controller
 
         $saleIds = $salesQuery->pluck('id');
         $totalMeter = SaleDetail::whereIn('sale_id', $saleIds)
-            ->where('satuan', 'meter')
-            ->sum('jumlah');
+            ->where('satuan', 'meter')->sum('jumlah');
             
         $totalRol = SaleDetail::whereIn('sale_id', $saleIds)
-            ->where('satuan', 'rol')
-            ->sum('jumlah');
+            ->where('satuan', 'rol')->sum('jumlah');
+
+        // Data Grafik Batang (Top 5 Kain Terlaris Omset)
+        $topKain = SaleDetail::with('fabric')
+            ->join('sales', 'sale_details.sale_id', '=', 'sales.id')
+            ->where('sales.status', 'berhasil')
+            ->selectRaw('fabric_id, SUM(subtotal) as total_omset')
+            ->groupBy('fabric_id')
+            ->orderByDesc('total_omset')
+            ->limit(5)
+            ->get();
+
+        $barLabels = [];
+        $barData   = [];
+        foreach ($topKain as $k) {
+            $barLabels[] = $k->fabric?->nama_kain ?? 'Kain';
+            $barData[]   = (float) $k->total_omset;
+        }
 
         return response()->json([
-            'labels'  => $labels,
-            'totals'  => $totals,
+            'labels'          => $labels,
+            'totals'          => $totals,
+            'totals_incoming' => $totalsIncoming,
+            'bar_labels'      => $barLabels,
+            'bar_data'        => $barData,
             'summary' => [
                 'total_penjualan' => 'Rp ' . number_format($totalPenjualan, 0, ',', '.'),
                 'total_transaksi' => number_format($totalTransaksi) . ' transaksi',

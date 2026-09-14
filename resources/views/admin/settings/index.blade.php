@@ -28,12 +28,23 @@
                 <form method="POST" action="{{ route('admin.settings.update') }}">
                     @csrf
                     
-                    <div class="dt-form-group mb-3">
-                        <label class="dt-label fw-600 mb-1.5" for="nama_toko">Nama Toko <span class="text-danger">*</span></label>
-                        <input type="text" id="nama_toko" name="nama_toko" value="{{ old('nama_toko', $settings['nama_toko']) }}" class="form-control form-control-lg @error('nama_toko') is-invalid @enderror" required style="font-size: 14px;">
-                        @error('nama_toko')
-                            <div class="dt-error-msg mt-1">{{ $message }}</div>
-                        @enderror
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="dt-label fw-600 mb-1.5" for="nama_depan_toko">Nama Depan Toko <span class="text-danger">*</span></label>
+                            <input type="text" id="nama_depan_toko" name="nama_depan_toko" value="{{ old('nama_depan_toko', $settings['nama_depan_toko']) }}" class="form-control form-control-lg @error('nama_depan_toko') is-invalid @enderror" placeholder="e.g. Budi, Desi, Ahmad" required style="font-size: 14px;">
+                            <div class="form-text text-muted" style="font-size: 11px;">Nama utama / awalan brand Anda.</div>
+                            @error('nama_depan_toko')
+                                <div class="dt-error-msg mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-6">
+                            <label class="dt-label fw-600 mb-1.5" for="nama_belakang_toko">Nama Belakang Toko</label>
+                            <input type="text" id="nama_belakang_toko" name="nama_belakang_toko" value="{{ old('nama_belakang_toko', $settings['nama_belakang_toko']) }}" class="form-control form-control-lg @error('nama_belakang_toko') is-invalid @enderror" placeholder="e.g. Kain, Teks, Store" style="font-size: 14px;">
+                            <div class="form-text text-muted" style="font-size: 11px;">Otomatis tanpa spasi dan diawali huruf besar.</div>
+                            @error('nama_belakang_toko')
+                                <div class="dt-error-msg mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
                     
                     <div class="dt-form-group mb-3">
@@ -55,10 +66,19 @@
                         @enderror
                     </div>
 
-                    <div class="dt-form-group mb-4">
+                    <div class="dt-form-group mb-3">
                         <label class="dt-label fw-600 mb-1.5" for="catatan_struk">Catatan Struk Belanja</label>
                         <textarea id="catatan_struk" name="catatan_struk" class="form-control @error('catatan_struk') is-invalid @enderror" placeholder="Contoh: Terima kasih atas kunjungan Anda..." rows="3" style="font-size: 13.5px;">{{ old('catatan_struk', $settings['catatan_struk']) }}</textarea>
                         @error('catatan_struk')
+                            <div class="dt-error-msg mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="dt-form-group mb-4">
+                        <label class="dt-label fw-600 mb-1.5" for="pengumuman_supplier">Pengumuman / Catatan untuk Supplier</label>
+                        <textarea id="pengumuman_supplier" name="pengumuman_supplier" class="form-control @error('pengumuman_supplier') is-invalid @enderror" placeholder="Contoh: Harap periksa kelengkapan kain dan surat jalan sebelum pengiriman ke gudang..." rows="3" style="font-size: 13.5px;">{{ old('pengumuman_supplier', $settings['pengumuman_supplier']) }}</textarea>
+                        <div class="form-text text-muted" style="font-size: 11px;">Catatan ini akan tampil pada halaman beranda supplier.</div>
+                        @error('pengumuman_supplier')
                             <div class="dt-error-msg mt-1">{{ $message }}</div>
                         @enderror
                     </div>

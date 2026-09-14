@@ -54,32 +54,14 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
+        // Admin hanya dapat melihat detail dalam mode Read-Only
         return view('admin.users.edit', compact('user'));
     }
 
     public function update(UserRequest $request, User $user)
     {
-        $data = [
-            'name'   => $request->name,
-            'username'=> $request->username,
-            'role'   => $request->role,
-            'status' => $request->status,
-        ];
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
-        }
-
-        $user->update($data);
-
-        AuditLog::create([
-            'user_id'   => Auth::id(),
-            'aktivitas' => "Mengubah data pengguna: {$user->name}",
-            'model'     => 'User',
-            'model_id'  => $user->id,
-        ]);
-
         return redirect()->route('admin.users.index')
-            ->with('success', "Data pengguna {$user->name} berhasil diperbarui.");
+            ->with('error', 'Akses ditolak: Admin hanya memiliki hak akses baca (Read-Only). Data pengguna tidak dapat diubah oleh Admin demi privasi.');
     }
 
     public function destroy(User $user)

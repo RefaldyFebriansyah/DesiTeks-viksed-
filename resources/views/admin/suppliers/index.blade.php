@@ -47,44 +47,39 @@
             <tbody>
             @forelse($suppliers as $sup)
                 <tr>
-                    <td style="white-space: nowrap;"><span class="dt-badge dt-badge-navy">{{ $sup->kode_supplier }}</span></td>
-                    <td class="fw-600 text-navy" style="white-space: nowrap;">{{ $sup->nama_supplier }}</td>
-                    <td style="white-space: nowrap;">
+                    <td><span class="dt-badge dt-badge-navy">{{ $sup->kode_supplier }}</span></td>
+                    <td class="fw-600 text-navy">{{ $sup->nama_supplier }}</td>
+                    <td>
                         @if($sup->email)
-                            <div class="d-flex align-items-center gap-2 email-wrap flex-nowrap" style="white-space: nowrap;">
-                                <span class="email-val text-navy fw-500 text-nowrap" style="font-size: 13px; white-space: nowrap;" data-real="{{ $sup->email }}" data-masked="{{ $sup->masked_email }}">{{ $sup->email }}</span>
-                                <button type="button" class="btn btn-link p-0 text-muted border-0 flex-shrink-0" onclick="toggleEmail(this)" title="Sensor / Buka Sensor Email" style="line-height:1;">
-                                    <i class="bi bi-eye-slash text-secondary" style="font-size: 13px;"></i>
-                                </button>
-                            </div>
+                            <span class="text-navy fw-500" style="font-size: 13px;">{{ $sup->email }}</span>
                         @else
                             <span class="text-muted">-</span>
                         @endif
                     </td>
-                    <td style="white-space: nowrap;">
+                    <td>
                         @if($sup->asal_kota)
                             <span class="dt-badge dt-badge-secondary"><i class="bi bi-geo-alt me-1"></i>{{ $sup->asal_kota }}</span>
                         @else
                             -
                         @endif
                     </td>
-                    <td style="white-space: nowrap;">
+                    <td>
                         @if($sup->no_telepon)
-                            <a href="https://wa.me/{{ preg_replace('/[^\d]/', '', $sup->no_telepon) }}" target="_blank" class="text-decoration-none text-success fw-500" style="white-space: nowrap;">
-                                <i class="bi bi-whatsapp me-1"></i>{{ $sup->no_telepon }}
-                            </a>
+                            <span class="text-dark fw-500">
+                                <i class="bi bi-whatsapp me-1 text-success"></i>{{ $sup->formatted_phone }}
+                            </span>
                         @else
                             -
                         @endif
                     </td>
-                    <td>{{ $sup->alamat ?? '-' }}</td>
-                    <td style="white-space: nowrap;"><span class="dt-badge dt-badge-gold">{{ $sup->incoming_goods_count }} Transaksi</span></td>
-                    <td class="text-center" style="white-space: nowrap;">
+                    <td><span class="text-dark small">{{ $sup->alamat ?? '-' }}</span></td>
+                    <td><span class="dt-badge dt-badge-gold">{{ $sup->incoming_goods_count }} Transaksi</span></td>
+                    <td class="text-center">
                         <div class="dt-action-wrap">
                             <button class="dt-action-btn" onclick="toggleMenu(this)" type="button">⋮</button>
                             <div class="dt-action-menu">
                                 <a href="{{ route('admin.suppliers.edit', $sup) }}">
-                                    <i class="bi bi-pencil me-1.5"></i> Edit
+                                    <i class="bi bi-pencil me-1.5 text-primary"></i> Edit Supplier
                                 </a>
                                 <div class="dt-menu-divider"></div>
                                 <form method="POST" action="{{ route('admin.suppliers.destroy', $sup) }}" onsubmit="return confirm('Hapus supplier {{ $sup->nama_supplier }}?')">

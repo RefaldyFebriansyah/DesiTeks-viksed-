@@ -7,13 +7,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'DesiTeks') — DesiTeks</title>
+    <title>@yield('title', $storeName) — {{ $storeName }}</title>
     
     <!-- PWA Settings -->
     <meta name="theme-color" content="#0f2744">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="DesiTeks">
+    <meta name="apple-mobile-web-app-title" content="{{ $storeName }}">
     <link rel="apple-touch-icon" href="{{ asset('images/logo_icon_light.png') }}">
     <link rel="manifest" href="{{ asset('manifest.json') }}">
 
@@ -151,8 +151,8 @@
                 {{-- KASIR TOPBAR LEFT: BRAND + TOP NAV MENU --}}
                 <div class="d-flex align-items-center gap-2 gap-lg-3 min-w-0">
                     <a href="{{ route('kasir.sales.pos') }}" class="d-flex align-items-center gap-2 text-decoration-none flex-shrink-0 me-1 me-lg-2">
-                        <img src="{{ asset('images/logo_icon_light.png') }}" alt="DesiTeks Logo" style="height:28px; width:auto; object-fit:contain;">
-                        <span class="fw-800 text-white" style="font-size:17px; letter-spacing:-0.3px;">Desi<span class="text-gold">Teks</span></span>
+                        <img src="{{ asset('images/logo_kainkita_transparent.png') }}" alt="KainKita Logo" style="height:32px; width:auto; object-fit:contain;">
+                        <span class="fw-800 text-white" style="font-size:17px; letter-spacing:-0.3px;">{!! $formattedStoreNameLight !!}</span>
                         <span class="badge rounded-pill px-2 py-0.5 fw-bold ms-1" style="background: rgba(37, 99, 235, 0.25); color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.3); font-size: 10px; letter-spacing: 0.5px;">KASIR</span>
                     </a>
 
@@ -690,19 +690,19 @@ function renderNotifItems(items) {
 
         if (n.type === 'stok_habis') {
             iconHtml = `<div class="d-flex align-items-center justify-content-center rounded-3 flex-shrink-0" style="width: 38px; height: 38px; background: #fee2e2; color: #dc2626;"><i class="bi bi-x-circle-fill" style="font-size: 16px;"></i></div>`;
-            badgeHtml = `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger-subtle font-monospace ms-2" style="font-size: 10px; font-weight:600;">Stok Habis</span>`;
+            badgeHtml = `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger-subtle font-monospace ms-1.5 flex-shrink-0" style="font-size: 10px; font-weight:600;">Stok Habis</span>`;
         } else if (n.type === 'stok_menipis') {
             iconHtml = `<div class="d-flex align-items-center justify-content-center rounded-3 flex-shrink-0" style="width: 38px; height: 38px; background: #fffbeb; color: #b45309;"><i class="bi bi-exclamation-triangle-fill" style="font-size: 16px;"></i></div>`;
-            badgeHtml = `<span class="badge bg-warning bg-opacity-10 text-warning border border-warning-subtle font-monospace ms-2" style="font-size: 10px; font-weight:600;">Stok Menipis</span>`;
+            badgeHtml = `<span class="badge bg-warning bg-opacity-10 text-warning border border-warning-subtle font-monospace ms-1.5 flex-shrink-0" style="font-size: 10px; font-weight:600;">Stok Menipis</span>`;
         } else if (n.type === 'barang_masuk') {
             iconHtml = `<div class="d-flex align-items-center justify-content-center rounded-3 flex-shrink-0" style="width: 38px; height: 38px; background: #eff6ff; color: #2563eb;"><i class="bi bi-box-arrow-in-down" style="font-size: 16px;"></i></div>`;
-            badgeHtml = `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle font-monospace ms-2" style="font-size: 10px; font-weight:600;">Barang Masuk</span>`;
+            badgeHtml = `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle font-monospace ms-1.5 flex-shrink-0" style="font-size: 10px; font-weight:600;">Barang Masuk</span>`;
         } else if (n.type === 'barang_keluar' || n.type === 'transaksi_baru') {
             iconHtml = `<div class="d-flex align-items-center justify-content-center rounded-3 flex-shrink-0" style="width: 38px; height: 38px; background: #dcfce7; color: #16a34a;"><i class="bi bi-box-arrow-up" style="font-size: 16px;"></i></div>`;
-            badgeHtml = `<span class="badge bg-success bg-opacity-10 text-success border border-success-subtle font-monospace ms-2" style="font-size: 10px; font-weight:600;">Barang Keluar</span>`;
+            badgeHtml = `<span class="badge bg-success bg-opacity-10 text-success border border-success-subtle font-monospace ms-1.5 flex-shrink-0" style="font-size: 10px; font-weight:600;">Barang Keluar</span>`;
         } else {
             iconHtml = `<div class="d-flex align-items-center justify-content-center rounded-3 flex-shrink-0" style="width: 38px; height: 38px; background: #f1f5f9; color: #475569;"><i class="bi bi-info-circle-fill" style="font-size: 16px;"></i></div>`;
-            badgeHtml = `<span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary-subtle font-monospace ms-2" style="font-size: 10px; font-weight:600;">Info</span>`;
+            badgeHtml = `<span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary-subtle font-monospace ms-1.5 flex-shrink-0" style="font-size: 10px; font-weight:600;">Info</span>`;
         }
 
         const isUnread = !n.is_read;
@@ -714,19 +714,19 @@ function renderNotifItems(items) {
             : '';
 
         html += `
-        <a href="${n.link || '#'}" class="notif-card d-block p-3 mb-2 rounded-3 text-decoration-none transition-all" style="${cardStyle}">
+        <a href="${n.link || '#'}" class="notif-card d-block p-3 mb-2 rounded-3 text-decoration-none transition-all position-relative overflow-hidden" style="${cardStyle}">
             <div class="d-flex align-items-start gap-3">
                 ${iconHtml}
-                <div class="flex-grow-1 min-w-0">
-                    <div class="d-flex align-items-center justify-content-between mb-1">
-                        <div class="d-flex align-items-center min-w-0">
+                <div class="flex-grow-1 min-w-0" style="min-width: 0;">
+                    <div class="d-flex align-items-center justify-content-between mb-1 gap-2" style="min-width: 0;">
+                        <div class="d-flex align-items-center gap-1.5 overflow-hidden me-1" style="min-width: 0; flex: 1 1 auto;">
                             ${unreadDot}
                             <span class="fw-semibold text-navy text-truncate" style="font-size: 13px;">${n.title}</span>
                             ${badgeHtml}
                         </div>
-                        <span class="text-muted flex-shrink-0 ms-2" style="font-size: 10.5px;">${n.created_at ? new Date(n.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : ''}</span>
+                        <span class="text-muted flex-shrink-0 ms-auto" style="font-size: 10.5px; white-space: nowrap; flex-shrink: 0;">${n.created_at ? new Date(n.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : ''}</span>
                     </div>
-                    <div class="text-secondary" style="font-size: 12px; line-height: 1.45;">${n.message}</div>
+                    <div class="text-secondary" style="font-size: 12px; line-height: 1.45; word-break: break-word;">${n.message}</div>
                 </div>
             </div>
         </a>`;

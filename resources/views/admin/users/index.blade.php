@@ -58,7 +58,7 @@
             @forelse($users as $u)
                 <tr>
                     <td class="fw-600 text-navy">{{ $u->name }}</td>
-                    <td><span class="dt-badge dt-badge-navy">{{ $u->username }}</span></td>
+                    <td><span class="dt-badge dt-badge-navy">{{ $u->username ?? $u->email }}</span></td>
                     <td><span class="dt-badge dt-badge-gold">{{ ucfirst($u->role) }}</span></td>
                     <td>
                         <span class="dt-badge {{ $u->status === 'aktif' ? 'dt-badge-success' : 'dt-badge-danger' }}">
@@ -71,7 +71,7 @@
                             <button class="dt-action-btn" onclick="toggleMenu(this)" type="button">⋮</button>
                             <div class="dt-action-menu">
                                 <a href="{{ route('admin.users.edit', $u) }}">
-                                    <i class="bi bi-pencil me-1.5"></i> Edit
+                                    <i class="bi bi-eye me-1.5 text-primary"></i> Detail (Read-Only)
                                 </a>
                                 @if($u->id !== auth()->id())
                                     <div class="dt-menu-divider"></div>
