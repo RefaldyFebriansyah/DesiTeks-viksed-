@@ -211,6 +211,9 @@ class SupplierDeliveryOrderTest extends TestCase
         $order->refresh();
         $this->assertEquals('disetujui_admin', $order->status);
 
+        // Transition order to dalam_perjalanan (shipped by supplier)
+        $order->update(['status' => 'dalam_perjalanan']);
+
         // Step 2: Gudang accepts physical goods
         $acceptResponse = $this->actingAs($this->gudangUser)
             ->post("/gudang/delivery-orders/{$order->id}/accept", [

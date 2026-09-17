@@ -471,6 +471,20 @@ body {
   gap: 4px !important;
 }
 
+.badge-stok-over {
+  background-color: #fee2e2 !important;
+  color: #dc2626 !important;
+  border: 1px solid #fca5a5 !important;
+  border-radius: 50px !important;
+  padding: 4px 12px !important;
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  white-space: nowrap !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+
 /* ─── BUTTONS (MODERN SAAS ENTERPRISE THEME) ─────────── */
 .dt-btn {
   display: inline-flex;

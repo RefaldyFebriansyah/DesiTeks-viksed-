@@ -226,6 +226,11 @@
                         <span class="text-muted small"><strong>Per 1 Rol = 50 Meter</strong> (Otomatis menghitung total meteran saat Anda memasukkan jumlah rol)</span>
                     </div>
                 </div>
+                <div class="d-flex align-items-center">
+                    <span class="badge bg-warning bg-opacity-10 text-dark border border-warning border-opacity-50 px-3 py-2 rounded-pill font-monospace" style="font-size: 11.5px;">
+                        <i class="bi bi-exclamation-triangle-fill text-warning me-1"></i> Kapasitas Gudang: <strong>Maks 25 Rol per Kain</strong>
+                    </span>
+                </div>
             </div>
 
             <div class="table-responsive">

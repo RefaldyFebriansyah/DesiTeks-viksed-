@@ -167,10 +167,15 @@
                                 @endif
                             </td>
                             <td class="text-center" style="white-space: nowrap;">
-                                @if($s->stok_rol <= 0 && $s->stok_meter <= 0)
+                                @php $statusStok = $s->fabric?->status_stok ?? 'habis'; @endphp
+                                @if($statusStok === 'habis')
                                     <span class="badge-stok-habis"><i class="bi bi-x-circle-fill me-1"></i> Habis</span>
-                                @else
+                                @elseif($statusStok === 'penuh')
+                                    <span class="badge-stok-over"><i class="bi bi-box-fill me-1"></i> Stok Penuh</span>
+                                @elseif($statusStok === 'menipis')
                                     <span class="badge-stok-menipis"><i class="bi bi-exclamation-triangle-fill me-1"></i> Stok Menipis</span>
+                                @else
+                                    <span class="badge-stok-aman"><i class="bi bi-check-circle-fill me-1"></i> Stok Aman</span>
                                 @endif
                             </td>
                         </tr>

@@ -40,11 +40,11 @@ class SupplierRegistrationTest extends TestCase
         $postData = [
             'nama_supplier'         => 'PT. Sinar Tekstil Jaya',
             'asal_kota'             => 'Bandung',
-            'no_telepon'            => '0812-9988-7766',
+            'no_telepon'            => '81299887766',
             'alamat'                => 'Kawasan Industri Cimahi No. 18',
             'name'                  => 'Hendro Wijaya',
             'username'              => 'sinartekstil',
-            'email'                 => 'admin@sinartekstil.co.id',
+            'email'                 => 'sinartekstil@gmail.com',
             'password'              => 'Rahasia123',
             'password_confirmation' => 'Rahasia123',
         ];
@@ -56,19 +56,19 @@ class SupplierRegistrationTest extends TestCase
         // 1. Verifikasi Supplier berhasil dibuat di database (masuk ke data supplier admin)
         $this->assertDatabaseHas('suppliers', [
             'nama_supplier' => 'PT. Sinar Tekstil Jaya',
-            'email'         => 'admin@sinartekstil.co.id',
+            'email'         => 'sinartekstil@gmail.com',
             'asal_kota'     => 'Bandung',
-            'no_telepon'    => '0812-9988-7766',
+            'no_telepon'    => '+6281299887766',
         ]);
 
-        $supplier = Supplier::where('email', 'admin@sinartekstil.co.id')->first();
+        $supplier = Supplier::where('email', 'sinartekstil@gmail.com')->first();
         $this->assertNotNull($supplier);
         $this->assertStringStartsWith('SUP', $supplier->kode_supplier);
 
         // 2. Verifikasi User supplier berhasil dibuat dan terhubung ke supplier_id
         $this->assertDatabaseHas('users', [
             'username'    => 'sinartekstil',
-            'email'       => 'admin@sinartekstil.co.id',
+            'email'       => 'sinartekstil@gmail.com',
             'role'        => 'supplier',
             'supplier_id' => $supplier->id,
         ]);
@@ -93,11 +93,11 @@ class SupplierRegistrationTest extends TestCase
         $this->post('/register', [
             'nama_supplier'         => 'CV. Tenun Makmur Bersama',
             'asal_kota'             => 'Solo',
-            'no_telepon'            => '0813-1122-3344',
+            'no_telepon'            => '81311223344',
             'alamat'                => 'Jl. Slamet Riyadi No. 45',
             'name'                  => 'Agus Prasetyo',
             'username'              => 'tenunmakmur',
-            'email'                 => 'kontak@tenunmakmur.com',
+            'email'                 => 'tenunmakmur@gmail.com',
             'password'              => 'Password123',
             'password_confirmation' => 'Password123',
         ]);
@@ -108,6 +108,6 @@ class SupplierRegistrationTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('CV. Tenun Makmur Bersama');
         $response->assertSee('Solo');
-        $response->assertSee('0813-1122-3344');
+        $response->assertSee('81311223344');
     }
 }

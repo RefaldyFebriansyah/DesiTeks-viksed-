@@ -10,66 +10,73 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 40px 20px;
+        padding: 16px;
         background: 
             linear-gradient(135deg, rgba(15, 23, 42, 0.90) 0%, rgba(30, 41, 59, 0.85) 100%),
             url('{{ asset('images/textile_hero_bg.jpg') }}') center center / cover no-repeat;
     }
     .register-card-box {
         background: #ffffff;
-        border-radius: 24px;
-        box-shadow: 0 30px 70px -15px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.3);
-        max-width: 940px;
+        border-radius: 16px;
+        box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.3);
+        max-width: 880px;
         width: 100%;
-        padding: 36px 44px;
+        padding: 20px 30px;
         position: relative;
     }
     .register-column-divider {
         border-right: 1px solid #e2e8f0;
     }
     .reg-logo-img {
-        height: 64px;
+        height: 120px;
         width: auto;
         object-fit: contain;
     }
 
     /* Password Strength Bar */
-    .pwd-strength-wrap { margin-top: 6px; }
+    .pwd-strength-wrap { margin-top: 4px; }
     .pwd-strength-bar {
-        height: 4px;
-        border-radius: 4px;
+        height: 3px;
+        border-radius: 3px;
         background: #e2e8f0;
         overflow: hidden;
-        margin-bottom: 4px;
+        margin-bottom: 2px;
     }
     .pwd-strength-bar .bar-fill {
         height: 100%;
         width: 0%;
-        border-radius: 4px;
+        border-radius: 3px;
         transition: width 0.3s ease, background 0.3s ease;
     }
     .pwd-strength-label {
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 600;
         transition: color 0.3s ease;
     }
-    .pwd-checklist { list-style: none; padding: 0; margin: 6px 0 0; }
+    .pwd-checklist {
+        list-style: none;
+        padding: 0;
+        margin: 4px 0 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2px 6px;
+    }
     .pwd-checklist li {
-        font-size: 11px;
+        font-size: 10px;
         color: #94a3b8;
         display: flex;
         align-items: center;
-        gap: 5px;
-        margin-bottom: 2px;
+        gap: 4px;
+        margin-bottom: 0;
         transition: color 0.2s;
     }
     .pwd-checklist li.pass { color: #16a34a; }
-    .pwd-checklist li i { font-size: 12px; }
+    .pwd-checklist li i { font-size: 10px; }
 
     /* Field hint */
     .field-hint {
-        font-size: 10.5px;
-        margin-top: 3px;
+        font-size: 10px;
+        margin-top: 2px;
         color: #94a3b8;
     }
     .field-hint.error { color: #dc2626; }
@@ -77,21 +84,21 @@
 
     @media (max-width: 991.98px) {
         .register-page-wrapper {
-            padding: 24px 14px;
+            padding: 16px 12px;
             align-items: flex-start;
         }
         .register-card-box {
-            padding: 24px 20px;
-            border-radius: 18px;
+            padding: 20px 16px;
+            border-radius: 14px;
         }
         .register-column-divider {
             border-right: none !important;
             border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 24px;
-            margin-bottom: 16px;
+            padding-bottom: 16px;
+            margin-bottom: 12px;
         }
         .reg-logo-img {
-            height: 52px;
+            height: 46px;
         }
         .btn-register-submit {
             width: 100% !important;
@@ -106,22 +113,22 @@
     <div class="register-card-box">
 
         {{-- Header --}}
-        <div class="text-center mb-4">
-            <a href="{{ url('/') }}" class="text-decoration-none d-inline-block mb-2">
+        <div class="text-center mb-2">
+            <a href="{{ url('/') }}" class="text-decoration-none d-inline-block mb-1">
                 <img src="{{ asset('images/logo_transparent.png') }}" alt="DesiTeks" class="reg-logo-img">
             </a>
-            <h3 class="fw-bold text-dark mb-1 fs-4" style="letter-spacing: -0.02em;">
+            <h3 class="fw-bold text-dark mb-0 fs-5" style="letter-spacing: -0.02em;">
                 Buat Akun Supplier Baru
             </h3>
-            <p class="text-muted small mb-0" style="font-size: 13px; max-width: 580px; margin: 0 auto; line-height: 1.5;">
+            <p class="text-muted small mb-0" style="font-size: 11.5px; max-width: 540px; margin: 0 auto; line-height: 1.4;">
                 Isi data perusahaan dan akun login kamu untuk mulai kirim surat jalan ke DesiTeks.
             </p>
         </div>
 
         {{-- Error --}}
         @if ($errors->any())
-            <div class="alert alert-danger py-2 px-3 mb-4 border-0 shadow-sm d-flex align-items-center gap-2" style="border-radius: 12px; font-size: 13px;">
-                <i class="bi bi-exclamation-triangle-fill text-danger flex-shrink-0 fs-5"></i>
+            <div class="alert alert-danger py-1.5 px-3 mb-2 border-0 shadow-sm d-flex align-items-center gap-2" style="border-radius: 8px; font-size: 12px;">
+                <i class="bi bi-exclamation-triangle-fill text-danger flex-shrink-0 fs-6"></i>
                 <span class="fw-semibold">{{ $errors->first() }}</span>
             </div>
         @endif
@@ -129,19 +136,19 @@
         <form method="POST" action="{{ route('register.post') }}" id="registerForm">
             @csrf
 
-            <div class="row g-4 mb-4">
+            <div class="row g-3 mb-2">
                 {{-- Kolom Kiri: Data Perusahaan --}}
-                <div class="col-lg-6 pe-lg-4 register-column-divider">
-                    <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
-                        <div class="d-flex align-items-center justify-content-center rounded-3 bg-primary bg-opacity-10 text-primary" style="width: 32px; height: 32px; flex-shrink: 0;">
-                            <i class="bi bi-building fs-5"></i>
+                <div class="col-lg-6 pe-lg-3 register-column-divider">
+                    <div class="d-flex align-items-center gap-2 mb-2 pb-1.5 border-bottom">
+                        <div class="d-flex align-items-center justify-content-center rounded-2 bg-primary bg-opacity-10 text-primary" style="width: 26px; height: 26px; flex-shrink: 0;">
+                            <i class="bi bi-building fs-6"></i>
                         </div>
-                        <span class="fw-bold text-dark fs-6">Data Perusahaan</span>
+                        <span class="fw-bold text-dark" style="font-size: 13.5px;">Data Perusahaan</span>
                     </div>
 
                     {{-- Nama Perusahaan --}}
-                    <div class="mb-3">
-                        <label class="form-label mb-1.5 fw-bold text-dark" style="font-size: 12.5px;">
+                    <div class="mb-2">
+                        <label class="form-label mb-1 fw-bold text-dark" style="font-size: 11.5px;">
                             Nama Perusahaan <span class="text-danger">*</span>
                         </label>
                         <input type="text" name="nama_supplier"
@@ -149,16 +156,16 @@
                             value="{{ old('nama_supplier') }}"
                             placeholder="PT. Tekstil Sejahtera"
                             required
-                            style="border-radius: 10px; font-size: 13.5px; height: 42px; border-color: #cbd5e1;">
+                            style="border-radius: 8px; font-size: 12.5px; height: 36px; border-color: #cbd5e1;">
                         @error('nama_supplier')
-                            <div class="invalid-feedback" style="font-size: 11px;">{{ $message }}</div>
+                            <div class="invalid-feedback" style="font-size: 10.5px;">{{ $message }}</div>
                         @enderror
                     </div>
 
                     {{-- Kota & No. Telepon --}}
-                    <div class="row g-3 mb-3">
+                    <div class="row g-2 mb-2">
                         <div class="col-sm-6">
-                            <label class="form-label mb-1.5 fw-bold text-dark" style="font-size: 12.5px;">
+                            <label class="form-label mb-1 fw-bold text-dark" style="font-size: 11.5px;">
                                 Kota <span class="text-danger">*</span>
                             </label>
                             <input type="text" name="asal_kota"
@@ -166,60 +173,60 @@
                                 value="{{ old('asal_kota') }}"
                                 placeholder="Bandung"
                                 required
-                                style="border-radius: 10px; font-size: 13.5px; height: 42px; border-color: #cbd5e1;">
+                                style="border-radius: 8px; font-size: 12.5px; height: 36px; border-color: #cbd5e1;">
                             @error('asal_kota')
-                                <div class="invalid-feedback" style="font-size: 11px;">{{ $message }}</div>
+                                <div class="invalid-feedback" style="font-size: 10.5px;">{{ $message }}</div>
                             @enderror
                         </div>
 
                         <div class="col-sm-6">
-                            <label class="form-label mb-1.5 fw-bold text-dark" style="font-size: 12.5px;">
+                            <label class="form-label mb-1 fw-bold text-dark" style="font-size: 11.5px;">
                                 No. WhatsApp <span class="text-danger">*</span>
                             </label>
                             <div class="input-group">
-                                <span class="input-group-text fw-bold bg-light border-end-0 px-2.5" style="font-size: 13px; border-color: #cbd5e1; color: #334155;">+62</span>
+                                <span class="input-group-text fw-bold bg-light border-end-0 px-2" style="font-size: 12px; border-color: #cbd5e1; color: #334155;">+62</span>
                                 <input type="text" name="no_telepon" id="noTelepon"
                                     class="form-control border-start-0 @error('no_telepon') is-invalid @enderror"
                                     value="{{ old('no_telepon') }}"
                                     placeholder="81234567890"
                                     required
-                                    style="border-top-right-radius: 10px; border-bottom-right-radius: 10px; font-size: 13.5px; height: 42px; border-color: #cbd5e1;">
+                                    style="border-top-right-radius: 8px; border-bottom-right-radius: 8px; font-size: 12.5px; height: 36px; border-color: #cbd5e1;">
                             </div>
                             <div class="field-hint" id="phoneHint">Jangan pakai angka 0 di depan</div>
                             @error('no_telepon')
-                                <div class="text-danger" style="font-size: 11px; margin-top: 2px;">{{ $message }}</div>
+                                <div class="text-danger" style="font-size: 10.5px; margin-top: 2px;">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
 
                     {{-- Alamat --}}
                     <div>
-                        <label class="form-label mb-1.5 fw-bold text-dark" style="font-size: 12.5px;">
-                            Alamat Gudang <span class="text-muted fw-normal" style="font-size: 11px;">(Opsional)</span>
+                        <label class="form-label mb-1 fw-bold text-dark" style="font-size: 11.5px;">
+                            Alamat Gudang <span class="text-muted fw-normal" style="font-size: 10.5px;">(Opsional)</span>
                         </label>
                         <input type="text" name="alamat"
                             class="form-control @error('alamat') is-invalid @enderror"
                             value="{{ old('alamat') }}"
                             placeholder="Jl. Industri No. 10, Kaw. Rancaekek"
-                            style="border-radius: 10px; font-size: 13.5px; height: 42px; border-color: #cbd5e1;">
+                            style="border-radius: 8px; font-size: 12.5px; height: 36px; border-color: #cbd5e1;">
                         @error('alamat')
-                            <div class="invalid-feedback" style="font-size: 11px;">{{ $message }}</div>
+                            <div class="invalid-feedback" style="font-size: 10.5px;">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
 
                 {{-- Kolom Kanan: Akun Login --}}
-                <div class="col-lg-6 ps-lg-4">
-                    <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
-                        <div class="d-flex align-items-center justify-content-center rounded-3 bg-primary bg-opacity-10 text-primary" style="width: 32px; height: 32px; flex-shrink: 0;">
-                            <i class="bi bi-person-badge fs-5"></i>
+                <div class="col-lg-6 ps-lg-3">
+                    <div class="d-flex align-items-center gap-2 mb-2 pb-1.5 border-bottom">
+                        <div class="d-flex align-items-center justify-content-center rounded-2 bg-primary bg-opacity-10 text-primary" style="width: 26px; height: 26px; flex-shrink: 0;">
+                            <i class="bi bi-person-badge fs-6"></i>
                         </div>
-                        <span class="fw-bold text-dark fs-6">Akun Login</span>
+                        <span class="fw-bold text-dark" style="font-size: 13.5px;">Akun Login</span>
                     </div>
 
                     {{-- Nama PIC --}}
-                    <div class="mb-3">
-                        <label class="form-label mb-1.5 fw-bold text-dark" style="font-size: 12.5px;">
+                    <div class="mb-2">
+                        <label class="form-label mb-1 fw-bold text-dark" style="font-size: 11.5px;">
                             Nama Lengkap <span class="text-danger">*</span>
                         </label>
                         <input type="text" name="name"
@@ -227,16 +234,16 @@
                             value="{{ old('name') }}"
                             placeholder="Budi Santoso"
                             required
-                            style="border-radius: 10px; font-size: 13.5px; height: 42px; border-color: #cbd5e1;">
+                            style="border-radius: 8px; font-size: 12.5px; height: 36px; border-color: #cbd5e1;">
                         @error('name')
-                            <div class="invalid-feedback" style="font-size: 11px;">{{ $message }}</div>
+                            <div class="invalid-feedback" style="font-size: 10.5px;">{{ $message }}</div>
                         @enderror
                     </div>
 
                     {{-- Username & Email --}}
-                    <div class="row g-3 mb-3">
+                    <div class="row g-2 mb-2">
                         <div class="col-sm-6">
-                            <label class="form-label mb-1.5 fw-bold text-dark" style="font-size: 12.5px;">
+                            <label class="form-label mb-1 fw-bold text-dark" style="font-size: 11.5px;">
                                 Username <span class="text-danger">*</span>
                             </label>
                             <input type="text" name="username"
@@ -244,14 +251,14 @@
                                 value="{{ old('username') }}"
                                 placeholder="budi_supplier"
                                 required
-                                style="border-radius: 10px; font-size: 13.5px; height: 42px; border-color: #cbd5e1;">
+                                style="border-radius: 8px; font-size: 12.5px; height: 36px; border-color: #cbd5e1;">
                             @error('username')
-                                <div class="invalid-feedback" style="font-size: 11px;">{{ $message }}</div>
+                                <div class="invalid-feedback" style="font-size: 10.5px;">{{ $message }}</div>
                             @enderror
                         </div>
 
                         <div class="col-sm-6">
-                            <label class="form-label mb-1.5 fw-bold text-dark" style="font-size: 12.5px;">
+                            <label class="form-label mb-1 fw-bold text-dark" style="font-size: 11.5px;">
                                 Email <span class="text-danger">*</span>
                             </label>
                             <input type="email" name="email" id="emailInput"
@@ -259,17 +266,17 @@
                                 value="{{ old('email') }}"
                                 placeholder="nama@gmail.com"
                                 required
-                                style="border-radius: 10px; font-size: 13.5px; height: 42px; border-color: #cbd5e1;">
+                                style="border-radius: 8px; font-size: 12.5px; height: 36px; border-color: #cbd5e1;">
                             <div class="field-hint" id="emailHint">Harus pakai @gmail.com</div>
                             @error('email')
-                                <div class="text-danger" style="font-size: 11px; margin-top: 2px;">{{ $message }}</div>
+                                <div class="text-danger" style="font-size: 10.5px; margin-top: 2px;">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
 
                     {{-- Password --}}
-                    <div class="mb-3">
-                        <label class="form-label mb-1.5 fw-bold text-dark" style="font-size: 12.5px;">
+                    <div class="mb-2">
+                        <label class="form-label mb-1 fw-bold text-dark" style="font-size: 11.5px;">
                             Password <span class="text-danger">*</span>
                         </label>
                         <div class="position-relative">
@@ -277,14 +284,14 @@
                                 class="form-control @error('password') is-invalid @enderror"
                                 placeholder="Buat password kamu"
                                 required
-                                style="border-radius: 10px; font-size: 13.5px; height: 42px; border-color: #cbd5e1; padding-right: 42px;">
+                                style="border-radius: 8px; font-size: 12.5px; height: 36px; border-color: #cbd5e1; padding-right: 36px;">
                             <button type="button" id="togglePwd"
-                                style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; cursor: pointer; padding: 4px;">
-                                <i class="bi bi-eye" id="pwdEyeIcon" style="font-size: 15px;"></i>
+                                style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; cursor: pointer; padding: 2px;">
+                                <i class="bi bi-eye" id="pwdEyeIcon" style="font-size: 14px;"></i>
                             </button>
                         </div>
                         @error('password')
-                            <div class="text-danger" style="font-size: 11px; margin-top: 2px;">{{ $message }}</div>
+                            <div class="text-danger" style="font-size: 10.5px; margin-top: 2px;">{{ $message }}</div>
                         @enderror
 
                         {{-- Strength Meter --}}
@@ -304,36 +311,36 @@
 
                     {{-- Konfirmasi Password --}}
                     <div>
-                        <label class="form-label mb-1.5 fw-bold text-dark" style="font-size: 12.5px;">
+                        <label class="form-label mb-1 fw-bold text-dark" style="font-size: 11.5px;">
                             Ulangi Password <span class="text-danger">*</span>
                         </label>
                         <input type="password" name="password_confirmation" id="regPasswordConfirm"
                             class="form-control"
                             placeholder="Ketik ulang password"
                             required
-                            style="border-radius: 10px; font-size: 13.5px; height: 42px; border-color: #cbd5e1;">
+                            style="border-radius: 8px; font-size: 12.5px; height: 36px; border-color: #cbd5e1;">
                         <div class="field-hint" id="confirmHint"></div>
                     </div>
                 </div>
             </div>
 
             {{-- Footer --}}
-            <div class="pt-4 border-top d-flex align-items-center justify-content-between flex-wrap gap-3">
-                <div style="font-size: 13.5px;">
+            <div class="pt-2.5 mt-1 border-top d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div style="font-size: 12.5px;">
                     <span class="text-muted">Sudah punya akun?</span>
                     <a href="{{ route('login') }}" class="text-primary fw-bold text-decoration-none ms-1">Masuk</a>
                 </div>
 
                 <button type="submit" id="btnSubmit"
-                    class="btn btn-primary fw-bold d-inline-flex align-items-center gap-2 px-4 py-2.5 shadow-sm btn-register-submit"
-                    style="font-size: 14.5px; border-radius: 12px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); border: none; box-shadow: 0 6px 20px rgba(37,99,235,0.32);">
-                    <i class="bi bi-person-check-fill fs-5"></i>
+                    class="btn btn-primary fw-bold d-inline-flex align-items-center gap-2 px-3.5 py-1.5 shadow-sm btn-register-submit"
+                    style="font-size: 13.5px; border-radius: 8px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); border: none; box-shadow: 0 4px 14px rgba(37,99,235,0.28);">
+                    <i class="bi bi-person-check-fill fs-6"></i>
                     <span>Daftar Sekarang</span>
                 </button>
             </div>
         </form>
 
-        <div class="text-center mt-4" style="font-size: 12px; color: #94a3b8;">
+        <div class="text-center mt-2" style="font-size: 11px; color: #94a3b8;">
             © {{ date('Y') }} DesiTeks
         </div>
     </div>

@@ -149,10 +149,15 @@
                     <div class="fw-600 text-navy">{{ $s->fabric->nama_kain }}</div>
                     <div class="d-flex justify-content-between align-items-center mt-1">
                         <span style="color:var(--dt-muted);font-size:12px">{{ $s->fabric->kode_kain }} • {{ $s->stok_rol }} rol ({{ number_format($s->total_meter,1) }}m)</span>
-                        @if($s->total_meter <= 0)
+                        @php $statusStok = $s->fabric?->status_stok ?? 'habis'; @endphp
+                        @if($statusStok === 'habis')
                             <span class="badge-stok-habis"><i class="bi bi-x-circle-fill me-1"></i> Habis</span>
-                        @else
+                        @elseif($statusStok === 'penuh')
+                            <span class="badge-stok-over"><i class="bi bi-box-fill me-1"></i> Stok Penuh</span>
+                        @elseif($statusStok === 'menipis')
                             <span class="badge-stok-menipis"><i class="bi bi-exclamation-triangle-fill me-1"></i> Stok Menipis</span>
+                        @else
+                            <span class="badge-stok-aman"><i class="bi bi-check-circle-fill me-1"></i> Stok Aman</span>
                         @endif
                     </div>
                 </div>

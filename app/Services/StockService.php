@@ -33,6 +33,12 @@ class StockService
         $looseMeterMasuk = $jumlahMeter - ($jumlahRol * $meterPerRol);
         if ($looseMeterMasuk < 0) $looseMeterMasuk = 0;
 
+        $maxStok = (int) ($fabric->stok_maksimum > 0 ? $fabric->stok_maksimum : 25);
+        if ($maxStok > 0 && ($stock->stok_rol + $jumlahRol) > $maxStok) {
+            $totalMencoba = $stock->stok_rol + $jumlahRol;
+            throw new \Exception("Kapasitas gudang untuk kain '{$fabric->nama_kain}' melebihi batas (Maksimal {$maxStok} rol per item). Stok saat ini: {$stock->stok_rol} rol, mencoba menjadi {$totalMencoba} rol.");
+        }
+
         $stock->stok_rol   += $jumlahRol;
         $stock->stok_meter += $looseMeterMasuk;
         $stock->updated_at  = now();
@@ -134,8 +140,9 @@ class StockService
         $stock->updated_at = now();
         $stock->save();
 
-        // Trigger notifikasi jika stok rol <= 5 atau stok meter <= 5
-        if ($stock->stok_rol <= 5) {
+        // Trigger notifikasi jika stok rol <= stok_minimum atau <= 0
+        $minStok = (int) ($fabric->stok_minimum > 0 ? $fabric->stok_minimum : 5);
+        if ($stock->stok_rol <= $minStok) {
             $statusText = ($stock->stok_rol <= 0 && $stock->stok_meter <= 0) ? 'HABIS' : 'MENIPIS';
             \App\Models\AppNotification::create([
                 'type'    => 'stok_menipis',
@@ -156,6 +163,11 @@ class StockService
             ['fabric_id' => $fabric->id, 'branch_id' => $branchId],
             ['stok_rol' => 0, 'stok_meter' => 0, 'updated_at' => now()]
         );
+
+        $maxStok = (int) ($fabric->stok_maksimum > 0 ? $fabric->stok_maksimum : 25);
+        if ($maxStok > 0 && $rolBaru > $maxStok) {
+            throw new \Exception("Stok rol kain '{$fabric->nama_kain}' tidak boleh melebihi {$maxStok} rol karena kapasitas gudang terbatas (Maksimal {$maxStok} rol per item).");
+        }
 
         $stock->stok_rol   = $rolBaru;
         $stock->stok_meter = $meterBaru;

@@ -50,21 +50,25 @@
         <table class="dt-table mb-0 align-middle">
             <thead>
                 <tr>
-                    <th>Kode</th>
-                    <th>Nama Kain</th>
-                    <th>Kategori</th>
-                    <th>Warna</th>
-                    <th class="text-end">Harga / Meter</th>
-                    <th class="text-end">Harga / Rol</th>
-                    <th class="text-end">Stok Rol</th>
-                    <th class="text-end">Stok Meter</th>
-                    <th class="text-center">Status</th>
-                    <th class="text-center">Aksi</th>
+                    <th style="font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;">Kode</th>
+                    <th style="font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;">Nama Kain</th>
+                    <th style="font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;">Kategori</th>
+                    <th style="font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;">Warna</th>
+                    <th class="text-end" style="font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;">Harga / Meter</th>
+                    <th class="text-end" style="font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;">Harga / Rol</th>
+                    <th class="text-end" style="font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;">Stok Rol</th>
+                    <th class="text-end" style="font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;">Stok Meter</th>
+                    <th class="text-center" style="font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;">Status</th>
+                    <th class="text-center" style="font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;">Aksi</th>
                 </tr>
             </thead>
             <tbody>
             @forelse($fabrics as $fabric)
-                @php $s = $fabric->stock; @endphp
+                @php 
+                    $s = $fabric->stock;
+                    $totalMeter = $fabric->total_stok_meter;
+                    $statusStok = $fabric->status_stok;
+                @endphp
                 <tr>
                     <td><span class="dt-badge dt-badge-navy">{{ $fabric->kode_kain }}</span></td>
                     <td>
@@ -76,11 +80,13 @@
                     <td class="text-end fw-600 text-navy">Rp {{ number_format($fabric->harga_per_meter,0,',','.') }}</td>
                     <td class="text-end fw-600 text-muted">Rp {{ number_format($fabric->harga_per_rol,0,',','.') }}</td>
                     <td class="text-end fw-700 text-navy">{{ $s?->stok_rol ?? 0 }} rol</td>
-                    <td class="text-end fw-600 text-navy">{{ number_format($fabric->total_stok_meter, 1) }} m</td>
+                    <td class="text-end fw-600 text-navy">{{ number_format($totalMeter, 1) }} m</td>
                     <td class="text-center">
-                        @if($fabric->status_stok === 'habis')
-                            <span class="badge-stok-habis"><i class="bi bi-x-circle-fill me-1"></i> Habis</span>
-                        @elseif($fabric->status_stok === 'menipis')
+                        @if($statusStok === 'penuh')
+                            <span class="badge-stok-over"><i class="bi bi-box-fill me-1"></i> Stok Penuh</span>
+                        @elseif($statusStok === 'habis')
+                            <span class="badge-stok-habis"><i class="bi bi-x-circle-fill me-1"></i> Stok Habis</span>
+                        @elseif($statusStok === 'menipis')
                             <span class="badge-stok-menipis"><i class="bi bi-exclamation-triangle-fill me-1"></i> Stok Menipis</span>
                         @else
                             <span class="badge-stok-aman"><i class="bi bi-check-circle-fill me-1"></i> Stok Aman</span>

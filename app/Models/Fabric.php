@@ -17,6 +17,7 @@ class Fabric extends Model
         'harga_per_rol',
         'meter_per_rol',
         'stok_minimum',
+        'stok_maksimum',
         'status',
     ];
 
@@ -24,6 +25,8 @@ class Fabric extends Model
         'harga_per_meter' => 'decimal:2',
         'harga_per_rol'   => 'decimal:2',
         'meter_per_rol'   => 'decimal:2',
+        'stok_minimum'    => 'integer',
+        'stok_maksimum'   => 'integer',
     ];
 
     // Relationships
@@ -66,7 +69,7 @@ class Fabric extends Model
         return (float) (($stok->stok_meter ?? 0) + (($stok->stok_rol ?? 0) * $mPerRol));
     }
 
-    // Helper: Get status stok (0: habis, <= 5 rol: menipis, > 5 rol: aman)
+    // Helper: Get status stok dinamis berdasarkan stok_minimum & stok_maksimum
     public function getStatusStokAttribute(): string
     {
         $stok = $this->stock;
@@ -75,11 +78,16 @@ class Fabric extends Model
         }
         $rol = (int) ($stok->stok_rol ?? 0);
         $meter = (float) ($stok->stok_meter ?? 0);
+        $minRol = 5;
+        $maxRol = (int) ($this->stok_maksimum > 0 ? $this->stok_maksimum : 25);
 
         if ($rol <= 0 && $meter <= 0) {
             return 'habis';
         }
-        if ($rol <= 5) {
+        if ($maxRol > 0 && $rol >= $maxRol) {
+            return 'penuh';
+        }
+        if ($rol <= $minRol) {
             return 'menipis';
         }
         return 'aman';

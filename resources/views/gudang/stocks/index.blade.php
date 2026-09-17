@@ -36,31 +36,37 @@
         <table class="dt-table mb-0 align-middle">
             <thead>
                 <tr>
-                    <th>Kode</th>
-                    <th>Nama Kain</th>
-                    <th>Kategori</th>
-                    <th class="text-end">Stok Rol</th>
-                    <th class="text-end">Total Meter</th>
-                    <th class="text-center">Status</th>
+                    <th style="font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;">Kode</th>
+                    <th style="font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;">Nama Kain</th>
+                    <th style="font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;">Kategori</th>
+                    <th class="text-end" style="font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;">Stok Rol</th>
+                    <th class="text-end" style="font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;">Total Meter</th>
+                    <th class="text-center" style="font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;">Status</th>
                 </tr>
             </thead>
             <tbody id="stockTableBody">
             @forelse($stocks as $stock)
+                @php
+                    $totalMeter = $stock->total_meter;
+                    $statusStok = $stock->status;
+                @endphp
                 <tr>
                     <td><span class="dt-badge dt-badge-navy">{{ $stock->fabric->kode_kain }}</span></td>
                     <td class="fw-600 text-navy">{{ $stock->fabric->nama_kain }}</td>
                     <td>{{ $stock->fabric->category->nama_kategori }}</td>
                     <td class="text-end fw-700 text-navy">{{ $stock->stok_rol }} rol</td>
                     <td class="text-end fw-600 text-navy">
-                        {{ number_format($stock->total_meter, 1) }} m
+                        {{ number_format($totalMeter, 1) }} m
                         @if($stock->stok_meter > 0)
                             <div style="font-size: 11px; color: var(--dt-muted); font-weight: normal;">(eceran {{ number_format($stock->stok_meter, 1) }}m)</div>
                         @endif
                     </td>
                     <td class="text-center">
-                        @if($stock->status === 'habis')
-                            <span class="badge-stok-habis"><i class="bi bi-x-circle-fill me-1"></i> Habis</span>
-                        @elseif($stock->status === 'menipis')
+                        @if($statusStok === 'penuh')
+                            <span class="badge-stok-over"><i class="bi bi-box-fill me-1"></i> Stok Penuh</span>
+                        @elseif($statusStok === 'habis')
+                            <span class="badge-stok-habis"><i class="bi bi-x-circle-fill me-1"></i> Stok Habis</span>
+                        @elseif($statusStok === 'menipis')
                             <span class="badge-stok-menipis"><i class="bi bi-exclamation-triangle-fill me-1"></i> Stok Menipis</span>
                         @else
                             <span class="badge-stok-aman"><i class="bi bi-check-circle-fill me-1"></i> Stok Aman</span>

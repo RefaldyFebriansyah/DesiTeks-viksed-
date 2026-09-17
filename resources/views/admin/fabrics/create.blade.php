@@ -96,6 +96,13 @@
             </div>
             <div class="col-md-6">
                 <div class="dt-form-group">
+                    <label class="dt-label">Stok Maksimum Gudang (Rol)</label>
+                    <input type="number" name="stok_maksimum" class="dt-input @error('stok_maksimum') is-invalid @enderror" value="{{ old('stok_maksimum', 25) }}" placeholder="Contoh: 25">
+                    @error('stok_maksimum') <div class="dt-error-msg">{{ $message }}</div> @enderror
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="dt-form-group">
                     <label class="dt-label">Status <span class="required">*</span></label>
                     <select name="status" class="dt-select" required>
                         <option value="aktif" {{ old('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>

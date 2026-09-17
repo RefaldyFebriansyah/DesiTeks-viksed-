@@ -56,6 +56,28 @@ class IncomingGoodsController extends Controller
 
     public function store(IncomingGoodsRequest $request)
     {
+        if ($request->has('items') && is_array($request->items)) {
+            foreach ($request->items as $index => $item) {
+                if (empty($item['fabric_id'])) continue;
+                $rol = (int) ($item['jumlah_rol'] ?? 0);
+                if ($rol > 25) {
+                    return back()->withInput()->withErrors([
+                        "items.{$index}.jumlah_rol" => "Jumlah rol barang masuk melebihi kapasitas gudang (Maksimal 25 rol per jenis kain)."
+                    ]);
+                }
+                if ($item['fabric_id'] !== 'new') {
+                    $fab = Fabric::find($item['fabric_id']);
+                    $existingRol = (int) ($fab?->stock?->stok_rol ?? 0);
+                    if (($existingRol + $rol) > 25) {
+                        $sisaKuota = max(0, 25 - $existingRol);
+                        return back()->withInput()->withErrors([
+                            "items.{$index}.jumlah_rol" => "Stok kain '{$fab->nama_kain}' di gudang saat ini {$existingRol} rol. Penambahan {$rol} rol ini akan melebihi max 25 rol gudang (Sisa kuota: {$sisaKuota} rol)."
+                        ]);
+                    }
+                }
+            }
+        }
+
         DB::transaction(function () use ($request) {
             // 1. Otomatis buat / cari Supplier
             $supplierName = trim($request->nama_supplier);

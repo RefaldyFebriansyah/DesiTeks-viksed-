@@ -37,6 +37,10 @@ class Stock extends Model
 
     public function getStatusAttribute(): string
     {
+        if ($this->fabric) {
+            return $this->fabric->status_stok;
+        }
+
         $rol = (int) ($this->stok_rol ?? 0);
         $meter = (float) ($this->stok_meter ?? 0);
 

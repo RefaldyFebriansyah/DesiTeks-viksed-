@@ -25,6 +25,11 @@ class Supplier extends Model
         return $this->hasMany(User::class);
     }
 
+    public function user()
+    {
+        return $this->hasOne(User::class);
+    }
+
     public function deliveryOrders()
     {
         return $this->hasMany(DeliveryOrder::class);

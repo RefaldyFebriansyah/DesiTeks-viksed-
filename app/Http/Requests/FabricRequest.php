@@ -32,6 +32,7 @@ class FabricRequest extends FormRequest
             'harga_per_rol'   => 'required|numeric|min:0',
             'meter_per_rol'   => 'required|numeric|min:0.01',
             'stok_minimum'    => 'nullable|integer|min:0',
+            'stok_maksimum'   => 'nullable|integer|min:0',
             'status'          => 'required|in:aktif,nonaktif',
         ];
     }

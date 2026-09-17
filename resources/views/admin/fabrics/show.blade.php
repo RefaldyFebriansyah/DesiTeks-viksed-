@@ -69,19 +69,28 @@
             <div style="font-size:11px; color:var(--dt-muted); font-weight:600; text-transform:uppercase; letter-spacing:.8px;">Stok Terkini (Meter)</div>
             <div style="font-size:22px; font-weight:700; color:var(--dt-navy); margin-top:2px;">{{ number_format($fabric->total_stok_meter, 1) }} <span style="font-size:13px; font-weight:400; color:var(--dt-muted);">m</span></div>
         </div>
+        <div style="flex:1; padding:14px 24px; text-align:center; border-right:1px solid var(--dt-border);">
+            <div style="font-size:11px; color:var(--dt-muted); font-weight:600; text-transform:uppercase; letter-spacing:.8px;">Max Stock Gudang</div>
+            <div style="font-size:22px; font-weight:700; color:var(--dt-navy); margin-top:2px;">{{ number_format($fabric->stok_maksimum ?? 25, 0) }} <span style="font-size:13px; font-weight:400; color:var(--dt-muted);">rol</span></div>
+        </div>
         <div style="flex:1; padding:14px 24px; text-align:center;">
             <div style="font-size:11px; color:var(--dt-muted); font-weight:600; text-transform:uppercase; letter-spacing:.8px;">Kondisi Stok</div>
             @php
                 $statusStok = $fabric->status_stok;
-                $badgeClass = match($statusStok) { 
-                    'habis'=>'dt-badge-danger',
-                    'menipis'=>'dt-badge-warning', 
-                    default=>'dt-badge-success' 
+                $stokRol    = $fabric->stock->stok_rol ?? 0;
+                $maxStock   = $fabric->stok_maksimum ?? 25;
+                $isOverstock = $maxStock > 0 && $stokRol >= $maxStock;
+                $badgeClass = match(true) { 
+                    $isOverstock => 'dt-badge-danger',
+                    $statusStok === 'habis' => 'dt-badge-danger',
+                    $statusStok === 'menipis' => 'dt-badge-warning', 
+                    default => 'dt-badge-success' 
                 };
+                $displayText = $isOverstock ? 'STOK PENUH' : strtoupper($statusStok);
             @endphp
             <div style="margin-top:6px;">
                 <span class="dt-badge {{ $badgeClass }}" style="font-size:12px; padding:6px 14px;">
-                    {{ strtoupper($statusStok) }}
+                    {{ $displayText }}
                 </span>
             </div>
         </div>

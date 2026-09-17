@@ -36,7 +36,7 @@ Route::post('/logout', [LoginController::class, 'logout'])
     ->name('logout')
     ->middleware('auth');
 
-// ─── NOTIFICATIONS (AUTH) ───────────────────────────────────────────────────
+// ─── NOTIFICATIONS (AUTH) ──────────────────────────────────────────────────
 Route::middleware('auth')->group(function () {
     Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/mark-read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.markRead');
@@ -62,8 +62,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('customers', Admin\CustomerController::class);
 
     // Stok
-    Route::get('/stocks',                    [Admin\StockController::class, 'index'])->name('stocks.index');
-    Route::post('/stocks/{fabric}/adjust',   [Admin\StockController::class, 'adjust'])->name('stocks.adjust');
+    Route::get('/stocks',                             [Admin\StockController::class, 'index'])->name('stocks.index');
+    Route::post('/stocks/{fabric}/adjust',            [Admin\StockController::class, 'adjust'])->name('stocks.adjust');
+    Route::post('/stocks/{fabric}/update-max-stock',  [Admin\StockController::class, 'updateMaxStock'])->name('stocks.update-max-stock');
+    Route::post('/stocks/update-total-max-stock',     [Admin\StockController::class, 'updateTotalMaxStock'])->name('stocks.update-total-max-stock');
 
     // Riwayat Stok
     Route::get('/stock-movements', [Admin\StockMovementController::class, 'index'])->name('stock-movements.index');

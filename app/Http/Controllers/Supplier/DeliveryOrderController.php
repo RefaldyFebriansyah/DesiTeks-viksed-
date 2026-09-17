@@ -111,6 +111,35 @@ class DeliveryOrderController extends Controller
             'items.*.jumlah_meter.required'=> 'Jumlah meter kain wajib diisi.',
         ]);
 
+        // Validasi Kapasitas Maksimum Gudang (Maksimal 25 Rol per Jenis Kain)
+        foreach ($request->items as $index => $item) {
+            $rol = (int) ($item['jumlah_rol'] ?? 0);
+            $namaKain = trim($item['nama_kain'] ?? 'Kain');
+            $fabricId = !empty($item['fabric_id']) && is_numeric($item['fabric_id']) ? $item['fabric_id'] : null;
+
+            $existingRol = 0;
+            if ($fabricId) {
+                $fab = Fabric::find($fabricId);
+                $existingRol = (int) ($fab?->stock?->stok_rol ?? 0);
+            } else {
+                $fab = Fabric::where('nama_kain', 'like', $namaKain)->first();
+                $existingRol = (int) ($fab?->stock?->stok_rol ?? 0);
+            }
+
+            if ($rol > 25) {
+                return back()->withInput()->withErrors([
+                    "items.{$index}.jumlah_rol" => "Jumlah pengiriman kain '{$namaKain}' ({$rol} rol) melebihi batas maksimum gudang (Maksimal 25 rol per jenis kain)."
+                ]);
+            }
+
+            if (($existingRol + $rol) > 25) {
+                $sisaKuota = max(0, 25 - $existingRol);
+                return back()->withInput()->withErrors([
+                    "items.{$index}.jumlah_rol" => "Stok kain '{$namaKain}' di gudang saat ini {$existingRol} rol. Pengiriman {$rol} rol ini akan melebihi kapasitas max 25 rol gudang (Sisa kuota penerimaan: {$sisaKuota} rol)."
+                ]);
+            }
+        }
+
         $deliveryOrder = DB::transaction(function () use ($request, $supplier) {
             $fotoPath = null;
             if ($request->hasFile('foto_surat_jalan')) {

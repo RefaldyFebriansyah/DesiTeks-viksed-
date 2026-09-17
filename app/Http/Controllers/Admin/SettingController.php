@@ -29,6 +29,7 @@ class SettingController extends Controller
             'telepon_toko'       => Setting::getVal('telepon_toko', ''),
             'catatan_struk'      => Setting::getVal('catatan_struk', ''),
             'pengumuman_supplier'=> Setting::getVal('pengumuman_supplier', 'Harap periksa kelengkapan kain, jumlah rol, dan surat jalan sebelum pengiriman ke gudang.'),
+            'max_stok_gudang_total' => Setting::getVal('max_stok_gudang_total', '10000'),
         ];
 
         return view('admin.settings.index', compact('settings'));
@@ -37,12 +38,13 @@ class SettingController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'nama_depan_toko'    => 'required|string|max:30',
-            'nama_belakang_toko' => 'nullable|string|max:30',
-            'alamat_toko'        => 'nullable|string|max:255',
-            'telepon_toko'       => 'nullable|string|max:30',
-            'catatan_struk'      => 'nullable|string|max:500',
-            'pengumuman_supplier'=> 'nullable|string|max:1000',
+            'nama_depan_toko'       => 'required|string|max:30',
+            'nama_belakang_toko'    => 'nullable|string|max:30',
+            'alamat_toko'           => 'nullable|string|max:255',
+            'telepon_toko'          => 'nullable|string|max:30',
+            'catatan_struk'         => 'nullable|string|max:500',
+            'pengumuman_supplier'   => 'nullable|string|max:1000',
+            'max_stok_gudang_total' => 'nullable|integer|min:0',
         ]);
 
         $depan = trim($request->nama_depan_toko);
@@ -63,6 +65,7 @@ class SettingController extends Controller
         Setting::setVal('telepon_toko', $request->telepon_toko);
         Setting::setVal('catatan_struk', $request->catatan_struk);
         Setting::setVal('pengumuman_supplier', $request->pengumuman_supplier);
+        Setting::setVal('max_stok_gudang_total', $request->max_stok_gudang_total ?? '10000');
 
         AuditLog::create([
             'user_id'   => Auth::id(),

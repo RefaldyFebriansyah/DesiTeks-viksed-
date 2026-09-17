@@ -129,6 +129,17 @@ class DeliveryOrderController extends Controller
             'catatan_gudang' => 'nullable|string|max:1000',
         ]);
 
+        // Cek Batas Maksimum Stok Gudang
+        foreach ($deliveryOrder->items as $item) {
+            $fabric = $item->fabric_id ? Fabric::find($item->fabric_id) : Fabric::where('nama_kain', 'like', $item->nama_kain)->first();
+            $existingRol = (int) ($fabric?->stock?->stok_rol ?? 0);
+            $maxStok = (int) ($fabric?->stok_maksimum > 0 ? $fabric->stok_maksimum : 25);
+            if ($maxStok > 0 && ($existingRol + $item->jumlah_rol) > $maxStok) {
+                $sisaKuota = max(0, $maxStok - $existingRol);
+                return back()->with('error', "Penerimaan ditolak: Kain '{$item->nama_kain}' akan melebihi kapasitas maksimum gudang ({$maxStok} rol). Stok gudang saat ini: {$existingRol} rol, barang masuk: {$item->jumlah_rol} rol (Sisa kuota: {$sisaKuota} rol).");
+            }
+        }
+
         DB::transaction(function () use ($request, $deliveryOrder) {
             $branchId = $deliveryOrder->branch_id ?? session('active_branch_id') ?? Auth::user()->branch_id ?? 1;
 

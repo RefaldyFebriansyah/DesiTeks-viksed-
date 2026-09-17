@@ -35,7 +35,7 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        // Stok menipis / habis (stok_rol <= 5 atau stok_rol <= 0 && stok_meter <= 0)
+        // Stok menipis / habis (stok_rol <= 5)
         $stokMenipis = Stock::with('fabric.category')
             ->join('fabrics', 'stocks.fabric_id', '=', 'fabrics.id')
             ->where('fabrics.status', 'aktif')
