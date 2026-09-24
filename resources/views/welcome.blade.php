@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Sistem DesiTeks — Inventory & POS</title>
+    <title>Portal Sistem MitraSeratBuana — Inventory & POS</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{{ asset('css/desiteks.css') }}">
@@ -76,14 +76,14 @@
                     <span class="status-dot"></span>
                     Sistem Online
                 </div>
-                <h1 style="font-size: 32px; font-weight: 700; color: var(--dt-white); letter-spacing: -0.5px;">DesiTeks</h1>
+                <h1 style="font-size: 32px; font-weight: 700; color: var(--dt-white); letter-spacing: -0.5px;">MitraSeratBuana</h1>
                 <p style="color: rgba(255,255,255,0.6); font-size: 14px; line-height: 1.6; margin-top: 12px;">
                     Sistem Terintegrasi Manajemen Inventaris Kain, Pembelian Gudang, dan Point of Sales (POS) Penjualan Toko.
                 </p>
             </div>
             
             <div style="margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px;">
-                <div style="font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px;">DesiTeks Enterprise v1.0</div>
+                <div style="font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px;">MitraSeratBuana Enterprise v1.0</div>
                 <div style="font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 4px;">&copy; {{ date('Y') }} Hak Cipta Dilindungi.</div>
             </div>
         </div>

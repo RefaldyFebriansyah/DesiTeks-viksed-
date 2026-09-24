@@ -16,7 +16,7 @@ class SupplierSeeder extends Seeder
                 'email'         => 'contact@tekstilnusantara.co.id',
                 'asal_kota'     => 'Bandung',
                 'alamat'        => 'Jl. Industri Raya No. 12, Bandung, Jawa Barat',
-                'no_telepon'    => '+62227654321',
+                'no_telepon'    => '+6281276543210',
             ],
             [
                 'kode_supplier' => 'SUP002',
@@ -24,7 +24,7 @@ class SupplierSeeder extends Seeder
                 'email'         => 'info@kainsejahtera.com',
                 'asal_kota'     => 'Jakarta',
                 'alamat'        => 'Jl. Pasar Baru No. 45, Jakarta Pusat',
-                'no_telepon'    => '+62213456789',
+                'no_telepon'    => '+6282134567890',
             ],
             [
                 'kode_supplier' => 'SUP003',
@@ -32,7 +32,7 @@ class SupplierSeeder extends Seeder
                 'email'         => 'batikmakmur@gmail.com',
                 'asal_kota'     => 'Surakarta',
                 'alamat'        => 'Jl. Batik Laweyan No. 7, Surakarta, Jawa Tengah',
-                'no_telepon'    => '+62271712345',
+                'no_telepon'    => '+6285712345678',
             ],
             [
                 'kode_supplier' => 'SUP004',
@@ -40,7 +40,7 @@ class SupplierSeeder extends Seeder
                 'email'         => 'sales@sinarsutra.co.id',
                 'asal_kota'     => 'Pekalongan',
                 'alamat'        => 'Jl. Urip Sumoharjo No. 88, Pekalongan, Jawa Tengah',
-                'no_telepon'    => '+62285421888',
+                'no_telepon'    => '+6281342188899',
             ],
             [
                 'kode_supplier' => 'SUP005',
@@ -48,7 +48,7 @@ class SupplierSeeder extends Seeder
                 'email'         => 'order@mitradenim.com',
                 'asal_kota'     => 'Surabaya',
                 'alamat'        => 'Kawasan Industri SIER Blok B-14, Surabaya, Jawa Timur',
-                'no_telepon'    => '+62318432190',
+                'no_telepon'    => '+6283184321900',
             ],
             [
                 'kode_supplier' => 'SUP006',
@@ -56,7 +56,7 @@ class SupplierSeeder extends Seeder
                 'email'         => 'sales@gajahindahtextile.id',
                 'asal_kota'     => 'Solo',
                 'alamat'        => 'Jl. Slamet Riyadi No. 340, Surakarta, Jawa Tengah',
-                'no_telepon'    => '+62271645220',
+                'no_telepon'    => '+6282716452200',
             ],
             [
                 'kode_supplier' => 'SUP007',
@@ -64,7 +64,7 @@ class SupplierSeeder extends Seeder
                 'email'         => 'cs@megahjayabrokat.com',
                 'asal_kota'     => 'Semarang',
                 'alamat'        => 'Jl. Pemuda No. 122, Semarang, Jawa Tengah',
-                'no_telepon'    => '+62243548901',
+                'no_telepon'    => '+6282435489011',
             ],
             [
                 'kode_supplier' => 'SUP008',
@@ -72,7 +72,7 @@ class SupplierSeeder extends Seeder
                 'email'         => 'info@primawoolen.co.id',
                 'asal_kota'     => 'Tangerang',
                 'alamat'        => 'Kawasan Industri Manis Jl. Manis Raya No. 45, Tangerang, Banten',
-                'no_telepon'    => '+62215918822',
+                'no_telepon'    => '+6281259188222',
             ],
         ];
 

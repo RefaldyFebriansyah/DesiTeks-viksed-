@@ -44,11 +44,26 @@ class ProfileController extends Controller
         $user = Auth::user();
         $supplier = $this->getSupplier();
 
+        if ($request->has('no_telepon') && $request->input('no_telepon') !== null) {
+            $rawPhone = trim((string) $request->input('no_telepon'));
+            $digits = preg_replace('/[^0-9]/', '', $rawPhone);
+            if (str_starts_with($digits, '62')) {
+                $phone = '+' . $digits;
+            } elseif (str_starts_with($digits, '0')) {
+                $phone = '+62' . substr($digits, 1);
+            } elseif ($digits !== '') {
+                $phone = '+62' . $digits;
+            } else {
+                $phone = null;
+            }
+            $request->merge(['no_telepon' => $phone]);
+        }
+
         $request->validate([
             'pic_name'      => 'required|string|max:100',
             'nama_supplier' => 'required|string|max:150',
             'email'         => ['required', 'string', 'email', 'max:150', 'regex:/^[a-zA-Z0-9._%+\-]+@gmail\.com$/i'],
-            'no_telepon'    => ['nullable', 'string', 'max:30', 'regex:/^[1-9][0-9]{7,14}$/'],
+            'no_telepon'    => ['nullable', 'string', 'regex:/^\+62[0-9]{8,13}$/'],
             'asal_kota'     => 'nullable|string|max:100',
             'alamat'        => 'nullable|string|max:500',
         ], [
@@ -56,8 +71,8 @@ class ProfileController extends Controller
             'nama_supplier.required' => 'Nama Perusahaan / Supplier wajib diisi.',
             'email.required'         => 'Email resmi supplier wajib diisi.',
             'email.email'            => 'Format email tidak valid.',
-            'email.regex'            => 'Email harus menggunakan @gmail.com (contoh: nama@gmail.com).',
-            'no_telepon.regex'       => 'Nomor telepon tidak boleh diawali angka 0. Masukkan langsung angka setelah +62.',
+            'email.regex'            => 'Email wajib menggunakan domain @gmail.com (contoh: nama@gmail.com).',
+            'no_telepon.regex'       => 'Nomor telepon harus diawali dengan +62 dan hanya berisi angka (contoh: +6281234567890).',
         ]);
 
         $supplier->update([

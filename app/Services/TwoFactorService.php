@@ -21,7 +21,7 @@ class TwoFactorService
     /**
      * Generate the otpauth:// URI for Google Authenticator
      */
-    public function getOtpauthUrl(string $email, string $secret, string $issuer = 'DesiTeks'): string
+    public function getOtpauthUrl(string $email, string $secret, string $issuer = 'MitraSeratBuana'): string
     {
         $label = rawurlencode($issuer . ':' . $email);
         $issuerEncoded = rawurlencode($issuer);
@@ -31,7 +31,7 @@ class TwoFactorService
     /**
      * Generate QR Code Image URL
      */
-    public function getQrCodeImageUrl(string $email, string $secret, string $issuer = 'DesiTeks'): string
+    public function getQrCodeImageUrl(string $email, string $secret, string $issuer = 'MitraSeratBuana'): string
     {
         $otpUrl = $this->getOtpauthUrl($email, $secret, $issuer);
         return 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=' . urlencode($otpUrl);

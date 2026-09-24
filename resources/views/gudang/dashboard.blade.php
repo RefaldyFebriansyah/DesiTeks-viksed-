@@ -84,11 +84,11 @@
         </div>
     </div>
 
-    {{-- Grafik Batang Stok per Kategori Kain --}}
+    {{-- Grafik Batang Stok Real per Jenis Kain (Maksimal 25 Rol per Kain) --}}
     <div class="col-lg-5">
         <div class="dt-card h-100 d-flex flex-column">
             <div class="dt-card-header">
-                <span class="dt-card-title"><i class="bi bi-bar-chart-line me-2"></i>Kapasitas Stok per Kategori</span>
+                <span class="dt-card-title"><i class="bi bi-bar-chart-line me-2"></i>Stok Real per Jenis Kain (Max 25 Rol)</span>
             </div>
             <div class="p-3 position-relative flex-grow-1" style="min-height: 240px; max-height: 270px;">
                 <canvas id="gudangBarChart"></canvas>
@@ -114,17 +114,17 @@
                 <div class="empty-state py-4"><i class="bi bi-inbox fs-3"></i><p class="mt-2 mb-0">Belum ada data barang masuk</p></div>
             @else
             <div class="dt-table-wrap flex-grow-1">
-                <table class="dt-table">
-                    <thead><tr><th>No. Faktur</th><th>Supplier</th><th>Tanggal</th><th>Total Rol</th><th>Total Meter</th><th>Total Pembelian</th></tr></thead>
+                <table class="dt-table" style="width: 100%; table-layout: fixed;">
+                    <thead><tr><th style="width: 22%;">No. Faktur</th><th style="width: 26%;">Supplier</th><th style="width: 15%;">Tanggal</th><th style="width: 12%;">Rol</th><th style="width: 12%;">Meter</th><th class="text-end" style="width: 13%;">Total</th></tr></thead>
                     <tbody>
                     @foreach($barangMasukTerbaru as $bg)
                         <tr>
-                            <td><a href="{{ route('gudang.incoming-goods.show', $bg) }}" class="fw-600 text-navy" style="text-decoration:none">{{ $bg->nomor_faktur }}</a></td>
-                            <td>{{ $bg->supplier->nama_supplier }}</td>
+                            <td><a href="{{ route('gudang.incoming-goods.show', $bg) }}" class="fw-600 text-navy dt-truncate" style="text-decoration:none; max-width: 100%; display: block;" title="{{ $bg->nomor_faktur }}">{{ $bg->nomor_faktur }}</a></td>
+                            <td><span class="dt-truncate" title="{{ $bg->supplier->nama_supplier }}" style="max-width: 100%;">{{ $bg->supplier->nama_supplier }}</span></td>
                             <td>{{ $bg->tanggal->format('d/m/Y') }}</td>
                             <td><span class="fw-600 text-navy">{{ $bg->total_rol }} rol</span></td>
                             <td>{{ number_format($bg->total_meter,1) }} m</td>
-                            <td class="fw-600 text-navy">Rp {{ number_format($bg->total_pembelian,0,',','.') }}</td>
+                            <td class="fw-600 text-navy text-end" style="font-size: 12.5px;">Rp {{ number_format($bg->total_pembelian,0,',','.') }}</td>
                         </tr>
                     @endforeach
                     </tbody>
@@ -278,23 +278,28 @@ function initGudangCharts(labels, rolData, fakturData, barLabels, barData) {
         }
     });
 
-    // 2. Bar Chart Gudang (Stok per Kategori - Modern Slim Bars)
+    // 2. Bar Chart Gudang (Stok Real per Jenis Kain - Max 25 Rol per Kain)
     const ctxBar = document.getElementById('gudangBarChart').getContext('2d');
     if (gudangBarChart) gudangBarChart.destroy();
 
-    const shortBarLabels = barLabels.map(l => (l && l.length > 15) ? l.substr(0, 13) + '...' : (l || '-'));
+    const shortBarLabels = barLabels.map(l => (l && l.length > 14) ? l.substr(0, 12) + '...' : (l || '-'));
+
+    const barColors = barData.map(v => {
+        if (v >= 25) return '#10b981'; // Green (Stok Penuh)
+        if (v <= 5)  return '#f59e0b'; // Amber (Stok Menipis)
+        return '#2563eb';              // Blue (Stok Aman)
+    });
 
     gudangBarChart = new Chart(ctxBar, {
         type: 'bar',
         data: {
             labels: shortBarLabels,
             datasets: [{
-                label: 'Total Stok (Rol)',
+                label: 'Stok Rol',
                 data: barData,
-                backgroundColor: ['#0f172a', '#1e3a8a', '#2563eb', '#0284c7', '#0d9488', '#10b981'],
-                hoverBackgroundColor: '#2563eb',
+                backgroundColor: barColors,
                 borderRadius: 6,
-                maxBarThickness: 28,
+                maxBarThickness: 24,
             }]
         },
         options: {
@@ -308,23 +313,31 @@ function initGudangCharts(labels, rolData, fakturData, barLabels, barData) {
                     cornerRadius: 8,
                     callbacks: {
                         title: items => barLabels[items[0].dataIndex] || '',
-                        label: ctx => ' Total Stok: ' + ctx.raw.toLocaleString('id-ID') + ' rol'
+                        label: ctx => {
+                            const val = ctx.raw;
+                            let statusText = 'Stok Aman';
+                            if (val >= 25) statusText = 'Stok Penuh';
+                            else if (val <= 5) statusText = 'Stok Menipis';
+                            return ' Stok Real: ' + val + ' / 25 Rol (' + statusText + ')';
+                        }
                     }
                 }
             },
             scales: {
                 y: {
                     beginAtZero: true,
-                    ticks: { font: { size: 10.5 }, color: '#64748b', precision: 0 },
+                    max: 25,
+                    ticks: { font: { size: 10.5 }, color: '#64748b', stepSize: 5 },
                     grid: { color: '#f1f5f9' }
                 },
                 x: {
                     grid: { display: false },
                     ticks: {
-                        font: { size: 10.5 },
+                        font: { size: 10 },
                         color: '#475569',
-                        maxRotation: 0,
-                        minRotation: 0
+                        maxRotation: 45,
+                        minRotation: 0,
+                        autoSkip: false
                     }
                 }
             }

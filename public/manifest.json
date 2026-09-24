@@ -1,7 +1,7 @@
 {
-  "name": "DesiTeks POS & Inventaris",
-  "short_name": "DesiTeks",
-  "description": "Sistem POS dan Inventaris Kain Premium DesiTeks",
+  "name": "MitraSeratBuana POS & Inventaris",
+  "short_name": "MitraSeratBuana",
+  "description": "Sistem POS dan Inventaris Kain Premium MitraSeratBuana",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f2744",

@@ -1,6 +1,6 @@
 @extends('layouts.auth')
 
-@section('title', 'Login Staf Internal — DesiTeks')
+@section('title', 'Login Staf Internal — MitraSeratBuana')
 
 @section('content')
 <div class="login-page-wrapper" style="
@@ -29,7 +29,7 @@
         {{-- Logo & Heading --}}
         <div class="text-center mb-3">
             <a href="{{ url('/') }}" title="Kembali ke Beranda" class="text-decoration-none d-inline-block">
-                <img src="{{ asset('images/logo_transparent.png') }}" alt="DesiTeks"
+                <img src="{{ asset('images/logo_transparent.png') }}" alt="MitraSeratBuana"
                     style="height: 72px; max-height: 75px; width: auto; object-fit: contain;">
             </a>
             <div class="mt-2">
@@ -151,7 +151,7 @@
         </div>
 
         <div class="text-center mt-2" style="font-size: 11px; color: #94a3b8;">
-            © {{ date('Y') }} DesiTeks — Internal Enterprise System
+            © {{ date('Y') }} MitraSeratBuana — Internal Enterprise System
         </div>
 
     </div>

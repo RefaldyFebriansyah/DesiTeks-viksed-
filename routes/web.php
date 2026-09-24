@@ -78,7 +78,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // Surat Jalan Online (Admin)
     Route::get('/delivery-orders',                               [Admin\DeliveryOrderController::class, 'index'])->name('delivery-orders.index');
+    Route::get('/delivery-orders-check-all-status',              [Admin\DeliveryOrderController::class, 'checkAllStatus'])->name('delivery-orders.check-all-status');
     Route::get('/delivery-orders/{deliveryOrder}',               [Admin\DeliveryOrderController::class, 'show'])->name('delivery-orders.show');
+    Route::get('/delivery-orders/{deliveryOrder}/print',         [Admin\DeliveryOrderController::class, 'print'])->name('delivery-orders.print');
+    Route::get('/delivery-orders/{deliveryOrder}/check-status',  [Admin\DeliveryOrderController::class, 'checkStatus'])->name('delivery-orders.check-status');
     Route::post('/delivery-orders/{deliveryOrder}/approve-admin', [Admin\DeliveryOrderController::class, 'approveByAdmin'])->name('delivery-orders.approve-admin');
     Route::post('/delivery-orders/{deliveryOrder}/accept',        [Admin\DeliveryOrderController::class, 'accept'])->name('delivery-orders.accept');
     Route::post('/delivery-orders/{deliveryOrder}/reject',        [Admin\DeliveryOrderController::class, 'reject'])->name('delivery-orders.reject');
@@ -130,7 +133,10 @@ Route::prefix('gudang')->name('gudang.')->middleware(['auth', 'gudang'])->group(
 
     // Surat Jalan Online Masuk / Stok Sedang Dikirim
     Route::get('/delivery-orders',                               [Gudang\DeliveryOrderController::class, 'index'])->name('delivery-orders.index');
+    Route::get('/delivery-orders-check-all-status',              [Gudang\DeliveryOrderController::class, 'checkAllStatus'])->name('delivery-orders.check-all-status');
     Route::get('/delivery-orders/{deliveryOrder}',               [Gudang\DeliveryOrderController::class, 'show'])->name('delivery-orders.show');
+    Route::get('/delivery-orders/{deliveryOrder}/print',         [Gudang\DeliveryOrderController::class, 'print'])->name('delivery-orders.print');
+    Route::get('/delivery-orders/{deliveryOrder}/check-status',  [Gudang\DeliveryOrderController::class, 'checkStatus'])->name('delivery-orders.check-status');
     Route::post('/delivery-orders/{deliveryOrder}/approve-admin', [Gudang\DeliveryOrderController::class, 'approveByAdmin'])->name('delivery-orders.approve-admin');
     Route::post('/delivery-orders/{deliveryOrder}/accept',        [Gudang\DeliveryOrderController::class, 'accept'])->name('delivery-orders.accept');
     Route::post('/delivery-orders/{deliveryOrder}/reject',        [Gudang\DeliveryOrderController::class, 'reject'])->name('delivery-orders.reject');
@@ -169,9 +175,11 @@ Route::prefix('supplier')->name('supplier.')->group(function () {
 
         // Surat Jalan Online
         Route::get('/delivery-orders',                      [App\Http\Controllers\Supplier\DeliveryOrderController::class, 'index'])->name('delivery-orders.index');
+        Route::get('/delivery-orders-check-all-status',     [App\Http\Controllers\Supplier\DeliveryOrderController::class, 'checkAllStatus'])->name('delivery-orders.check-all-status');
         Route::get('/delivery-orders/create',               [App\Http\Controllers\Supplier\DeliveryOrderController::class, 'create'])->name('delivery-orders.create');
         Route::post('/delivery-orders',                     [App\Http\Controllers\Supplier\DeliveryOrderController::class, 'store'])->name('delivery-orders.store');
         Route::get('/delivery-orders/{deliveryOrder}',      [App\Http\Controllers\Supplier\DeliveryOrderController::class, 'show'])->name('delivery-orders.show');
+        Route::get('/delivery-orders/{deliveryOrder}/check-status', [App\Http\Controllers\Supplier\DeliveryOrderController::class, 'checkStatus'])->name('delivery-orders.check-status');
         Route::post('/delivery-orders/{deliveryOrder}/ship',[App\Http\Controllers\Supplier\DeliveryOrderController::class, 'ship'])->name('delivery-orders.ship');
         Route::get('/delivery-orders/{deliveryOrder}/print',[App\Http\Controllers\Supplier\DeliveryOrderController::class, 'print'])->name('delivery-orders.print');
 

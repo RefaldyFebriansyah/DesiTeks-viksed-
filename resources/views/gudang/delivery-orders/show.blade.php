@@ -84,6 +84,34 @@
 
     .status-danger  { background: #fef2f2; color: #b91c1c; border: 1px solid #fee2e2; }
     .status-danger .dot  { background: #dc2626; }
+
+    @media print {
+        body * {
+            visibility: hidden !important;
+        }
+
+        .surat-jalan-paper, .surat-jalan-paper * {
+            visibility: visible !important;
+        }
+
+        .surat-jalan-paper {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            background: #ffffff !important;
+        }
+
+        nav, header, sidebar, .dt-sidebar, .dt-header, .dt-page-header, .dt-breadcrumb,
+        .status-pill, .btn, button, a, .stepper-card, #do-status-toast,
+        footer, .dt-page-footer, .no-print {
+            display: none !important;
+        }
+    }
 </style>
 @endpush
 
@@ -115,9 +143,16 @@
 
         <!-- Action Buttons -->
         <div class="d-flex flex-wrap gap-2">
-            <button type="button" onclick="directPrintSuratJalan('{{ route('supplier.delivery-orders.print', $deliveryOrder->id) }}')" class="btn btn-outline-secondary px-3 py-2 fw-semibold d-inline-flex align-items-center gap-2" style="font-size: 13px; border-radius: 8px;">
+            <!-- 1. Cetak Surat Jalan (Langsung cetak tanpa buka tab baru) -->
+            <button type="button" onclick="printSuratJalanDirectly()" class="btn btn-outline-secondary px-3 py-2 fw-semibold d-inline-flex align-items-center gap-2" style="font-size: 13px; border-radius: 8px;">
                 <i class="bi bi-printer"></i>
                 <span>Cetak Surat Jalan</span>
+            </button>
+
+            <!-- 2. Unduh PDF Surat Jalan (Langsung unduh file .pdf) -->
+            <button type="button" onclick="downloadSuratJalanPdf('{{ $deliveryOrder->nomor_surat_jalan }}')" class="btn btn-outline-primary px-3 py-2 fw-semibold d-inline-flex align-items-center gap-2" style="font-size: 13px; border-radius: 8px;">
+                <i class="bi bi-file-earmark-pdf"></i>
+                <span>Unduh PDF Surat Jalan</span>
             </button>
 
             @if($deliveryOrder->status === 'menunggu_approval')
@@ -243,14 +278,14 @@
             </div>
         </div>
 
-        <!-- Informasi Penerima (Tujuan DesiTeks) & Ekspedisi -->
+        <!-- Informasi Penerima (Tujuan MitraSeratBuana) & Ekspedisi -->
         <div class="row g-3 mb-4">
             <div class="col-md-6">
                 <div class="sj-box h-100">
                     <div class="text-uppercase fw-bold small text-muted border-bottom pb-1 mb-2">KEPADA YTH. (PENERIMA):</div>
-                    <div class="fw-bold text-dark fs-6">PT. DESITEKS SEJAHTERA NUSA</div>
-                    <div class="text-primary fw-bold small">{{ $deliveryOrder->branch?->nama_cabang ?? 'Gudang Utama DesiTeks' }}</div>
-                    <div class="text-secondary small mt-1">{{ $deliveryOrder->branch?->alamat ?? 'Jl. Kebon Jati No. 45, Bandung, Jawa Barat' }}</div>
+                    <div class="fw-bold text-dark fs-6">{{ $storeName ?? 'Desiteks' }}</div>
+                    <div class="text-primary fw-bold small">{{ $deliveryOrder->branch?->nama_cabang ?? 'Gudang Penerimaan Kain Kosan Dinar Ciamis' }}</div>
+                    <div class="text-secondary small mt-1">{{ $deliveryOrder->branch?->alamat ?? 'Kosan Dinar, Ciamis, Jawa Barat' }}</div>
                 </div>
             </div>
 
@@ -354,9 +389,9 @@
                     <div class="text-muted small">{{ $deliveryOrder->plat_nomor ?: 'Armada Pengantar' }}</div>
                 </div>
 
-                <!-- 3. Diterima Oleh (Gudang DesiTeks) -->
+                <!-- 3. Diterima Oleh (Gudang MitraSeratBuana) -->
                 <div class="col-4">
-                    <div class="text-muted small fw-semibold mb-2">Diterima Oleh (Gudang DesiTeks),</div>
+                    <div class="text-muted small fw-semibold mb-2">Diterima Oleh (Gudang MitraSeratBuana),</div>
                     @if($deliveryOrder->status === 'diterima')
                         <div class="badge bg-success text-white px-2.5 py-1 mb-1">DITERIMA & ACC STOK</div>
                         <div class="fw-bold text-success">{{ $deliveryOrder->receivedBy?->name ?? 'Staf Gudang' }}</div>
@@ -495,20 +530,118 @@
 
 @push('scripts')
 <script>
-function directPrintSuratJalan(printUrl) {
-    let printFrame = document.getElementById('directPrintIframe');
-    if (!printFrame) {
-        printFrame = document.createElement('iframe');
-        printFrame.id = 'directPrintIframe';
-        printFrame.style.position = 'fixed';
-        printFrame.style.right = '0';
-        printFrame.style.bottom = '0';
-        printFrame.style.width = '0px';
-        printFrame.style.height = '0px';
-        printFrame.style.border = 'none';
-        document.body.appendChild(printFrame);
+function printSuratJalanDirectly(printUrl) {
+    const paper = document.querySelector('.surat-jalan-paper');
+    if (paper) {
+        window.print();
+        return;
     }
-    printFrame.src = printUrl;
+    if (printUrl) {
+        let printFrame = document.getElementById('directPrintIframe');
+        if (!printFrame) {
+            printFrame = document.createElement('iframe');
+            printFrame.id = 'directPrintIframe';
+            printFrame.style.position = 'fixed';
+            printFrame.style.right = '0';
+            printFrame.style.bottom = '0';
+            printFrame.style.width = '0px';
+            printFrame.style.height = '0px';
+            printFrame.style.border = 'none';
+            document.body.appendChild(printFrame);
+        }
+        printFrame.onload = function() {
+            try {
+                printFrame.contentWindow.focus();
+                printFrame.contentWindow.print();
+            } catch (e) {
+                console.error('Print iframe error:', e);
+            }
+        };
+        printFrame.src = printUrl;
+    }
 }
+
+function downloadSuratJalanPdf(nomorSuratJalan, elementSelector = '.surat-jalan-paper') {
+    const element = document.querySelector(elementSelector);
+    if (!element) {
+        alert('Dokumen Surat Jalan tidak ditemukan.');
+        return;
+    }
+
+    const cleanNo = (nomorSuratJalan || 'Surat_Jalan').replace(/[\/\s]/g, '_');
+    const opt = {
+        margin:       [8, 8, 8, 8],
+        filename:     cleanNo + '.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, logging: false },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    if (typeof html2pdf !== 'undefined') {
+        html2pdf().set(opt).from(element).save();
+    } else {
+        window.print();
+    }
+}
+
+// Real-time Auto Update / Polling tanpa perlu refresh manual (Zero-Reload / Non-Kedip)
+(function() {
+    let currentStatus = @json($deliveryOrder->status);
+    let checkUrl = "{{ route(request()->routeIs('admin*') ? 'admin.delivery-orders.check-status' : 'gudang.delivery-orders.check-status', $deliveryOrder->id) }}";
+
+    function showStatusToast(message) {
+        let old = document.getElementById('do-status-toast');
+        if (old) old.remove();
+
+        let toast = document.createElement('div');
+        toast.id = 'do-status-toast';
+        toast.style.cssText = 'position:fixed; top:20px; right:20px; background:#0f172a; color:#fff; padding:14px 20px; border-radius:12px; box-shadow:0 10px 25px -5px rgba(0,0,0,0.3); z-index:99999; font-weight:600; font-size:13.5px; display:flex; align-items:center; gap:10px; border:1px solid #334155; transition: opacity 0.3s ease;';
+        toast.innerHTML = '<span style="font-size:18px;">🚀</span> <span>' + message + '</span>';
+        document.body.appendChild(toast);
+
+        setTimeout(function() {
+            if (toast) {
+                toast.style.opacity = '0';
+                setTimeout(function() { toast.remove(); }, 300);
+            }
+        }, 4000);
+    }
+
+    setInterval(function() {
+        if (document.querySelector('.modal.show')) {
+            return;
+        }
+
+        fetch(checkUrl, {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status && data.status !== currentStatus) {
+                currentStatus = data.status;
+                showStatusToast('Progress pengiriman diperbarui!');
+                
+                fetch(window.location.href, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(res => res.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newContent = doc.querySelector('.pb-5');
+                    const curContent = document.querySelector('.pb-5');
+                    if (newContent && curContent) {
+                        curContent.innerHTML = newContent.innerHTML;
+                    }
+                })
+                .catch(err => {});
+            }
+        })
+        .catch(err => {});
+    }, 3000);
+})();
 </script>
 @endpush

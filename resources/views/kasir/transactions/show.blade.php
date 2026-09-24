@@ -36,15 +36,7 @@
         <div style="flex:1; padding: 20px 24px; border-right: 1px solid var(--dt-border);">
             <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--dt-muted); margin-bottom:6px;">Metode Pembayaran</div>
             <div style="font-size:15px; font-weight:600; color:var(--dt-navy);">
-                @php
-                    $emoji = match(strtolower($sale->payment->metode ?? 'tunai')) {
-                        'tunai' => '💵 ',
-                        'transfer' => '🏦 ',
-                        'qris' => '📱 ',
-                        default => ''
-                    };
-                @endphp
-                {{ $emoji }}{{ ucfirst($sale->payment->metode ?? 'tunai') }}
+                {{ strtolower($sale->payment->metode ?? '') === 'qris' ? 'QRIS' : ucfirst($sale->payment->metode ?? 'Tunai') }}
             </div>
             <div style="margin-top:8px; font-size:13px; color:var(--dt-muted);">
                 Status: 

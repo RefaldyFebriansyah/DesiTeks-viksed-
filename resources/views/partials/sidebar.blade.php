@@ -125,9 +125,6 @@
                 <a href="{{ route('admin.transactions.index') }}" class="dt-nav-sublink {{ request()->routeIs('admin.transactions*') ? 'active' : '' }}">
                     <i class="bi bi-receipt-cutoff"></i> Riwayat Transaksi
                 </a>
-                <a href="{{ route('admin.stock-movements.index') }}" class="dt-nav-sublink {{ request()->routeIs('admin.stock-movements*') ? 'active' : '' }}">
-                    <i class="bi bi-arrow-left-right"></i> Riwayat Pergerakan Stok
-                </a>
                 <a href="{{ route('admin.incoming-goods.index') }}" class="dt-nav-sublink {{ request()->routeIs('admin.incoming-goods*') ? 'active' : '' }}">
                     <i class="bi bi-box-arrow-in-down"></i> Riwayat Barang Masuk
                 </a>

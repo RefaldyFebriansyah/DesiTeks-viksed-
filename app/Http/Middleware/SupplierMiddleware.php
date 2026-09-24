@@ -18,7 +18,7 @@ class SupplierMiddleware
         }
 
         if (auth()->user()->role !== 'supplier') {
-            abort(403, 'Akses terbatas hanya untuk akun Rekanan Supplier DesiTeks.');
+            abort(403, 'Akses terbatas hanya untuk akun Rekanan Supplier MitraSeratBuana.');
         }
 
         return $next($request);

@@ -20,16 +20,16 @@
         <div class="row g-3">
             <div class="col-md-6">
                 <div class="dt-form-group">
-                    <label class="dt-label">Kode Kain <span class="required">*</span></label>
-                    <input type="text" name="kode_kain" class="dt-input @error('kode_kain') is-invalid @enderror" value="{{ old('kode_kain', $fabric->kode_kain) }}" required>
-                    @error('kode_kain') <div class="dt-error-msg">{{ $message }}</div> @enderror
+                    <label class="dt-label">Kode Kain</label>
+                    <input type="text" class="dt-input" value="{{ $fabric->kode_kain }}" readonly style="background-color: #f1f5f9; cursor: not-allowed; color: #475569; font-weight: 600;" title="Kode kain tidak dapat diubah">
+                    <input type="hidden" name="kode_kain" value="{{ $fabric->kode_kain }}">
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="dt-form-group">
-                    <label class="dt-label">Nama Kain <span class="required">*</span></label>
-                    <input type="text" name="nama_kain" class="dt-input @error('nama_kain') is-invalid @enderror" value="{{ old('nama_kain', $fabric->nama_kain) }}" required>
-                    @error('nama_kain') <div class="dt-error-msg">{{ $message }}</div> @enderror
+                    <label class="dt-label">Nama Kain</label>
+                    <input type="text" class="dt-input" value="{{ $fabric->nama_kain }}" readonly style="background-color: #f1f5f9; cursor: not-allowed; color: #475569; font-weight: 600;" title="Nama kain tidak dapat diubah">
+                    <input type="hidden" name="nama_kain" value="{{ $fabric->nama_kain }}">
                 </div>
             </div>
             <div class="col-md-6">

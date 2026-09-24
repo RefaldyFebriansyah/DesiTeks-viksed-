@@ -28,7 +28,7 @@ class SupplierDeliveryOrderTest extends TestCase
 
         $this->branch = Branch::firstOrCreate(
             ['id' => 1],
-            ['nama_cabang' => 'DesiTeks Pusat', 'kode_cabang' => 'CBG-001', 'is_main' => true]
+            ['nama_cabang' => 'MitraSeratBuana Pusat', 'kode_cabang' => 'CBG-001', 'is_main' => true]
         );
 
         $this->supplier = Supplier::firstOrCreate(
@@ -87,7 +87,7 @@ class SupplierDeliveryOrderTest extends TestCase
         // Akses /supplier juga menampilkan Landing Page
         $guestLanding = $this->get('/supplier');
         $guestLanding->assertStatus(200);
-        $guestLanding->assertSee('DesiTeks');
+        $guestLanding->assertSee('MitraSeratBuana');
 
         // Saat guest mencoba mau isi form pengiriman, harus login dulu
         $guestCreate = $this->get('/supplier/delivery-orders/create');

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title', 'Laporan Lengkap')
-@section('page-title', 'Laporan Toko DesiTeks')
+@section('page-title', 'Laporan Toko MitraSeratBuana')
 
 @section('content')
 <div class="dt-page-header mb-3">

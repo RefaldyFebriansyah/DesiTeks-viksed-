@@ -1,6 +1,6 @@
 @extends('layouts.auth')
 
-@section('title', 'Daftar Akun Mitra Supplier — DesiTeks')
+@section('title', 'Daftar Akun Mitra Supplier — MitraSeratBuana')
 
 @push('styles')
 <style>
@@ -115,13 +115,13 @@
         {{-- Header --}}
         <div class="text-center mb-2">
             <a href="{{ url('/') }}" class="text-decoration-none d-inline-block mb-1">
-                <img src="{{ asset('images/logo_transparent.png') }}" alt="DesiTeks" class="reg-logo-img">
+                <img src="{{ asset('images/logo_transparent.png') }}" alt="MitraSeratBuana" class="reg-logo-img">
             </a>
             <h3 class="fw-bold text-dark mb-0 fs-5" style="letter-spacing: -0.02em;">
                 Buat Akun Supplier Baru
             </h3>
             <p class="text-muted small mb-0" style="font-size: 11.5px; max-width: 540px; margin: 0 auto; line-height: 1.4;">
-                Isi data perusahaan dan akun login kamu untuk mulai kirim surat jalan ke DesiTeks.
+                Isi data perusahaan dan akun login kamu untuk mulai kirim surat jalan ke MitraSeratBuana.
             </p>
         </div>
 
@@ -341,7 +341,7 @@
         </form>
 
         <div class="text-center mt-2" style="font-size: 11px; color: #94a3b8;">
-            © {{ date('Y') }} DesiTeks
+            © {{ date('Y') }} MitraSeratBuana
         </div>
     </div>
 </div>

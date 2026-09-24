@@ -74,14 +74,6 @@
                         @enderror
                     </div>
 
-                    <div class="dt-form-group mb-3">
-                        <label class="dt-label fw-600 mb-1.5" for="max_stok_gudang_total"><i class="bi bi-diagram-3-fill me-1 text-primary"></i>Total Kapasitas Gudang Kain Keseluruhan (Meter)</label>
-                        <input type="number" id="max_stok_gudang_total" name="max_stok_gudang_total" value="{{ old('max_stok_gudang_total', $settings['max_stok_gudang_total']) }}" class="form-control @error('max_stok_gudang_total') is-invalid @enderror" placeholder="e.g. 10000" min="0" style="font-size: 13.5px;">
-                        <div class="form-text text-muted" style="font-size: 11px;">Batas maksimum total daya tampung stok seluruh kain di gudang (dalam meter).</div>
-                        @error('max_stok_gudang_total')
-                            <div class="dt-error-msg mt-1">{{ $message }}</div>
-                        @enderror
-                    </div>
 
                     <div class="dt-form-group mb-4">
                         <label class="dt-label fw-600 mb-1.5" for="pengumuman_supplier">Pengumuman / Catatan untuk Supplier</label>

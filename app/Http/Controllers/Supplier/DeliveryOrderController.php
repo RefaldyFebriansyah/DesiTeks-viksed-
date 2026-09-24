@@ -245,7 +245,7 @@ class DeliveryOrderController extends Controller
 
     /**
      * Konfirmasi dari supplier bahwa barang sudah dalam perjalanan menuju gudang
-     * (setelah di-ACC oleh Admin DesiTeks).
+     * (setelah di-ACC oleh Admin MitraSeratBuana).
      */
     public function ship(Request $request, DeliveryOrder $deliveryOrder)
     {
@@ -278,5 +278,43 @@ class DeliveryOrderController extends Controller
         ]);
 
         return back()->with('success', "Konfirmasi berhasil! Status surat jalan {$deliveryOrder->nomor_surat_jalan} kini diperbarui menjadi 'Dalam Perjalanan'. Pihak gudang telah diberi tahu.");
+    }
+
+    public function checkStatus(DeliveryOrder $deliveryOrder)
+    {
+        $supplier = $this->getSupplier();
+        if ($deliveryOrder->supplier_id !== $supplier->id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        return response()->json([
+            'id'          => $deliveryOrder->id,
+            'status'      => $deliveryOrder->status,
+            'updated_at'  => $deliveryOrder->updated_at->toIso8601String(),
+            'approved_at' => $deliveryOrder->approved_at?->format('d M Y, H:i'),
+            'shipped_at'  => $deliveryOrder->shipped_at?->format('d M Y, H:i'),
+            'received_at' => $deliveryOrder->received_at?->format('d M Y, H:i'),
+        ]);
+    }
+
+    public function checkAllStatus(Request $request)
+    {
+        $supplier = $this->getSupplier();
+        $ids = $request->input('ids', []);
+        if (empty($ids) || !is_array($ids)) {
+            return response()->json([]);
+        }
+
+        $orders = DeliveryOrder::where('supplier_id', $supplier->id)->whereIn('id', $ids)->get(['id', 'status', 'updated_at']);
+
+        $statuses = [];
+        foreach ($orders as $order) {
+            $statuses[$order->id] = [
+                'status'     => $order->status,
+                'updated_at' => $order->updated_at->toIso8601String(),
+            ];
+        }
+
+        return response()->json($statuses);
     }
 }

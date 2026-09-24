@@ -130,6 +130,12 @@
             margin-top: 0;
         }
     }
+
+    @media print {
+        .stepper-card {
+            display: none !important;
+        }
+    }
 </style>
 
 @php
@@ -155,21 +161,21 @@
 
     <div class="stepper-track-wrap">
         <div class="stepper-track-line">
-            <div class="stepper-track-fill" style="width: {{ $fill }};"></div>
+            <div class="stepper-track-fill" id="stepper-fill" style="width: {{ $fill }};"></div>
         </div>
 
         <!-- Step 1 -->
-        <div class="st-item {{ $s1 ? 'done' : '' }}">
-            <div class="st-dot"><i class="bi bi-check-lg"></i></div>
+        <div class="st-item {{ $s1 ? 'done' : '' }}" id="step-item-1">
+            <div class="st-dot" id="step-dot-1"><i class="bi bi-check-lg"></i></div>
             <div>
                 <div class="st-title">1. Pengajuan Surat Jalan</div>
-                <div class="st-sub">{{ $deliveryOrder->created_at ? $deliveryOrder->created_at->format('d M Y, H:i') : '-' }}</div>
+                <div class="st-sub" id="step-sub-1">{{ $deliveryOrder->created_at ? $deliveryOrder->created_at->format('d M Y, H:i') : '-' }}</div>
             </div>
         </div>
 
         <!-- Step 2 -->
-        <div class="st-item {{ $isReject && !$s2 ? 'rejected' : ($s2 ? 'done' : ($status === 'menunggu_approval' ? 'active' : '')) }}">
-            <div class="st-dot">
+        <div class="st-item {{ $isReject && !$s2 ? 'rejected' : ($s2 ? 'done' : ($status === 'menunggu_approval' ? 'active' : '')) }}" id="step-item-2">
+            <div class="st-dot" id="step-dot-2">
                 @if($isReject && !$s2)
                     <i class="bi bi-x-lg"></i>
                 @elseif($s2)
@@ -180,7 +186,7 @@
             </div>
             <div>
                 <div class="st-title">2. Disetujui Admin</div>
-                <div class="st-sub">
+                <div class="st-sub" id="step-sub-2">
                     @if($deliveryOrder->approved_at)
                         {{ $deliveryOrder->approved_at->format('d M Y, H:i') }}
                     @elseif($s2)
@@ -195,8 +201,8 @@
         </div>
 
         <!-- Step 3 -->
-        <div class="st-item {{ $isReject && $s2 && !$s3 ? 'rejected' : ($s3 ? 'done' : ($status === 'disetujui_admin' || $status === 'dikirim' ? 'active' : '')) }}">
-            <div class="st-dot">
+        <div class="st-item {{ $isReject && $s2 && !$s3 ? 'rejected' : ($s3 ? 'done' : ($status === 'disetujui_admin' || $status === 'dikirim' ? 'active' : '')) }}" id="step-item-3">
+            <div class="st-dot" id="step-dot-3">
                 @if($isReject && $s2 && !$s3)
                     <i class="bi bi-x-lg"></i>
                 @elseif($s3)
@@ -207,7 +213,7 @@
             </div>
             <div>
                 <div class="st-title">3. Dalam Perjalanan</div>
-                <div class="st-sub">
+                <div class="st-sub" id="step-sub-3">
                     @if($deliveryOrder->shipped_at)
                         {{ $deliveryOrder->shipped_at->format('d M Y, H:i') }}
                     @elseif($s3)
@@ -222,8 +228,8 @@
         </div>
 
         <!-- Step 4 -->
-        <div class="st-item {{ $isReject && $s3 ? 'rejected' : ($s4 ? 'done' : ($status === 'dalam_perjalanan' ? 'active' : '')) }}">
-            <div class="st-dot">
+        <div class="st-item {{ $isReject && $s3 ? 'rejected' : ($s4 ? 'done' : ($status === 'dalam_perjalanan' ? 'active' : '')) }}" id="step-item-4">
+            <div class="st-dot" id="step-dot-4">
                 @if($isReject && $s3)
                     <i class="bi bi-x-lg"></i>
                 @elseif($s4)
@@ -234,7 +240,7 @@
             </div>
             <div>
                 <div class="st-title">4. Diterima Gudang</div>
-                <div class="st-sub">
+                <div class="st-sub" id="step-sub-4">
                     @if($deliveryOrder->received_at)
                         {{ $deliveryOrder->received_at->format('d M Y, H:i') }}
                     @elseif($status === 'dalam_perjalanan')

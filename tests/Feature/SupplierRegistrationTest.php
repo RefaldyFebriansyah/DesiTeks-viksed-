@@ -80,9 +80,9 @@ class SupplierRegistrationTest extends TestCase
     public function test_registered_supplier_appears_in_admin_suppliers_list(): void
     {
         $admin = User::create([
-            'name'      => 'Admin DesiTeks',
+            'name'      => 'Admin MitraSeratBuana',
             'username'  => 'admin',
-            'email'     => 'admin@desiteks.com',
+            'email'     => 'admin@mitraseratbuana.com',
             'password'  => bcrypt('password'),
             'role'      => 'admin',
             'status'    => 'aktif',
@@ -108,6 +108,6 @@ class SupplierRegistrationTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('CV. Tenun Makmur Bersama');
         $response->assertSee('Solo');
-        $response->assertSee('81311223344');
+        $response->assertSee('813-1122-3344');
     }
 }

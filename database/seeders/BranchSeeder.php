@@ -12,9 +12,9 @@ class BranchSeeder extends Seeder
         $branches = [
             [
                 'id'          => 1,
-                'nama_cabang' => 'Cabang Utama (Pusat)',
+                'nama_cabang' => 'Gudang Penerimaan Kain Kosan Dinar Ciamis',
                 'kode_cabang' => 'CBG-001',
-                'alamat'      => 'Jl. Kebon Jati No. 45, Bandung',
+                'alamat'      => 'Kosan Dinar, Ciamis, Jawa Barat',
                 'telepon'     => '0812-3456-7890',
                 'is_main'     => true,
                 'status'      => 'aktif',

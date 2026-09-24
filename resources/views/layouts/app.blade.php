@@ -9,6 +9,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', $storeName) — {{ $storeName }}</title>
     
+    <link rel="icon" type="image/png" href="{{ asset('images/logo_icon_light.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('images/logo_icon_light.png') }}">
+
     <!-- PWA Settings -->
     <meta name="theme-color" content="#0f2744">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -19,6 +22,7 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link rel="stylesheet" href="{{ asset('css/desiteks.css') }}">
     <style>
         /* Bell Notification Button Styling (Anti-Gepeng & Sleek Circular SaaS Style) */
@@ -179,8 +183,8 @@
                     </button>
                     <div class="d-flex align-items-center gap-2 min-w-0">
                         <a href="#" class="d-lg-none d-flex align-items-center gap-1.5 text-decoration-none me-1" onclick="openSidebarMobile(); return false;">
-                            <img src="{{ asset('images/logo_icon_light.png') }}" alt="DesiTeks Logo" style="height:26px; width:auto; object-fit:contain;">
-                            <span class="fw-800 text-navy" style="font-size:16px; letter-spacing:-0.3px;">Desi<span class="text-gold">Teks</span></span>
+                            <img src="{{ asset('images/logo_icon_light.png') }}" alt="MitraSeratBuana Logo" style="height:26px; width:auto; object-fit:contain;">
+                            <span class="fw-800 text-navy" style="font-size:16px; letter-spacing:-0.3px;">MitraSerat<span class="text-gold">Buana</span></span>
                         </a>
                         <span class="dt-topbar-title text-truncate fw-700 text-navy" style="font-size: 15px;">@yield('page-title', 'Dashboard')</span>
                     </div>
@@ -250,7 +254,7 @@
                                 </div>
                                 <div class="min-w-0 flex-grow-1">
                                     <div class="fw-700 text-navy text-truncate" style="font-size: 13.5px; line-height: 1.25;">{{ $cleanName }}</div>
-                                    <div class="text-muted text-truncate" style="font-size: 11.5px; margin-top: 2px;">{{ auth()->user()->email ?? (auth()->user()->username . '@desiteks.com') }}</div>
+                                    <div class="text-muted text-truncate" style="font-size: 11.5px; margin-top: 2px;">{{ auth()->user()->email ?? (auth()->user()->username . '@mitraseratbuana.com') }}</div>
                                 </div>
                             </div>
                             <div class="mt-2 pt-2 d-flex align-items-center justify-content-between" style="border-top: 1px solid #e2e8f0;">
@@ -456,27 +460,12 @@ setInterval(() => {
     }
 }, 1000);
 
-// Smart Realtime Live Polling: Auto-refreshes data list pages every 12s if user is idle
-let isUserInteracting = false;
-['input', 'change', 'keydown', 'mousedown'].forEach(evt => {
-    document.addEventListener(evt, () => {
-        isUserInteracting = true;
-        clearTimeout(window.idleTimer);
-        window.idleTimer = setTimeout(() => { isUserInteracting = false; }, 15000);
-    });
-});
-
-// Auto-refresh monitoring pages every 12 seconds if not filling form
-const currentPath = window.location.pathname;
-const isFormPage = currentPath.includes('/create') || currentPath.includes('/edit') || currentPath.includes('/pos');
-
-if (!isFormPage) {
-    setInterval(() => {
-        if (!isUserInteracting && !document.querySelector('.modal.show')) {
-            window.location.reload();
-        }
-    }, 12000);
-}
+// Silent background poll for unread notification count (Zero page reloads / Non-kedip)
+setInterval(() => {
+    if (typeof loadUnreadNotifCount === 'function') {
+        loadUnreadNotifCount();
+    }
+}, 10000);
 </script>
 @stack('scripts')
 <script>

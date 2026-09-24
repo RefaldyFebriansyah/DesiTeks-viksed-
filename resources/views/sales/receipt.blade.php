@@ -1,5 +1,5 @@
 @php
-    $namaToko = \App\Models\Setting::getVal('nama_toko', 'DesiTeks');
+    $namaToko = \App\Models\Setting::getVal('nama_toko', 'MitraSeratBuana');
     $alamatToko = \App\Models\Setting::getVal('alamat_toko', '');
     $teleponToko = \App\Models\Setting::getVal('telepon_toko', '');
     $catatanStruk = \App\Models\Setting::getVal('catatan_struk', 'Terima kasih telah berbelanja!');

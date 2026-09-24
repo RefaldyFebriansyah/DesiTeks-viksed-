@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Schema;
 class DashboardController extends Controller
 {
     /**
-     * Halaman Beranda / Dashboard Terpadu Mitra Supplier DesiTeks
+     * Halaman Beranda / Dashboard Terpadu Mitra Supplier MitraSeratBuana
      */
     public function index()
     {
@@ -61,7 +61,7 @@ class DashboardController extends Controller
                 ->take(5)
                 ->get();
         } else {
-            // Tampilan publik / perkenalan portal supplier DesiTeks (Guest Mode)
+            // Tampilan publik / perkenalan portal supplier MitraSeratBuana (Guest Mode)
             $totalSuratJalan = 0;
             $sedangDikirim   = 0;
             $diterima        = 0;

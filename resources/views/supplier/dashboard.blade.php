@@ -372,7 +372,7 @@
                     </div>
                 </div>
                 <p class="text-muted mb-0" style="font-size: 12.5px; line-height: 1.6;">
-                    Jumlah rol dan meteran kain yang diterima oleh tim gudang otomatis terintegrasi langsung dengan sistem manajemen stok DesiTeks.
+                    Jumlah rol dan meteran kain yang diterima oleh tim gudang otomatis terintegrasi langsung dengan sistem manajemen stok MitraSeratBuana.
                 </p>
             </div>
         </div>
@@ -510,6 +510,90 @@
             </div>
         </div>
     </div>
+
+    {{-- Map Lokasi Gudang & Alamat Tujuan MitraSeratBuana --}}
+    <div class="dash-card mb-5">
+        <div class="dash-card-header flex-column flex-sm-row align-items-start align-items-sm-center gap-2">
+            <div class="d-flex align-items-center gap-2.5">
+                <div class="rounded-3 bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px; font-size: 18px; color: #475569;">
+                    <i class="bi bi-geo-alt-fill"></i>
+                </div>
+                <div>
+                    <h6 class="m-0 fw-bold text-dark" style="font-size: 15px;">Lokasi Gudang & Alamat Tujuan Pengiriman MitraSeratBuana</h6>
+                    <div class="sub">Alamat resmi pengantaran armada supir & lokasi penerimaan pasokan kain</div>
+                </div>
+            </div>
+            <a href="https://www.google.com/maps/dir/?api=1&destination=Kosan+Dinar+Ciamis" target="_blank" class="btn btn-primary btn-sm px-3.5 py-2 fw-bold d-inline-flex align-items-center gap-2 ms-auto shadow-sm" style="border-radius: 9px; font-size: 13px; background: #2563eb; border: none;">
+                <i class="bi bi-sign-turn-right-fill fs-6"></i> Buka Rute Google Maps
+            </a>
+        </div>
+        <div class="p-3 p-md-4">
+            <div class="row g-4 align-items-stretch">
+                <div class="col-lg-7">
+                    <div class="rounded-3 overflow-hidden border shadow-sm h-100" style="min-height: 330px; background: #f8fafc;">
+                        <iframe 
+                            src="https://maps.google.com/maps?q=Kosan%20Dinar%20Ciamis&t=&z=16&ie=UTF8&iwloc=&output=embed" 
+                            width="100%" 
+                            height="100%" 
+                            style="border:0; min-height: 330px; display: block;" 
+                            allowfullscreen="" 
+                            loading="lazy">
+                        </iframe>
+                    </div>
+                </div>
+                <div class="col-lg-5 d-flex flex-column justify-content-between gap-3">
+                    <div class="p-4 rounded-3 bg-white border shadow-2xs">
+                        <div class="d-flex align-items-center flex-wrap gap-2 mb-2.5">
+                            <span class="badge px-2.5 py-1 rounded-2 fw-bold text-white" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); font-size: 10px; letter-spacing: 0.05em;">GUDANG UTAMA</span>
+                            <span class="text-muted fw-semibold" style="font-size: 11.5px; letter-spacing: 0.01em;">{{ $storeName ?? 'Desiteks' }}</span>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-2" style="font-size: 16px; letter-spacing: -0.015em; line-height: 1.35;">{{ $branches->first()?->nama_cabang ?? 'Gudang Penerimaan Kain Kosan Dinar Ciamis' }}</h6>
+                        <div class="d-flex align-items-center gap-2 mb-3.5 text-secondary">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0" style="width: 26px; height: 26px; background: #f1f5f9; color: #475569; font-size: 13px;">
+                                <i class="bi bi-geo-alt-fill"></i>
+                            </div>
+                            <span class="fw-semibold text-dark" style="font-size: 13px;">{{ $branches->first()?->alamat ?? 'Kosan Dinar, Ciamis, Jawa Barat' }}</span>
+                        </div>
+                        <a href="https://www.google.com/maps/dir/?api=1&destination=Kosan+Dinar+Ciamis" target="_blank" class="btn btn-primary btn-sm w-100 fw-bold d-inline-flex align-items-center justify-content-center gap-2 py-2.5 shadow-sm" style="border-radius: 10px; font-size: 13px; background: #2563eb; border: none; transition: all 0.25s ease;">
+                            <i class="bi bi-compass-fill fs-6"></i> Petunjuk Arah / Rute Supir
+                        </a>
+                    </div>
+
+                    <div class="d-flex flex-column gap-2.5">
+                        <div class="d-flex align-items-center gap-3 p-3 rounded-3 bg-white border shadow-2xs">
+                            <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 border" style="width: 40px; height: 40px; font-size: 17px; background: #f1f5f9; color: #475569; border-color: #e2e8f0 !important;">
+                                <i class="bi bi-clock-history"></i>
+                            </div>
+                            <div>
+                                <div class="text-muted" style="font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;">Jam Bongkar Muat</div>
+                                <div class="fw-bold text-dark mt-0.5" style="font-size: 13px;">Senin - Sabtu: 08:00 - 17:00 WIB</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-3 p-3 rounded-3 bg-white border shadow-2xs">
+                            <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 border" style="width: 40px; height: 40px; font-size: 17px; background: #f1f5f9; color: #475569; border-color: #e2e8f0 !important;">
+                                <i class="bi bi-telephone"></i>
+                            </div>
+                            <div>
+                                <div class="text-muted" style="font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;">Kontak Petugas Gudang</div>
+                                <div class="fw-bold text-dark mt-0.5" style="font-size: 13px;">+62812-3456-7890 / (022) 420-1234</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-3 p-3 rounded-3 bg-white border shadow-2xs">
+                            <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 border" style="width: 40px; height: 40px; font-size: 17px; background: #f1f5f9; color: #475569; border-color: #e2e8f0 !important;">
+                                <i class="bi bi-truck-front"></i>
+                            </div>
+                            <div>
+                                <div class="text-muted" style="font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;">Petunjuk Armada Supir</div>
+                                <div class="fw-semibold text-secondary mt-0.5" style="font-size: 12.5px; line-height: 1.45;">Bongkar muatan di Gate B / Dok Penerimaan Kain dengan membawa Surat Jalan Digital.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     @else
         {{-- Guest Callout --}}
         <div class="dash-card p-5 mb-5 text-center">
@@ -590,7 +674,7 @@
         <div class="section-header text-center">
             <div class="label">SOP Penerimaan</div>
             <h4>Alur Pengiriman Kain ke Gudang</h4>
-            <p>Proses terstruktur dari surat jalan online hingga penambahan stok di gudang DesiTeks.</p>
+            <p>Proses terstruktur dari surat jalan online hingga penambahan stok di gudang MitraSeratBuana.</p>
         </div>
 
         <div class="row g-3">

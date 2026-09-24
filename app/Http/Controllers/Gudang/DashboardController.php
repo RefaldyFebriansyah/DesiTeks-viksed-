@@ -83,25 +83,26 @@ class DashboardController extends Controller
             }
         }
 
-        // Data Grafik Batang (Stok Rol per Kategori Kain)
-        $stokPerKategori = \App\Models\Category::withCount(['fabrics as total_rol' => function($q) {
-            $q->join('stocks', 'fabrics.id', '=', 'stocks.fabric_id');
-            $q->select(\DB::raw('COALESCE(SUM(stocks.stok_rol), 0)'));
-        }])->get();
+        // Data Grafik Batang: Stok Real per Jenis Kain (Maksimal 25 Rol per Kain)
+        $stokPerKain = Fabric::where('status', 'aktif')
+            ->join('stocks', 'fabrics.id', '=', 'stocks.fabric_id')
+            ->select('fabrics.nama_kain', 'stocks.stok_rol')
+            ->orderBy('fabrics.nama_kain', 'asc')
+            ->get();
 
-        $categoryLabels = [];
-        $categoryData   = [];
-        foreach ($stokPerKategori as $cat) {
-            $categoryLabels[] = $cat->nama_kategori;
-            $categoryData[]   = (int) $cat->total_rol;
+        $barLabels = [];
+        $barData   = [];
+        foreach ($stokPerKain as $item) {
+            $barLabels[] = $item->nama_kain;
+            $barData[]   = (int) $item->stok_rol;
         }
 
         return response()->json([
             'labels'       => $labels,
             'rol_masuk'    => $rolMasuk,
             'faktur_masuk' => $fakturMasuk,
-            'bar_labels'   => $categoryLabels,
-            'bar_data'     => $categoryData,
+            'bar_labels'   => $barLabels,
+            'bar_data'     => $barData,
         ]);
     }
 }

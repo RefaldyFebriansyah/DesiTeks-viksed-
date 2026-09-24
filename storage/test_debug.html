@@ -1,0 +1,256 @@
+)
+                const scriptsToExecute = [];
+
+                // 1. External scripts (e.g. Chart.js CDN)
+                doc.querySelectorAll('script[src]').forEach(s => {
+                    const src = s.getAttribute('src');
+                    if (src && !src.includes('bootstrap.bundle') && !document.querySelector(`script[src="${src}"]`)) {
+                        scriptsToExecute.push({ type: 'external', src: src });
+                    }
+                });
+
+                // 2. Inline scripts inside .dt-page OR from doc.querySelectorAll('script:not([src])').forEach(s => {
+                    const content = s.innerHTML.trim();
+                    if (content.length > 0 && 
+                        !content.includes('openSidebarMobile') && 
+                        !content.includes('dt-page-progress') && 
+                        !content.includes('loadPageSPA') &&
+                        !content.includes('bootstrap')) {
+                        scriptsToExecute.push({ type: 'inline', content: content, element: s });
+                    }
+                });
+
+                const loadExternalScripts = scriptsToExecute.filter(s => s.type === 'external').map(s => {
+                    return new Promise((resolve) => {
+                        const script = document.createElement('script');
+                        script.src = s.src;
+                        script.onload = resolve;
+                        script.onerror = resolve;
+                        document.head.appendChild(script);
+                    });
+                });
+
+                Promise.all(loadExternalScripts).then(() => {
+                    scriptsToExecute.filter(s => s.type === 'inline').forEach(s => {
+                        const newScript = document.createElement('script');
+                        Array.from(s.element.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                        newScript.appendChild(document.createTextNode(s.content));
+                        document.body.appendChild(newScript);
+                    });
+
+                    // Re-trigger counter animations
+                    if (typeof window.initCounterAnimations === 'function') {
+                        window.initCounterAnimations();
+                    }
+                });
+
+                if (progressBar) {
+                    progressBar.style.width = '100%';
+                    setTimeout(() => {
+                        progressBar.classList.remove('loading');
+                        progressBar.style.width = '0%';
+                    }, 200);
+                }
+            }, 120);
+        })
+        .catch(err => {
+            console.error('SPA Navigation Fallback:', err);
+            window.location.href = url;
+        });
+    };
+
+    function syncSidebarNav(doc, currentUrl) {
+        const newNav = doc ? doc.querySelector('.dt-sidebar nav.dt-nav') : null;
+        const currentNav = document.querySelector('.dt-sidebar nav.dt-nav');
+        if (currentNav && newNav) {
+            currentNav.innerHTML = newNav.innerHTML;
+        }
+
+        if (typeof window.restoreSidebarDropdownState === 'function') {
+            window.restoreSidebarDropdownState();
+        }
+
+        const cleanCurrent = currentUrl.split('?')[0].replace(/\/$/, '');
+        document.querySelectorAll('.dt-nav-link, .dt-nav-sublink, .dt-top-nav-link, .dt-mobile-nav-link').forEach(link => {
+            const href = link.getAttribute('href');
+            if (!href) return;
+            const cleanHref = href.split('?')[0].replace(/\/$/, '');
+            if (cleanHref === cleanCurrent) {
+                link.classList.add('active');
+            }
+        });
+    }
+
+    // Global Event Listener for smooth link clicks
+    document.addEventListener('click', function(e) {
+        const link = e.target.closest('a[href]');
+        if (!link) return;
+
+        const href = link.getAttribute('href');
+        if (!href || href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
+        if (link.getAttribute('target') === '_blank' || link.hasAttribute('download') || link.hasAttribute('data-no-spa')) return;
+        if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+
+        // Only intercept same-origin internal links
+        const linkUrl = new URL(href, window.location.href);
+        if (linkUrl.origin !== window.location.origin) return;
+
+        // Ignore logout links or POST form links
+        if (link.closest('form') || link.classList.contains('dropdown-item-danger') || href.includes('logout')) return;
+
+        e.preventDefault();
+        window.loadPageSPA(linkUrl.href, true);
+    });
+
+    // Handle Browser Back / Forward buttons
+    window.addEventListener('popstate', function(e) {
+        if (e.state && e.state.url) {
+            window.loadPageSPA(e.state.url, false);
+        } else {
+            window.loadPageSPA(window.location.href, false);
+        }
+    });
+});
+
+window.addEventListener('pageshow', () => {
+    const progressBar = document.getElementById('dt-page-progress');
+    if (progressBar) {
+        progressBar.style.width = '100%';
+        setTimeout(() => {
+            progressBar.classList.remove('loading');
+            progressBar.style.width = '0%';
+        }, 250);
+    }
+});
+
+// Instant Real-Time Client-Side Search (0ms Latency, Zero Page Reload)
+document.addEventListener('DOMContentLoaded', () => {
+    function escapeHtml(str) {
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    // Sembunyikan popup riwayat pencarian bawaan browser (Browser History Autocomplete Popup)
+    document.querySelectorAll('input').forEach(input => {
+        const isSearchField = input.name === 'search' || 
+                             input.type === 'search' || 
+                             input.classList.contains('dt-search-input') || 
+                             (input.placeholder && (
+                                input.placeholder.toLowerCase().includes('cari') || 
+                                input.placeholder.toLowerCase().includes('ketik') ||
+                                input.placeholder.toLowerCase().includes('scan')
+                             ));
+        if (isSearchField) {
+            input.setAttribute('autocomplete', 'off');
+            if (input.form) {
+                input.form.setAttribute('autocomplete', 'off');
+            }
+        }
+    });
+
+    document.addEventListener('input', (e) => {
+        const input = e.target;
+        if (!input || input.tagName !== 'INPUT') return;
+
+        // Abaikan form create/edit atau data entry (POST form atau modal)
+        const form = input.closest('form');
+        if (form && form.method && form.method.toLowerCase() === 'post') return;
+        if (input.closest('.modal') || input.closest('#itemsTable')) return;
+
+        const isSearchField = input.name === 'search' || 
+                             input.type === 'search' || 
+                             input.id === 'searchInput' ||
+                             input.classList.contains('dt-search-input') || 
+                             (input.placeholder && input.placeholder.toLowerCase().includes('cari'));
+
+        if (!isSearchField) return;
+
+        const query = input.value.toLowerCase().trim();
+        const container = input.closest('.dt-card') || input.closest('.dt-page') || document;
+        const tables = container.querySelectorAll('table.dt-table, table.table');
+
+        if (tables.length > 0) {
+            tables.forEach(table => {
+                if (table.closest('form') && table.closest('form').method && table.closest('form').method.toLowerCase() === 'post') return;
+
+                const tbody = table.querySelector('tbody');
+                if (!tbody) return;
+
+                const rows = Array.from(tbody.querySelectorAll('tr:not(.no-search-results):not(#noResultRow)'));
+                let visibleCount = 0;
+
+                rows.forEach(row => {
+                    if (row.classList.contains('empty-row') || row.querySelector('.empty-state')) return;
+
+                    const text = row.innerText.toLowerCase();
+                    if (!query || text.includes(query)) {
+                        row.style.display = '';
+                        visibleCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Tampilkan pesan jika tidak ada data yang cocok
+                let noResultRow = tbody.querySelector('.no-search-results');
+                if (visibleCount === 0 && query !== '') {
+                    if (!noResultRow) {
+                        const colCount = table.querySelectorAll('thead th').length || 6;
+                        noResultRow = document.createElement('tr');
+                        noResultRow.className = 'no-search-results';
+                        noResultRow.innerHTML = `
+                            <td colspan="${colCount}" class="text-center py-4 text-muted">
+                                <i class="bi bi-search fs-4 d-block mb-1 opacity-50"></i>
+                                <span style="font-size: 12.5px;">Tidak ada data yang cocok dengan pencarian "<strong>${escapeHtml(query)}</strong>"</span>
+                            </td>`;
+                        tbody.appendChild(noResultRow);
+                    } else {
+                        const strong = noResultRow.querySelector('strong');
+                        if (strong) strong.innerText = query;
+                        noResultRow.style.display = '';
+                    }
+                } else if (noResultRow) {
+                    noResultRow.style.display = 'none';
+                }
+
+                // Sembunyikan pagination saat filter lokal aktif
+                const pagination = container.querySelector('.pagination, #paginationContainer, nav[aria-label*="pagination"]');
+                if (pagination) {
+                    pagination.style.display = query ? 'none' : '';
+                }
+            });
+        }
+    });
+});
+
+// Auto close toasts after 4 seconds
+document.addEventListener('DOMContentLoaded', () => {
+    const toasts = document.querySelectorAll('.dt-toast');
+    toasts.forEach(toast => {
+        setTimeout(() => {
+            if (toast && toast.classList.contains('show')) {
+                toast.classList.remove('show');
+                toast.classList.add('hide');
+                setTimeout(() => toast.remove(), 400);
+            }
+        }, 4000);
+    });
+
+    // Registrasi PWA Service Worker
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/service-worker.js')
+            .then(reg => console.log('PWA Service Worker terdaftar!', reg))
+            .catch(err => console.error('Gagal mendaftarkan PWA Service Worker', err));
+    }
+});
+
+// Teleport modal apapun ke document.body agar tidak terjebak stacking context / backdrop
+document.addEventListener('show.bs.modal', function (event) {
+    const modal = event.target;
+    if (modal && modal.classList.contains('modal') && modal.parentElement !== document.body) {
+        document.body.appendChild(modal);
+    }
+});
+</script>
+
+</body>
+</html>

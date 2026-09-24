@@ -51,7 +51,7 @@
                                 <input type="text" name="nomor_faktur" id="nomorFakturInput" class="form-control border-start-0 @error('nomor_faktur') is-invalid @enderror" value="{{ old('nomor_faktur') }}" required placeholder="Otomatis sesuai PT" style="font-size: 13px; font-weight: 500; border-top-right-radius: 8px; border-bottom-right-radius: 8px;">
                             </div>
                             <div class="mt-1" id="fakturHelperContainer">
-                                <small class="text-muted" id="fakturHelperText" style="font-size: 11px;">Otomatis mengikuti riwayat transaksi supplier ke Desiteks</small>
+                                <small class="text-muted" id="fakturHelperText" style="font-size: 11px;">Otomatis mengikuti riwayat transaksi supplier ke MitraSeratBuana</small>
                             </div>
                             @error('nomor_faktur') <div class="dt-error-msg mt-1">{{ $message }}</div> @enderror
                         </div>
@@ -440,7 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Mapping riwayat jumlah transaksi barang masuk dari tiap supplier ke Desiteks
+// Mapping riwayat jumlah transaksi barang masuk dari tiap supplier ke MitraSeratBuana
 const supplierCounts = {
     @foreach($suppliers as $sup)
         @json(trim($sup->nama_supplier)): {{ (int) $sup->incoming_goods_count }},
@@ -475,12 +475,12 @@ function onSupplierChange() {
             badge.className = 'badge bg-light text-muted border py-0.5 px-1.5';
         }
         if (helper) {
-            helper.textContent = 'Otomatis mengikuti riwayat transaksi supplier ke Desiteks';
+            helper.textContent = 'Otomatis mengikuti riwayat transaksi supplier ke MitraSeratBuana';
         }
         return;
     }
 
-    // Hitung jumlah transaksi sebelumnya dari PT ini ke Desiteks
+    // Hitung jumlah transaksi sebelumnya dari PT ini ke MitraSeratBuana
     let prevCount = 0;
     const lower = companyName.toLowerCase();
     for (const [name, count] of Object.entries(supplierCounts)) {
@@ -504,7 +504,7 @@ function onSupplierChange() {
         badge.className = 'badge bg-primary-subtle text-primary border border-primary-subtle py-0.5 px-1.5';
     }
     if (helper) {
-        helper.innerHTML = `<span class="text-success fw-semibold"><i class="bi bi-check-circle me-1"></i>Transaksi ke-${nextTx} dari ${companyName} ke Desiteks</span>`;
+        helper.innerHTML = `<span class="text-success fw-semibold"><i class="bi bi-check-circle me-1"></i>Transaksi ke-${nextTx} dari ${companyName} ke MitraSeratBuana</span>`;
     }
 
     // Efek highlight input saat nomor terupdate otomatis

@@ -85,7 +85,7 @@
                 <i class="bi bi-arrow-left me-1"></i> Kembali ke Daftar Surat Jalan
             </a>
             <h3 class="fw-bold mb-0 text-dark">Buat Surat Jalan Online</h3>
-            <p class="text-muted small mb-0">Terbitkan dokumen pengiriman barang resmi dari <strong>{{ $supplier->nama_supplier }}</strong> menuju Gudang DesiTeks</p>
+            <p class="text-muted small mb-0">Terbitkan dokumen pengiriman barang resmi dari <strong>{{ $supplier->nama_supplier }}</strong> menuju Gudang MitraSeratBuana</p>
         </div>
     </div>
 
@@ -193,7 +193,7 @@
                             <label class="form-label small fw-bold text-dark">
                                 <i class="bi bi-camera-fill text-primary me-1"></i> Foto Bukti Kirim (Foto Supir / Armada / Surat Jalan)
                             </label>
-                            <div class="upload-box-custom p-3 text-center cursor-pointer" onclick="document.getElementById('fotoSuratJalanInput').click()" id="uploadDropArea" style="cursor: pointer;">
+                            <div class="upload-box-custom p-3 text-center cursor-pointer" onclick="openCameraModal('fotoSuratJalanInput')" id="uploadDropArea" style="cursor: pointer;">
                                 <input type="file" name="foto_surat_jalan" id="fotoSuratJalanInput" class="d-none" accept="image/*" onchange="previewDriverPhoto(this)">
                                 <div id="uploadPlaceholder">
                                     <div class="rounded-circle bg-primary bg-opacity-10 text-primary mx-auto mb-2 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
@@ -330,6 +330,8 @@
         </div>
     </form>
 </div>
+
+@include('partials.camera-modal')
 @endsection
 
 @push('scripts')

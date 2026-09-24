@@ -276,4 +276,42 @@ class DeliveryOrderController extends Controller
         return redirect()->route('gudang.delivery-orders.show', $deliveryOrder->id)
             ->with('warning', "Surat Jalan {$deliveryOrder->nomor_surat_jalan} ditandai sebagai DITOLAK. Catatan telah diteruskan ke pihak supplier.");
     }
+
+    public function checkStatus(DeliveryOrder $deliveryOrder)
+    {
+        return response()->json([
+            'id'          => $deliveryOrder->id,
+            'status'      => $deliveryOrder->status,
+            'updated_at'  => $deliveryOrder->updated_at->toIso8601String(),
+            'approved_at' => $deliveryOrder->approved_at?->format('d M Y, H:i'),
+            'shipped_at'  => $deliveryOrder->shipped_at?->format('d M Y, H:i'),
+            'received_at' => $deliveryOrder->received_at?->format('d M Y, H:i'),
+        ]);
+    }
+
+    public function checkAllStatus(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        if (empty($ids) || !is_array($ids)) {
+            return response()->json([]);
+        }
+
+        $orders = DeliveryOrder::whereIn('id', $ids)->get(['id', 'status', 'updated_at']);
+
+        $statuses = [];
+        foreach ($orders as $order) {
+            $statuses[$order->id] = [
+                'status'     => $order->status,
+                'updated_at' => $order->updated_at->toIso8601String(),
+            ];
+        }
+
+        return response()->json($statuses);
+    }
+
+    public function print(DeliveryOrder $deliveryOrder)
+    {
+        $deliveryOrder->load(['branch', 'user', 'supplier', 'receivedBy', 'items.fabric']);
+        return view('supplier.delivery-orders.print', compact('deliveryOrder'));
+    }
 }

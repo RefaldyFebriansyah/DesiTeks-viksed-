@@ -37,7 +37,7 @@ class AuthFlowTest extends TestCase
         $admin = User::create([
             'name'      => 'Admin User',
             'username'  => 'admin',
-            'email'     => 'admin@desiteks.com',
+            'email'     => 'admin@mitraseratbuana.com',
             'password'  => bcrypt('password123'),
             'role'      => 'admin',
             'status'    => 'aktif',
@@ -45,7 +45,7 @@ class AuthFlowTest extends TestCase
         ]);
 
         $response = $this->post('/login', [
-            'login'    => 'admin@desiteks.com',
+            'login'    => 'admin@mitraseratbuana.com',
             'password' => 'password123',
             'role'     => 'admin',
         ]);
@@ -66,7 +66,7 @@ class AuthFlowTest extends TestCase
         $kasir = User::create([
             'name'      => 'Kasir User',
             'username'  => 'kasir',
-            'email'     => 'kasir@desiteks.com',
+            'email'     => 'kasir@mitraseratbuana.com',
             'password'  => bcrypt('password123'),
             'role'      => 'kasir',
             'status'    => 'aktif',
@@ -94,7 +94,7 @@ class AuthFlowTest extends TestCase
         $gudang = User::create([
             'name'      => 'Gudang User',
             'username'  => 'gudang',
-            'email'     => 'gudang@desiteks.com',
+            'email'     => 'gudang@mitraseratbuana.com',
             'password'  => bcrypt('password123'),
             'role'      => 'gudang',
             'status'    => 'aktif',
@@ -102,7 +102,7 @@ class AuthFlowTest extends TestCase
         ]);
 
         $response = $this->post('/login', [
-            'login'    => 'gudang@desiteks.com',
+            'login'    => 'gudang@mitraseratbuana.com',
             'password' => 'password123',
         ]);
 
@@ -122,7 +122,7 @@ class AuthFlowTest extends TestCase
         User::create([
             'name'      => 'Kasir User',
             'username'  => 'kasir',
-            'email'     => 'kasir@desiteks.com',
+            'email'     => 'kasir@mitraseratbuana.com',
             'password'  => bcrypt('password123'),
             'role'      => 'kasir',
             'status'    => 'aktif',
@@ -130,7 +130,7 @@ class AuthFlowTest extends TestCase
         ]);
 
         $response = $this->post('/login', [
-            'login'    => 'kasir@desiteks.com',
+            'login'    => 'kasir@mitraseratbuana.com',
             'password' => 'password123',
             'role'     => 'admin', // Mismatch!
         ]);

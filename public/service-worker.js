@@ -1,4 +1,4 @@
-const CACHE_NAME = 'desiteks-cache-v1';
+const CACHE_NAME = 'mitraseratbuana-cache-v1';
 const ASSETS_TO_CACHE = [
   '/css/desiteks.css',
   '/images/logo_icon_light.png',

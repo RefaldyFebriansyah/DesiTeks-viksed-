@@ -365,7 +365,7 @@ class NewSuppliersAndIncomingGoodsSeeder extends Seeder
         imagerectangle($im, 440, 190, 810, 310, $lineColor);
 
         imagestring($im, 4, 455, 205, "PENERIMA (TUJUAN):", $headerBg);
-        imagestring($im, 3, 455, 228, "TOKO KAIN DESITEKS (PUSAT)", $textDark);
+        imagestring($im, 3, 455, 228, "TOKO KAIN MITRASERATBUANA (PUSAT)", $textDark);
         imagestring($im, 2, 455, 248, "Jl. Tekstil Raya No. 101, Bandung", $grayText);
         imagestring($im, 2, 455, 265, "Tanggal Kirim: " . date('d F Y', strtotime($incoming['tanggal'])), $grayText);
         imagestring($im, 2, 455, 282, "Status: DITERIMA LENGKAP & UTUH", $stampGreen);
@@ -413,7 +413,7 @@ class NewSuppliersAndIncomingGoodsSeeder extends Seeder
         $sigY = $noteY + 110;
         imagestring($im, 3, 80, $sigY, "Pengirim (Gudang Supplier)", $textDark);
         imagestring($im, 3, 350, $sigY, "Sopir / Ekspedisi", $textDark);
-        imagestring($im, 3, 600, $sigY, "Penerima (DesiTeks)", $textDark);
+        imagestring($im, 3, 600, $sigY, "Penerima (MitraSeratBuana)", $textDark);
 
         // Garis tanda tangan
         imageline($im, 60, $sigY + 80, 240, $sigY + 80, $grayText);
@@ -423,7 +423,7 @@ class NewSuppliersAndIncomingGoodsSeeder extends Seeder
         imagestring($im, 3, 350, $sigY + 85, "(" . ($incoming['sopir'] ?? 'Bpk. Sopir') . ")", $grayText);
 
         imageline($im, 580, $sigY + 80, 760, $sigY + 80, $grayText);
-        imagestring($im, 3, 600, $sigY + 85, "(Staff Gudang DesiTeks)", $grayText);
+        imagestring($im, 3, 600, $sigY + 85, "(Staff Gudang MitraSeratBuana)", $grayText);
 
         // Stempel Verifikasi "VERIFIED / DITERIMA GUDANG"
         imagerectangle($im, 570, $sigY + 15, 770, $sigY + 65, $stampGreen);
@@ -432,7 +432,7 @@ class NewSuppliersAndIncomingGoodsSeeder extends Seeder
         imagestring($im, 2, 605, $sigY + 44, date('d-m-Y H:i') . " WIB", $stampGreen);
 
         // Footer Barcode Line
-        imagestring($im, 2, 40, $h - 40, "Dokumen Cetak Elektronik Sistem DesiTeks | Dilampirkan otomatis pada penerimaan barang masuk", $grayText);
+        imagestring($im, 2, 40, $h - 40, "Dokumen Cetak Elektronik Sistem MitraSeratBuana | Dilampirkan otomatis pada penerimaan barang masuk", $grayText);
         imagestring($im, 2, 650, $h - 40, "Hal 1 dari 1 (Asli)", $grayText);
 
         imagepng($im, $path);

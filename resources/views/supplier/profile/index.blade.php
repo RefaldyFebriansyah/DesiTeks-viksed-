@@ -131,11 +131,11 @@
                     <i class="bi bi-check-circle-fill me-1"></i> Rekanan Terverifikasi
                 </span>
                 <p class="text-muted small mb-0">
-                    Akun ini bertindak sebagai mitra resmi penyuplai kain untuk seluruh cabang toko kain DesiTeks.
+                    Akun ini bertindak sebagai mitra resmi penyuplai kain untuk seluruh cabang toko kain MitraSeratBuana.
                 </p>
             </div>
 
-            <div class="sup-card p-4">
+            <div class="sup-card p-4 mb-4">
                 <h6 class="fw-bold mb-3 pb-2 border-bottom">Ringkasan Kemitraan</h6>
                 <div class="d-flex justify-content-between py-2 border-bottom small">
                     <span class="text-muted">Kode Rekanan</span>
@@ -153,6 +153,26 @@
                     <span class="text-muted">Mitra Sejak</span>
                     <span class="fw-semibold">{{ $supplier->created_at ? $supplier->created_at->format('d M Y') : '2026' }}</span>
                 </div>
+            </div>
+
+            <!-- Alamat Tujuan Pengiriman MitraSeratBuana -->
+            <div class="sup-card p-4">
+                <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
+                    <i class="bi bi-geo-alt-fill text-danger fs-5"></i>
+                    <h6 class="fw-bold mb-0 text-dark">Alamat Tujuan Pengiriman</h6>
+                </div>
+                <div class="p-3 bg-light rounded border mb-3">
+                    <div class="fw-bold text-dark mb-1" style="font-size: 13.5px;">{{ $storeName ?? 'Desiteks' }}</div>
+                    <div class="text-secondary small mb-2" style="line-height: 1.5;">
+                        <strong>Kosan Dinar, Ciamis, Jawa Barat</strong>
+                    </div>
+                    <div class="text-muted" style="font-size: 11.5px;">
+                        <i class="bi bi-telephone me-1 text-success"></i> Kontak Gudang: <strong>+62812-3456-7890</strong>
+                    </div>
+                </div>
+                <a href="https://www.google.com/maps/dir/?api=1&destination=Kosan+Dinar+Ciamis" target="_blank" class="btn btn-primary btn-sm w-100 fw-bold d-inline-flex align-items-center justify-content-center gap-1.5 shadow-sm" style="border-radius: 8px; background: #2563eb; border: none;">
+                    <i class="bi bi-sign-turn-right-fill"></i> Buka Rute Google Maps (Kosan Dinar Ciamis)
+                </a>
             </div>
         </div>
     </div>

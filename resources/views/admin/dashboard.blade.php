@@ -143,39 +143,36 @@
                 <div class="empty-state py-4"><i class="bi bi-check-circle text-success fs-3"></i><p class="mt-2 mb-0">Semua stok kain aman</p></div>
             @else
             <div class="dt-table-wrap flex-grow-1">
-                <table class="dt-table align-middle mb-0">
+                <table class="dt-table align-middle mb-0" style="width: 100%; table-layout: fixed;">
                     <thead>
                         <tr>
-                            <th>Kain</th>
-                            <th class="text-end">Stok Rol</th>
-                            <th class="text-end">Total Meter</th>
-                            <th class="text-center" style="white-space: nowrap;">Status</th>
+                            <th style="width: 38%;">Kain</th>
+                            <th class="text-end" style="width: 18%;">Stok Rol</th>
+                            <th class="text-end" style="width: 22%;">Total Meter</th>
+                            <th class="text-center" style="width: 22%;">Status</th>
                         </tr>
                     </thead>
                     <tbody>
                     @foreach($stokMenipis as $s)
                         <tr>
                             <td>
-                                <div class="fw-600 text-navy" style="font-size:12.5px">{{ $s->fabric->nama_kain }}</div>
-                                <div style="font-size:11px;color:var(--dt-muted)">{{ $s->fabric->kode_kain }}</div>
+                                <div class="fw-600 text-navy dt-truncate" title="{{ $s->fabric->nama_kain }}" style="font-size:12px; max-width: 100%;">{{ $s->fabric->nama_kain }}</div>
+                                <div style="font-size:10.5px;color:var(--dt-muted)">{{ $s->fabric->kode_kain }}</div>
                             </td>
-                            <td class="fw-700 text-navy text-end">{{ $s->stok_rol }} rol</td>
-                            <td class="fw-600 text-navy text-end">
+                            <td class="fw-700 text-navy text-end" style="font-size:12px;">{{ $s->stok_rol }} rol</td>
+                            <td class="fw-600 text-navy text-end" style="font-size:12px;">
                                 {{ number_format($s->total_meter, 1) }} m
-                                @if($s->stok_meter > 0)
-                                    <div style="font-size:10.5px;color:var(--dt-muted);font-weight:normal">(eceran {{ number_format($s->stok_meter, 1) }}m)</div>
-                                @endif
                             </td>
-                            <td class="text-center" style="white-space: nowrap;">
+                            <td class="text-center">
                                 @php $statusStok = $s->fabric?->status_stok ?? 'habis'; @endphp
                                 @if($statusStok === 'habis')
-                                    <span class="badge-stok-habis"><i class="bi bi-x-circle-fill me-1"></i> Habis</span>
+                                    <span class="badge-stok-habis" style="padding: 3px 6px !important; font-size: 10px !important;"><i class="bi bi-x-circle-fill me-0.5"></i> Habis</span>
                                 @elseif($statusStok === 'penuh')
-                                    <span class="badge-stok-over"><i class="bi bi-box-fill me-1"></i> Stok Penuh</span>
+                                    <span class="badge-stok-over" style="padding: 3px 6px !important; font-size: 10px !important;"><i class="bi bi-box-fill me-0.5"></i> Penuh</span>
                                 @elseif($statusStok === 'menipis')
-                                    <span class="badge-stok-menipis"><i class="bi bi-exclamation-triangle-fill me-1"></i> Stok Menipis</span>
+                                    <span class="badge-stok-menipis" style="padding: 3px 6px !important; font-size: 10px !important;"><i class="bi bi-exclamation-triangle-fill me-0.5"></i> Menipis</span>
                                 @else
-                                    <span class="badge-stok-aman"><i class="bi bi-check-circle-fill me-1"></i> Stok Aman</span>
+                                    <span class="badge-stok-aman" style="padding: 3px 6px !important; font-size: 10px !important;"><i class="bi bi-check-circle-fill me-0.5"></i> Aman</span>
                                 @endif
                             </td>
                         </tr>

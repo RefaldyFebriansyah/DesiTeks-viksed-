@@ -1,6 +1,6 @@
 @extends('layouts.auth')
 
-@section('title', 'Login Portal Supplier — DesiTeks')
+@section('title', 'Login Portal Supplier — MitraSeratBuana')
 
 @push('styles')
 <style>
@@ -58,7 +58,7 @@
         {{-- Logo & Heading --}}
         <div class="text-center mb-3">
             <a href="{{ url('/') }}" title="Kembali ke Beranda" class="text-decoration-none d-inline-block">
-                <img src="{{ asset('images/logo_transparent.png') }}" alt="DesiTeks" class="login-logo-img">
+                <img src="{{ asset('images/logo_transparent.png') }}" alt="MitraSeratBuana" class="login-logo-img">
             </a>
             <div class="mt-2">
                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1 fw-bold" style="font-size: 11px; letter-spacing: 0.3px;">
@@ -66,7 +66,7 @@
                 </span>
             </div>
             <p style="margin: 6px 0 0; font-size: 12.5px; color: #64748b; line-height: 1.4;">
-                Masuk untuk membuat surat jalan online dan memantau penerimaan stok kain di DesiTeks
+                Masuk untuk membuat surat jalan online dan memantau penerimaan stok kain di MitraSeratBuana
             </p>
         </div>
 
@@ -167,7 +167,7 @@
         </div>
 
         <div class="text-center mt-2" style="font-size: 11px; color: #94a3b8;">
-            © {{ date('Y') }} DesiTeks — B2B Partner Network
+            © {{ date('Y') }} MitraSeratBuana — B2B Partner Network
         </div>
 
     </div>

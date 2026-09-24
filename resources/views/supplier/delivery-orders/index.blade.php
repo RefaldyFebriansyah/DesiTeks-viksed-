@@ -157,7 +157,7 @@
     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
         <div>
             <h3 class="fw-bold mb-1 text-dark" style="letter-spacing: -0.02em;">Surat Jalan Online</h3>
-            <div class="text-secondary small">Daftar seluruh pengiriman kain dan status verifikasi penerimaan di Gudang DesiTeks</div>
+            <div class="text-secondary small">Daftar seluruh pengiriman kain dan status verifikasi penerimaan di Gudang MitraSeratBuana</div>
         </div>
         <a href="{{ route('supplier.delivery-orders.create') }}" class="btn btn-primary px-4 py-2.5 rounded-pill fw-bold d-inline-flex align-items-center gap-2 shadow-sm" style="font-size: 13.5px;">
             <i class="bi bi-plus-lg"></i>
@@ -214,7 +214,7 @@
                     </thead>
                     <tbody id="tableBody">
                         @foreach($deliveryOrders as $order)
-                            <tr class="table-row-item">
+                            <tr class="table-row-item" data-id="{{ $order->id }}" data-status="{{ $order->status }}">
                                 <td class="ps-4" data-label="No. Surat Jalan">
                                     <div class="d-flex align-items-center gap-2">
                                         <div class="rounded-2 bg-light d-flex align-items-center justify-content-center text-primary flex-shrink-0" style="width: 32px; height: 32px; font-size: 14px;">
@@ -298,7 +298,7 @@
             <div class="text-center py-5 text-muted">
                 <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary"></i>
                 <h6 class="fw-bold text-dark mb-1">Tidak ada data surat jalan ditemukan</h6>
-                <p class="small text-muted mb-3">Mulai buat surat jalan baru untuk pengiriman kain ke gudang DesiTeks.</p>
+                <p class="small text-muted mb-3">Mulai buat surat jalan baru untuk pengiriman kain ke gudang MitraSeratBuana.</p>
                 <a href="{{ route('supplier.delivery-orders.create') }}" class="btn btn-primary px-4 py-2 rounded-pill fw-bold small">
                     <i class="bi bi-plus-lg me-1"></i> Buat Surat Jalan Baru
                 </a>
@@ -395,5 +395,79 @@
             handleLiveSearch(searchInput);
         }
     });
+
+    // Real-time polling for list view (Zero-Reload / Non-Kedip)
+    (function() {
+        let checkUrl = "{{ route('supplier.delivery-orders.check-all-status') }}";
+
+        function getVisibleIds() {
+            let rows = document.querySelectorAll('.table-row-item[data-id]');
+            let ids = [];
+            rows.forEach(r => ids.push(r.dataset.id));
+            return ids;
+        }
+
+        function showStatusToast(message) {
+            let old = document.getElementById('do-status-toast');
+            if (old) old.remove();
+
+            let toast = document.createElement('div');
+            toast.id = 'do-status-toast';
+            toast.style.cssText = 'position:fixed; top:20px; right:20px; background:#0f172a; color:#fff; padding:14px 20px; border-radius:12px; box-shadow:0 10px 25px -5px rgba(0,0,0,0.3); z-index:99999; font-weight:600; font-size:13.5px; display:flex; align-items:center; gap:10px; border:1px solid #334155; transition: opacity 0.3s ease;';
+            toast.innerHTML = '<span style="font-size:18px;">🚀</span> <span>' + message + '</span>';
+            document.body.appendChild(toast);
+
+            setTimeout(function() {
+                if (toast) {
+                    toast.style.opacity = '0';
+                    setTimeout(function() { toast.remove(); }, 300);
+                }
+            }, 4000);
+        }
+
+        setInterval(function() {
+            let ids = getVisibleIds();
+            if (ids.length === 0) return;
+
+            let queryParams = ids.map(id => 'ids[]=' + encodeURIComponent(id)).join('&');
+            fetch(checkUrl + '?' + queryParams, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(res => res.json())
+            .then(statuses => {
+                let changed = false;
+                let rows = document.querySelectorAll('.table-row-item[data-id]');
+                rows.forEach(r => {
+                    let id = r.dataset.id;
+                    let current = r.dataset.status;
+                    if (statuses[id] && statuses[id].status !== current) {
+                        changed = true;
+                    }
+                });
+
+                if (changed) {
+                    showStatusToast('Status surat jalan diperbarui!');
+                    fetch(window.location.href, {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    })
+                    .then(res => res.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newWrapper = doc.querySelector('.table-responsive-wrapper');
+                        const curWrapper = document.querySelector('.table-responsive-wrapper');
+                        if (newWrapper && curWrapper) {
+                            curWrapper.innerHTML = newWrapper.innerHTML;
+                        }
+                    })
+                    .catch(err => {});
+                }
+            })
+            .catch(err => {});
+        }, 4000);
+    })();
 </script>
 @endpush

@@ -25,6 +25,9 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\BranchMiddleware::class,
         ]);
 
+        // Trust proxies for Cloudflare / Load Balancers
+        $middleware->trustProxies(at: '*');
+
         // Redirect to /login with friendly flash message
         $middleware->redirectGuestsTo(function (Request $request) {
             session()->flash('info', 'Silakan masuk ke akun Anda terlebih dahulu untuk mengisi formulir atau mengakses fitur ini.');

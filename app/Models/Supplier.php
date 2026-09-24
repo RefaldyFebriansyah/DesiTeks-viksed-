@@ -36,7 +36,7 @@ class Supplier extends Model
     }
 
     /**
-     * Mutator untuk memastikan nomor telepon selalu tersimpan dalam format +62
+     * Mutator untuk memastikan nomor telepon selalu tersimpan dalam format +628...
      */
     public function setNoTeleponAttribute($value): void
     {
@@ -52,11 +52,18 @@ class Supplier extends Model
         } elseif (!str_starts_with($clean, '62')) {
             $clean = '62' . $clean;
         }
+
+        // Normalkan digit setelah 62 agar selalu diawali 8 (nomor HP Indonesia)
+        $after62 = substr($clean, 2);
+        if (strlen($after62) > 0 && !str_starts_with($after62, '8')) {
+            $clean = '628' . $after62;
+        }
+
         $this->attributes['no_telepon'] = '+' . $clean;
     }
 
     /**
-     * Accessor nomor telepon terformat +62
+     * Accessor nomor telepon terformat rapi +62 8xx-xxxx-xxxx
      */
     public function getFormattedPhoneAttribute(): string
     {
@@ -69,7 +76,19 @@ class Supplier extends Model
         } elseif (!str_starts_with($clean, '62')) {
             $clean = '62' . $clean;
         }
-        return '+' . $clean;
+
+        $after62 = substr($clean, 2);
+        if (strlen($after62) > 0 && !str_starts_with($after62, '8')) {
+            $clean = '628' . $after62;
+        }
+
+        $prefix = '+' . substr($clean, 0, 2);
+        $body   = substr($clean, 2);
+
+        if (strlen($body) >= 9) {
+            return $prefix . ' ' . substr($body, 0, 3) . '-' . substr($body, 3, 4) . '-' . substr($body, 7);
+        }
+        return $prefix . ' ' . $body;
     }
 
     /**

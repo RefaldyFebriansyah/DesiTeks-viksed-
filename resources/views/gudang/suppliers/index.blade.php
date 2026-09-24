@@ -31,49 +31,66 @@
     </div>
 
     <div class="dt-table-wrap">
-        <table class="dt-table mb-0 align-middle">
+        <table class="dt-table mb-0 align-middle" style="width: 100%; table-layout: fixed;">
             <thead>
                 <tr>
-                    <th>Kode</th>
-                    <th>Nama Supplier / PT</th>
-                    <th>Email</th>
-                    <th>Asal Kota</th>
-                    <th>No. Telepon (+62)</th>
+                    <th style="width: 215px;">Nama Supplier / PT</th>
+                    <th style="width: 170px;">Email</th>
+                    <th style="width: 115px;">Asal Kota</th>
+                    <th style="width: 165px;">No. Telepon / WA</th>
                     <th>Alamat</th>
-                    <th>Total Barang Masuk</th>
-                    <th class="text-center">Aksi</th>
+                    <th style="width: 125px;">Total Barang Masuk</th>
+                    <th class="text-center" style="width: 50px;">Aksi</th>
                 </tr>
             </thead>
             <tbody>
             @forelse($suppliers as $sup)
+                @php
+                    $cleanName = trim(preg_replace('/^(PT|CV|UD)\.?\s*/i', '', $sup->nama_supplier));
+                    $initials = strtoupper(substr($cleanName, 0, min(2, strlen($cleanName))));
+                @endphp
                 <tr>
-                    <td><span class="dt-badge dt-badge-navy">{{ $sup->kode_supplier }}</span></td>
-                    <td class="fw-600 text-navy">{{ $sup->nama_supplier }}</td>
+                    <td>
+                        <div class="d-flex align-items-center" style="gap: 12px;">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-navy fw-bold flex-shrink-0" style="width: 36px; height: 36px; background: #e2e8f0; font-size: 12px; border: 1px solid #cbd5e1; letter-spacing: 0.5px;">
+                                {{ $initials ?: 'SP' }}
+                            </div>
+                            <div class="min-w-0 flex-grow-1">
+                                <div class="fw-600 text-navy dt-truncate" title="{{ $sup->nama_supplier }}" style="font-size: 13.5px; max-width: 155px;">{{ $sup->nama_supplier }}</div>
+                                <div class="mt-0.5"><span class="dt-badge dt-badge-navy" style="font-size: 9.5px; padding: 1px 6px; letter-spacing: 0.3px;">{{ $sup->kode_supplier }}</span></div>
+                            </div>
+                        </div>
+                    </td>
                     <td>
                         @if($sup->email)
-                            <span class="text-muted" style="font-size: 13px;">{{ $sup->masked_email }}</span>
+                            <span class="text-muted dt-truncate" title="{{ $sup->masked_email }}" style="font-size: 13px; max-width: 160px;">{{ $sup->masked_email }}</span>
                         @else
-                            <span class="text-muted">-</span>
+                            <span class="text-muted small">-</span>
                         @endif
                     </td>
                     <td>
                         @if($sup->asal_kota)
-                            <span class="dt-badge dt-badge-secondary"><i class="bi bi-geo-alt me-1"></i>{{ $sup->asal_kota }}</span>
+                            <span class="dt-badge dt-badge-secondary dt-truncate d-inline-flex align-items-center gap-1" title="{{ $sup->asal_kota }}" style="max-width: 105px; font-size: 11.5px;">
+                                <i class="bi bi-geo-alt text-secondary opacity-75"></i>
+                                <span>{{ $sup->asal_kota }}</span>
+                            </span>
                         @else
-                            -
+                            <span class="text-muted small">-</span>
                         @endif
                     </td>
                     <td>
                         @if($sup->no_telepon)
-                            <a href="https://wa.me/{{ preg_replace('/[^\d]/', '', $sup->no_telepon) }}" target="_blank" class="text-decoration-none text-success fw-500">
-                                <i class="bi bi-whatsapp me-1"></i>{{ $sup->no_telepon }}
-                            </a>
+                            <span class="text-dark fw-500" style="white-space: nowrap; font-size: 13px;">{{ $sup->formatted_phone }}</span>
                         @else
-                            -
+                            <span class="text-muted small">-</span>
                         @endif
                     </td>
-                    <td>{{ $sup->alamat ?? '-' }}</td>
-                    <td><span class="dt-badge dt-badge-gold">{{ $sup->incoming_goods_count }} Transaksi</span></td>
+                    <td>
+                        <span class="text-dark small dt-truncate" title="{{ $sup->alamat ?? '-' }}" style="max-width: 100%;">{{ $sup->alamat ?? '-' }}</span>
+                    </td>
+                    <td>
+                        <span class="dt-badge dt-badge-gold" style="font-size: 11.5px;">{{ $sup->incoming_goods_count }} Transaksi</span>
+                    </td>
                     <td class="text-center">
                         <div class="dt-action-wrap">
                             <button class="dt-action-btn" onclick="toggleMenu(this)" type="button">⋮</button>
@@ -93,7 +110,7 @@
                     </td>
                 </tr>
             @empty
-                <tr><td colspan="8" class="text-center py-5 text-muted">Belum ada supplier yang ditemukan.</td></tr>
+                <tr><td colspan="7" class="text-center py-5 text-muted">Belum ada supplier yang ditemukan.</td></tr>
             @endforelse
             </tbody>
         </table>

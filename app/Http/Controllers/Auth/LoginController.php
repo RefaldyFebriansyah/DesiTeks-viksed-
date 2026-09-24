@@ -70,7 +70,7 @@ class LoginController extends Controller
                 $user->save();
             }
 
-            $email = $user->email ?? ($user->username . '@desiteks.com');
+            $email = $user->email ?? ($user->username . '@mitraseratbuana.com');
             $qrCodeUrl = $this->twoFactorService->getQrCodeImageUrl($email, $user->two_factor_secret);
 
             // Simpan pending user state ke session untuk verifikasi 2FA
@@ -113,7 +113,7 @@ class LoginController extends Controller
         }
 
         $secret    = $user->two_factor_secret;
-        $userEmail = $user->email ?? ($user->username . '@desiteks.com');
+        $userEmail = $user->email ?? ($user->username . '@mitraseratbuana.com');
         $otpUrl    = $this->twoFactorService->getOtpauthUrl($userEmail, $secret);
         $qrCodeUrl = $this->twoFactorService->getQrCodeImageUrl($userEmail, $secret);
 

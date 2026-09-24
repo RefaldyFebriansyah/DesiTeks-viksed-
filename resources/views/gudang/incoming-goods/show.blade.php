@@ -10,16 +10,19 @@
         <h1 class="dt-page-title">Detail Barang Masuk</h1>
         <div class="dt-breadcrumb">Gudang / Barang Masuk / {{ $incomingGood->nomor_faktur }}</div>
     </div>
-    @if($incomingGood->foto_lampiran)
     <div class="d-flex align-items-center gap-2">
-        <a href="{{ asset('storage/' . $incomingGood->foto_lampiran) }}" target="_blank" download class="dt-btn dt-btn-outline dt-btn-sm d-inline-flex align-items-center gap-1.5">
-            <i class="bi bi-file-earmark-arrow-down"></i> Unduh Soft File Surat Jalan
-        </a>
-        <button type="button" class="dt-btn dt-btn-primary dt-btn-sm d-inline-flex align-items-center gap-1.5" data-bs-toggle="modal" data-bs-target="#suratJalanModal">
+        <a href="{{ route('gudang.delivery-orders.show', $incomingGood->getOrCreateDeliveryOrder()->id) }}" class="dt-btn dt-btn-primary dt-btn-sm d-inline-flex align-items-center gap-1.5">
             <i class="bi bi-eye"></i> Lihat Surat Jalan
-        </button>
+        </a>
+        <a href="{{ route('gudang.delivery-orders.print', $incomingGood->getOrCreateDeliveryOrder()->id) }}" target="_blank" class="dt-btn dt-btn-outline dt-btn-sm d-inline-flex align-items-center gap-1.5">
+            <i class="bi bi-file-earmark-pdf"></i> Unduh PDF Surat Jalan
+        </a>
+        @if($incomingGood->foto_lampiran)
+        <a href="{{ asset('storage/' . $incomingGood->foto_lampiran) }}" target="_blank" download class="dt-btn dt-btn-outline dt-btn-sm d-inline-flex align-items-center gap-1.5">
+            <i class="bi bi-image"></i> Unduh Foto Lampiran
+        </a>
+        @endif
     </div>
-    @endif
 </div>
 
 {{-- Dokumen Header --}}
@@ -59,14 +62,16 @@
                 "{{ $incomingGood->catatan }}"
             </div>
             @endif
-            @if($incomingGood->foto_lampiran)
-            <div class="mt-2">
-                <button type="button" class="dt-btn dt-btn-gold dt-btn-xs w-100 w-md-auto" data-bs-toggle="modal" data-bs-target="#suratJalanModal">
-                    <i class="bi bi-image me-1"></i> Lihat Bukti Surat Jalan
+            <div class="mt-2 d-flex flex-column gap-1">
+                <a href="{{ route('gudang.delivery-orders.show', $incomingGood->getOrCreateDeliveryOrder()->id) }}" class="dt-btn dt-btn-gold dt-btn-xs w-100 w-md-auto d-inline-flex align-items-center justify-content-center gap-1">
+                    <i class="bi bi-file-earmark-text"></i> Lihat Surat Jalan
+                </a>
+                @if($incomingGood->foto_lampiran)
+                <button type="button" class="dt-btn dt-btn-outline dt-btn-xs w-100 w-md-auto d-inline-flex align-items-center justify-content-center gap-1 text-muted" data-bs-toggle="modal" data-bs-target="#suratJalanModal">
+                    <i class="bi bi-image"></i> Lihat Foto Lampiran
                 </button>
+                @endif
             </div>
-            @endif
-        </div>
     </div>
 
     {{-- Ringkasan Angka --}}

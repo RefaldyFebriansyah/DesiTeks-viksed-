@@ -56,7 +56,7 @@ class ReportController extends Controller
             ->orderByDesc('total_subtotal')
             ->get();
 
-        $filename = "laporan-penjualan-desiteks-{$periode}-" . date('Ymd') . ".csv";
+        $filename = "laporan-penjualan-mitraseratbuana-{$periode}-" . date('Ymd') . ".csv";
 
         $headers = [
             "Content-type"        => "text/csv; charset=UTF-8",
@@ -72,7 +72,7 @@ class ReportController extends Controller
             // Tambahkan UTF-8 BOM untuk kompatibilitas Microsoft Excel
             fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
             
-            fputcsv($file, ["LAPORAN PENJUALAN DESITEKS"]);
+            fputcsv($file, ["LAPORAN PENJUALAN MITRASERATBUANA"]);
             fputcsv($file, ["Periode Laporan", ucfirst(str_replace('_', ' ', $periode))]);
             fputcsv($file, ["Rentang Tanggal", $dari->format('d-m-Y') . " s/d " . $sampai->format('d-m-Y')]);
             fputcsv($file, []);

@@ -13,7 +13,7 @@ class SettingSeeder extends Seeder
             'nama_depan_toko'    => 'Kain',
             'nama_belakang_toko' => 'Kita',
             'nama_toko'          => 'KainKita',
-            'alamat_toko'        => 'Jl. Kebon Jati No. 45, Bandung',
+            'alamat_toko'        => 'Kosan Dinar, Ciamis, Jawa Barat',
             'telepon_toko'       => '0812-3456-7890',
             'catatan_struk'      => 'Terima kasih atas kunjungan Anda! Kain yang sudah dipotong tidak dapat ditukar/dikembalikan.',
         ];

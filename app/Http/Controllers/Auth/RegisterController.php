@@ -29,12 +29,25 @@ class RegisterController extends Controller
      */
     public function register(Request $request)
     {
+        if ($request->has('no_telepon') && $request->input('no_telepon') !== null) {
+            $rawPhone = trim((string) $request->input('no_telepon'));
+            $digits = preg_replace('/[^0-9]/', '', $rawPhone);
+            if (str_starts_with($digits, '62')) {
+                $phone = '+' . $digits;
+            } elseif (str_starts_with($digits, '0')) {
+                $phone = '+62' . substr($digits, 1);
+            } else {
+                $phone = '+62' . $digits;
+            }
+            $request->merge(['no_telepon' => $phone]);
+        }
+
         $validated = $request->validate([
             'nama_supplier' => ['required', 'string', 'max:255'],
             'name'          => ['required', 'string', 'max:255'],
             'username'      => ['required', 'string', 'min:3', 'max:50', 'alpha_dash', 'unique:users,username'],
             'email'         => ['required', 'string', 'email', 'max:150', 'unique:users,email', 'regex:/^[a-zA-Z0-9._%+\-]+@gmail\.com$/i'],
-            'no_telepon'    => ['required', 'string', 'max:30', 'regex:/^[1-9][0-9]{7,14}$/'],
+            'no_telepon'    => ['required', 'string', 'regex:/^\+62[0-9]{8,13}$/'],
             'asal_kota'     => ['required', 'string', 'max:100'],
             'alamat'        => ['nullable', 'string', 'max:500'],
             'password'      => ['required', 'string', 'min:8', 'confirmed', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'],
@@ -45,10 +58,11 @@ class RegisterController extends Controller
             'username.unique'        => 'Username ini sudah digunakan, silakan pilih username lain.',
             'username.alpha_dash'    => 'Username hanya boleh berisi huruf, angka, tanda strip, dan garis bawah.',
             'email.required'         => 'Alamat email wajib diisi.',
+            'email.email'            => 'Format email tidak valid.',
             'email.unique'           => 'Email ini sudah terdaftar di sistem.',
-            'email.regex'            => 'Email harus menggunakan @gmail.com (contoh: nama@gmail.com).',
+            'email.regex'            => 'Email wajib menggunakan domain @gmail.com (contoh: nama@gmail.com).',
             'no_telepon.required'    => 'Nomor telepon / WhatsApp wajib diisi.',
-            'no_telepon.regex'       => 'Nomor telepon tidak boleh diawali angka 0. Masukkan langsung angka setelah +62 (contoh: 81234567890).',
+            'no_telepon.regex'       => 'Nomor telepon harus diawali dengan +62 dan hanya berisi angka (contoh: +6281234567890).',
             'asal_kota.required'     => 'Kota domisili supplier wajib diisi.',
             'password.required'      => 'Password akun wajib diisi.',
             'password.min'           => 'Password minimal terdiri dari 8 karakter.',
@@ -106,6 +120,6 @@ class RegisterController extends Controller
         Auth::login($user);
 
         return redirect()->route('supplier.dashboard')
-            ->with('success', "Selamat datang, {$user->name}! Akun mitra supplier Anda ({$user->supplier?->nama_supplier}) berhasil didaftarkan dan aktif di sistem DesiTeks.");
+            ->with('success', "Selamat datang, {$user->name}! Akun mitra supplier Anda ({$user->supplier?->nama_supplier}) berhasil didaftarkan dan aktif di sistem MitraSeratBuana.");
     }
 }

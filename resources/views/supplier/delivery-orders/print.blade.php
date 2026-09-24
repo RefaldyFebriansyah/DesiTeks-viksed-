@@ -102,9 +102,9 @@
         <div class="col-6">
             <div class="print-box h-100">
                 <div class="fw-bold small text-uppercase border-bottom border-dark pb-1 mb-2">KEPADA YTH. (PENERIMA):</div>
-                <div class="fw-bold fs-6">PT. DESITEKS SEJAHTERA NUSA</div>
-                <div class="fw-semibold small">{{ $deliveryOrder->branch?->nama_cabang ?? 'Gudang Utama DesiTeks' }}</div>
-                <div class="small">{{ $deliveryOrder->branch?->alamat ?? 'Jl. Kebon Jati No. 45, Bandung, Jawa Barat' }}</div>
+                <div class="fw-bold fs-6">{{ $storeName ?? 'Desiteks' }}</div>
+                <div class="fw-semibold small">{{ $deliveryOrder->branch?->nama_cabang ?? 'Gudang Penerimaan Kain Kosan Dinar Ciamis' }}</div>
+                <div class="small">{{ $deliveryOrder->branch?->alamat ?? 'Kosan Dinar, Ciamis, Jawa Barat' }}</div>
             </div>
         </div>
         <div class="col-6">
@@ -188,7 +188,7 @@
                 <div class="small">{{ $deliveryOrder->plat_nomor ?: 'Armada Pengantar' }}</div>
             </div>
             <div class="col-4">
-                <div class="fw-bold">Diterima Oleh (Gudang DesiTeks),</div>
+                <div class="fw-bold">Diterima Oleh (Gudang MitraSeratBuana),</div>
                 <div class="signature-line-print"></div>
                 <div class="fw-bold">{{ $deliveryOrder->receivedBy?->name ?: '( ................................... )' }}</div>
                 <div class="small">{{ $deliveryOrder->received_at ? $deliveryOrder->received_at->format('d/m/Y H:i') : 'Tim Logistik Gudang' }}</div>
